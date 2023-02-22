@@ -36,7 +36,7 @@ internal static class LinkUtilities
 
             if (s is not null)
             {
-                string[] rgbs = s.Split(new char[] { ',' });
+                string[] rgbs = s.Split(',');
                 int[] rgb = new int[3];
 
                 int nMax = Math.Min(rgb.Length, rgbs.Length);

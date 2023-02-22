@@ -61,7 +61,7 @@ public class SelectionRangeConverter : TypeConverter
             culture ??= CultureInfo.CurrentCulture;
 
             char separator = culture.TextInfo.ListSeparator[0];
-            string[] tokens = text.Split(new char[] { separator });
+            string[] tokens = text.Split(separator);
 
             if (tokens.Length == 2)
             {

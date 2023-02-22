@@ -57,7 +57,7 @@ public class LinkConverter : TypeConverter
             culture ??= CultureInfo.CurrentCulture;
 
             char sep = culture.TextInfo.ListSeparator[0];
-            string[] tokens = text.Split(new char[] { sep });
+            string[] tokens = text.Split(sep);
             int[] values = new int[tokens.Length];
 
             if (values.Length != 2)

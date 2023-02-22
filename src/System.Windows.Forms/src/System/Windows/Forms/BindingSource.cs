@@ -980,7 +980,7 @@ public class BindingSource : Component,
         List<ListSortDescription> sorts = new();
         PropertyDescriptorCollection props = _currencyManager.GetItemProperties();
 
-        string[] split = sortString.Split(new char[] { ',' });
+        string[] split = sortString.Split(',');
         for (int i = 0; i < split.Length; i++)
         {
             string current = split[i].Trim();

@@ -51,7 +51,7 @@ public class PaddingConverter : TypeConverter
             // Parse 4 integer values.
             culture ??= CultureInfo.CurrentCulture;
 
-            string[] tokens = stringValue.Split(new char[] { culture.TextInfo.ListSeparator[0] });
+            string[] tokens = stringValue.Split(culture.TextInfo.ListSeparator[0]);
             int[] values = new int[tokens.Length];
             TypeConverter intConverter = TypeDescriptor.GetConverter(typeof(int));
             for (int i = 0; i < values.Length; i++)
