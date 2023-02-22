@@ -350,7 +350,7 @@ namespace System.Windows.Forms.Design.Behavior
                     if (dragComponents.Length == 1)
                     {
                         string name = TypeDescriptor.GetComponentName(dragComponents[0].dragComponent);
-                        if (name is null || name.Length == 0)
+                        if (string.IsNullOrEmpty(name))
                         {
                             name = dragComponents[0].dragComponent.GetType().Name;
                         }

@@ -692,7 +692,7 @@ namespace System.Windows.Forms.Design
                     if (pd is not null && pd.PropertyType.Equals(typeof(string)))
                     {
                         string current = (string)pd.GetValue(component);
-                        if (current is null || current.Length == 0)
+                        if (string.IsNullOrEmpty(current))
                         {
                             pd.SetValue(component, site.Name);
                         }

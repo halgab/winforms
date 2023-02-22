@@ -5103,7 +5103,7 @@ namespace System.Windows.Forms.PropertyGridInternal
 
             bool revert;
 
-            while (exMessage is null || exMessage.Length == 0)
+            while (string.IsNullOrEmpty(exMessage))
             {
                 ex = ex.InnerException;
                 if (ex is null)
@@ -5180,7 +5180,7 @@ namespace System.Windows.Forms.PropertyGridInternal
 
             bool revert;
 
-            while (message is null || message.Length == 0)
+            while (string.IsNullOrEmpty(message))
             {
                 ex = ex.InnerException;
                 if (ex is null)

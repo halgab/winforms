@@ -160,7 +160,7 @@ namespace System.Windows.Forms.PropertyGridInternal
             get
             {
                 string category = _propertyDescriptor.Category;
-                if (category is null || category.Length == 0)
+                if (string.IsNullOrEmpty(category))
                 {
                     category = base.PropertyCategory;
                 }

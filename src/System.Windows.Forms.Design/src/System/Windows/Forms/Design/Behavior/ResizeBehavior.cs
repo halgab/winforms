@@ -237,7 +237,7 @@ namespace System.Windows.Forms.Design.Behavior
                 if (_resizeComponents.Length == 1)
                 {
                     string name = TypeDescriptor.GetComponentName(_resizeComponents[0].resizeControl);
-                    if (name is null || name.Length == 0)
+                    if (string.IsNullOrEmpty(name))
                     {
                         name = _resizeComponents[0].resizeControl.GetType().Name;
                     }

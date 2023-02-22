@@ -35,7 +35,7 @@ namespace System.Windows.Forms
 
                     string? baseShortcut = base.KeyboardShortcut;
 
-                    if ((baseShortcut is null || baseShortcut.Length == 0))
+                    if (string.IsNullOrEmpty(baseShortcut))
                     {
                         char ownerTextMnemonic = WindowsFormsUtils.GetMnemonic(Owner.Text, false /*convertToUpperCase*/);
                         if (ownerTextMnemonic != (char)0)
@@ -57,7 +57,7 @@ namespace System.Windows.Forms
                 get
                 {
                     string? baseValue = base.Value;
-                    if (baseValue is null || baseValue.Length == 0)
+                    if (string.IsNullOrEmpty(baseValue))
                     {
                         return Owner.Text;
                     }

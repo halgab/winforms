@@ -215,18 +215,14 @@ namespace System.Windows.Forms
                         }
 
                         // Win32 version
-                        if (s_companyName is null || s_companyName.Length == 0)
+                        if (string.IsNullOrEmpty(s_companyName))
                         {
-                            s_companyName = GetAppFileVersionInfo().CompanyName;
-                            if (s_companyName is not null)
-                            {
-                                s_companyName = s_companyName.Trim();
-                            }
+                            s_companyName = GetAppFileVersionInfo().CompanyName?.Trim();
                         }
 
                         // fake it with a namespace
                         // won't work with MC++ see GetAppMainType.
-                        if (s_companyName is null || s_companyName.Length == 0)
+                        if (string.IsNullOrEmpty(s_companyName))
                         {
                             Type? type = GetAppMainType();
 
@@ -341,18 +337,14 @@ namespace System.Windows.Forms
                         }
 
                         // Win32 version info
-                        if (s_productName is null || s_productName.Length == 0)
+                        if (string.IsNullOrEmpty(s_productName))
                         {
-                            s_productName = GetAppFileVersionInfo().ProductName;
-                            if (s_productName is not null)
-                            {
-                                s_productName = s_productName.Trim();
-                            }
+                            s_productName = GetAppFileVersionInfo().ProductName?.Trim();
                         }
 
                         // fake it with namespace
                         // won't work with MC++ see GetAppMainType.
-                        if (s_productName is null || s_productName.Length == 0)
+                        if (string.IsNullOrEmpty(s_productName))
                         {
                             Type? type = GetAppMainType();
 
@@ -409,17 +401,13 @@ namespace System.Windows.Forms
                         }
 
                         // Win32 version info
-                        if (s_productVersion is null || s_productVersion.Length == 0)
+                        if (string.IsNullOrEmpty(s_productVersion))
                         {
-                            s_productVersion = GetAppFileVersionInfo().ProductVersion;
-                            if (s_productVersion is not null)
-                            {
-                                s_productVersion = s_productVersion.Trim();
-                            }
+                            s_productVersion = GetAppFileVersionInfo().ProductVersion?.Trim();
                         }
 
                         // fake it
-                        if (s_productVersion is null || s_productVersion.Length == 0)
+                        if (string.IsNullOrEmpty(s_productVersion))
                         {
                             s_productVersion = "1.0.0.0";
                         }

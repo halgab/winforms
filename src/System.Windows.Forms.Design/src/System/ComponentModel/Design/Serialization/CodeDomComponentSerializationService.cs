@@ -1073,7 +1073,7 @@ namespace System.ComponentModel.Design.Serialization
                     foreach (IComponent c in container.Components)
                     {
                         string name = TypeDescriptor.GetComponentName(c);
-                        if (name is not null && name.Length > 0)
+                        if (!string.IsNullOrEmpty(name))
                         {
                             bool needVar = true;
                             if (objectData.Contains(c) && ((ObjectData)objectData[c]).EntireObject)

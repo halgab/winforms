@@ -195,7 +195,7 @@ namespace System.Windows.Forms.Design
             else
             {
                 string message = ex.Message;
-                if (message is null || message.Length == 0)
+                if (string.IsNullOrEmpty(message))
                 {
                     message = ex.ToString();
                 }

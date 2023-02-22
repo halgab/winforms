@@ -60,7 +60,7 @@ namespace System.Windows.Forms
             get
             {
                 // We do not support null and empty string as valid keys.
-                if ((key is null) || (key.Length == 0))
+                if (string.IsNullOrEmpty(key))
                 {
                     return null;
                 }
@@ -338,7 +338,7 @@ namespace System.Windows.Forms
         public virtual int IndexOfKey(string key)
         {
             // Step 0 - Arg validation
-            if ((key is null) || (key.Length == 0))
+            if (string.IsNullOrEmpty(key))
             {
                 return -1; // we don't support empty or null keys.
             }

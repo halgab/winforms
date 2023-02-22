@@ -39,20 +39,14 @@ namespace System.Windows.Forms
                             _companyName = ((AssemblyCompanyAttribute)attrs[0]).Company;
                         }
 
-                        if ((_companyName is null || _companyName.Length == 0) && !OwnerIsInMemoryAssembly)
+                        if (string.IsNullOrEmpty(_companyName) && !OwnerIsInMemoryAssembly)
                         {
-                            _companyName = GetFileVersionInfo().CompanyName;
-                            if (_companyName is not null)
-                            {
-                                _companyName = _companyName.Trim();
-                            }
+                            _companyName = GetFileVersionInfo().CompanyName?.Trim();
                         }
 
-                        if (_companyName is null || _companyName.Length == 0)
+                        if (string.IsNullOrEmpty(_companyName))
                         {
-                            string? ns = _owner.GetType().Namespace;
-
-                            ns ??= string.Empty;
+                            string ns = _owner.GetType().Namespace ?? "";
 
                             int firstDot = ns.IndexOf('/');
                             if (firstDot != -1)
@@ -86,16 +80,12 @@ namespace System.Windows.Forms
                             _productName = ((AssemblyProductAttribute)attrs[0]).Product;
                         }
 
-                        if ((_productName is null || _productName.Length == 0) && !OwnerIsInMemoryAssembly)
+                        if (string.IsNullOrEmpty(_productName) && !OwnerIsInMemoryAssembly)
                         {
-                            _productName = GetFileVersionInfo().ProductName;
-                            if (_productName is not null)
-                            {
-                                _productName = _productName.Trim();
-                            }
+                            _productName = GetFileVersionInfo().ProductName?.Trim();
                         }
 
-                        if (_productName is null || _productName.Length == 0)
+                        if (string.IsNullOrEmpty(_productName))
                         {
                             string? ns = _owner.GetType().Namespace;
 
@@ -135,17 +125,13 @@ namespace System.Windows.Forms
                         }
 
                         // win32 version info
-                        if ((_productVersion is null || _productVersion.Length == 0) && !OwnerIsInMemoryAssembly)
+                        if (string.IsNullOrEmpty(_productVersion) && !OwnerIsInMemoryAssembly)
                         {
-                            _productVersion = GetFileVersionInfo().ProductVersion;
-                            if (_productVersion is not null)
-                            {
-                                _productVersion = _productVersion.Trim();
-                            }
+                            _productVersion = GetFileVersionInfo().ProductVersion?.Trim();
                         }
 
                         // fake it
-                        if (_productVersion is null || _productVersion.Length == 0)
+                        if (string.IsNullOrEmpty(_productVersion))
                         {
                             _productVersion = "1.0.0.0";
                         }

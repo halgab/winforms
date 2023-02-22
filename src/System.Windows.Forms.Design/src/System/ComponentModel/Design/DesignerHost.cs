@@ -336,7 +336,7 @@ namespace System.ComponentModel.Design
 
                 string message = e.Message;
                 // We must handle the case of an exception with no message.
-                if (message is null || message.Length == 0)
+                if (string.IsNullOrEmpty(message))
                 {
                     e = new Exception(string.Format(SR.DesignSurfaceFatalError, e.ToString()), e);
                 }

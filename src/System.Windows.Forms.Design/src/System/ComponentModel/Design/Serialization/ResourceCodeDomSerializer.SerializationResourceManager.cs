@@ -260,7 +260,7 @@ namespace System.ComponentModel.Design.Serialization
                 catch (Exception e)
                 {
                     string message = e.Message;
-                    if (message is null || message.Length == 0)
+                    if (string.IsNullOrEmpty(message))
                     {
                         message = e.GetType().Name;
                     }

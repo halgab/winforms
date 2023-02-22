@@ -836,7 +836,7 @@ namespace System.Windows.Forms
             set
             {
                 // Clause to check length
-                if (value is null || value.Length == 0)
+                if (string.IsNullOrEmpty(value))
                 {
                     ResetValue();
                 }

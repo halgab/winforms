@@ -2673,7 +2673,7 @@ namespace System.Windows.Forms.Design
                         if (components.Count == 1)
                         {
                             string name = TypeDescriptor.GetComponentName(components[0]);
-                            if (name is null || name.Length == 0)
+                            if (string.IsNullOrEmpty(name))
                             {
                                 name = components[0].GetType().Name;
                             }

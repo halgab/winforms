@@ -1658,9 +1658,9 @@ namespace System.Windows.Forms.Design
                 return null;
             }
 
-            Debug.Assert(defaultName is not null && defaultName.Length > 0, "Couldn't create default name for item");
+            Debug.Assert(!string.IsNullOrEmpty(defaultName), "Couldn't create default name for item");
 
-            if (text is null || text.Length == 0 || text == "-")
+            if (string.IsNullOrEmpty(text) || text == "-")
             {
                 return defaultName;
             }
@@ -1824,7 +1824,7 @@ namespace System.Windows.Forms.Design
             if (components.Count == 1)
             {
                 string name = TypeDescriptor.GetComponentName(components[0]);
-                if (name is null || name.Length == 0)
+                if (string.IsNullOrEmpty(name))
                 {
                     name = components[0].GetType().Name;
                 }

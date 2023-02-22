@@ -474,7 +474,7 @@ namespace System.Resources.Tools
                     ? $"{resourcesNamespace}.{baseName}"
                     : baseName;
             }
-            else if ((nameSpace is not null) && (nameSpace.Length > 0))
+            else if (!string.IsNullOrEmpty(nameSpace))
             {
                 resourceManagerConstructorParameter = $"{nameSpace}.{baseName}";
             }
