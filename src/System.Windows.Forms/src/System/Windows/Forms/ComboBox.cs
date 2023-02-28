@@ -462,13 +462,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        string.Format(SR.InvalidArgument, nameof(DropDownWidth), value));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
                 if (Properties.GetInteger(PropDropDownWidth) != value)
                 {
@@ -505,13 +499,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        string.Format(SR.InvalidArgument, nameof(DropDownHeight), value));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
                 if (Properties.GetInteger(PropDropDownHeight) != value)
                 {
@@ -682,10 +670,7 @@ namespace System.Windows.Forms
 
             set
             {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(ItemHeight), value));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
                 ResetHeightCache();
 
@@ -999,10 +984,8 @@ namespace System.Windows.Forms
                         itemCount = _itemsCollection.Count;
                     }
 
-                    if (value < -1 || value >= itemCount)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(SelectedIndex), value));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, itemCount);
 
                     if (IsHandleCreated)
                     {
@@ -1135,13 +1118,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        string.Format(SR.InvalidArgument, nameof(SelectionStart), value));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value);
 
                 Select(value, SelectionLength);
             }
@@ -3400,19 +3377,13 @@ namespace System.Windows.Forms
         /// </summary>
         public void Select(int start, int length)
         {
-            if (start < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(start), start, string.Format(SR.InvalidArgument, nameof(start), start));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(start);
 
             // the Length can be negative to support Selecting in the "reverse" direction..
             int end = start + length;
 
             // but end cannot be negative... this means Length is far negative...
-            if (end < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(length), length, string.Format(SR.InvalidArgument, nameof(length), length));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(length, -start);
 
             PInvoke.SendMessage(this, (WM)PInvoke.CB_SETEDITSEL, (WPARAM)0, LPARAM.MAKELPARAM(start, end));
         }

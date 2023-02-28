@@ -395,10 +395,8 @@ namespace System.Windows.Forms
         /// </summary>
         public CheckState GetItemCheckState(int index)
         {
-            if (index < 0 || index >= Items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Items.Count);
 
             return CheckedItems.GetCheckedState(index);
         }
@@ -886,10 +884,8 @@ namespace System.Windows.Forms
         /// </summary>
         public void SetItemCheckState(int index, CheckState value)
         {
-            if (index < 0 || index >= Items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Items.Count);
 
             // valid values are 0-2 inclusive.
             SourceGenerated.EnumValidator.Validate(value);

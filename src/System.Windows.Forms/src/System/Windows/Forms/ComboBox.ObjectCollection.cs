@@ -217,10 +217,8 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     return InnerList[index].Item;
                 }
@@ -288,10 +286,8 @@ namespace System.Windows.Forms
 
                 int count = InnerList.Count;
 
-                if (index < 0 || count + index > destination.Length)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, destination.Length - count);
 
                 for (int i = 0; i < count; i++)
                 {
@@ -319,10 +315,8 @@ namespace System.Windows.Forms
 
                 ArgumentNullException.ThrowIfNull(item);
 
-                if (index < 0 || index > Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, Count);
 
                 // If the combo box is sorted, then nust treat this like an add
                 // because we are going to twiddle the index anyway.
@@ -369,10 +363,8 @@ namespace System.Windows.Forms
             {
                 _owner.CheckNoDataSource();
 
-                if (index < 0 || index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                 if (_owner.IsHandleCreated)
                 {
@@ -417,10 +409,8 @@ namespace System.Windows.Forms
 
             internal void SetItemInternal(int index, object value)
             {
-                if (index < 0 || index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                 InnerList[index].Item = value.OrThrowIfNull();
 
