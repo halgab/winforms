@@ -286,8 +286,10 @@ namespace System.Windows.Forms
 
                 int count = InnerList.Count;
 
-                ArgumentOutOfRangeException.ThrowIfNegative(index);
-                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, destination.Length - count);
+                if (index < 0 || count + index > destination.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
+                }
 
                 for (int i = 0; i < count; i++)
                 {

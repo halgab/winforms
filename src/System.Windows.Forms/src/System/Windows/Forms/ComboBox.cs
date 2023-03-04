@@ -3383,7 +3383,10 @@ namespace System.Windows.Forms
             int end = start + length;
 
             // but end cannot be negative... this means Length is far negative...
-            ArgumentOutOfRangeException.ThrowIfLessThan(length, -start);
+            if (end < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), length, string.Format(SR.InvalidArgument, nameof(length), length));
+            }
 
             PInvoke.SendMessage(this, (WM)PInvoke.CB_SETEDITSEL, (WPARAM)0, LPARAM.MAKELPARAM(start, end));
         }

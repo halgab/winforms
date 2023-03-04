@@ -1219,10 +1219,8 @@ namespace System.Windows.Forms
                     throw new InvalidOperationException(SR.DataGridView_InvalidOperationOnSharedRow);
                 }
 
-                if (rowIndex < 0 || rowIndex >= DataGridView.Rows.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(rowIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
                 if (DataGridView.VirtualMode || DataGridView.DataSource is not null)
                 {
@@ -1248,10 +1246,8 @@ namespace System.Windows.Forms
                     throw new InvalidOperationException(SR.DataGridView_InvalidOperationOnSharedRow);
                 }
 
-                if (rowIndex < 0 || rowIndex >= DataGridView.Rows.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(rowIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
                 if (string.IsNullOrEmpty(errorText) &&
                     DataGridView.DataSource is not null &&

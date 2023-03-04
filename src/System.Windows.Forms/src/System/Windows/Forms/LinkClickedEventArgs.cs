@@ -28,8 +28,7 @@ namespace System.Windows.Forms
         /// </exception>
         public LinkClickedEventArgs(string? linkText, int linkStart, int linkLength)
         {
-            if (linkStart < 0)
-                throw new ArgumentOutOfRangeException(nameof(linkStart));
+            ArgumentOutOfRangeException.ThrowIfNegative(linkStart);
 
             if (linkLength < 0 || linkStart + linkLength < 0)
                 throw new ArgumentOutOfRangeException(nameof(linkLength));

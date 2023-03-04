@@ -618,10 +618,7 @@ namespace System.Windows.Forms
         /// </param>
         internal unsafe void SetProgressBarMarquee(bool enableMarquee, int animationSpeed = 0)
         {
-            if (animationSpeed < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(animationSpeed));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(animationSpeed);
 
             SendTaskDialogMessage(
                 TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_MARQUEE,
@@ -639,15 +636,10 @@ namespace System.Windows.Forms
         /// </remarks>
         internal unsafe void SetProgressBarRange(int min, int max)
         {
-            if (min < 0 || min > ushort.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(min));
-            }
-
-            if (max < 0 || max > ushort.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(max));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(min);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(min, ushort.MaxValue);
+            ArgumentOutOfRangeException.ThrowIfNegative(max);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(max, ushort.MaxValue);
 
             SendTaskDialogMessage(
                 TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_RANGE,
@@ -661,10 +653,8 @@ namespace System.Windows.Forms
         /// <param name="pos"></param>
         internal void SetProgressBarPosition(int pos)
         {
-            if (pos < 0 || pos > ushort.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(pos));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(pos);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(pos, ushort.MaxValue);
 
             SendTaskDialogMessage(
                 TASKDIALOG_MESSAGES.TDM_SET_PROGRESS_BAR_POS,
