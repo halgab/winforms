@@ -92,10 +92,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(MaxInputLength), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(MaxInputLength));
 
                 Properties.SetInteger(PropTextBoxCellMaxInputLength, value);
                 if (OwnsEditingTextBox(RowIndex))

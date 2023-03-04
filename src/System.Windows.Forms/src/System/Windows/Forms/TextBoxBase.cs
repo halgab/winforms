@@ -678,10 +678,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(MaxLength), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(MaxLength));
 
                 if (_maxLength != value)
                 {

@@ -659,10 +659,7 @@ namespace System.Windows.Forms
             get => IsHandleCreated ? (int)PInvoke.SendMessage(this, (User32.WM)PInvoke.TCM_GETCURSEL) : _selectedIndex;
             set
             {
-                if (value < -1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(SelectedIndex), value, -1));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1, nameof(SelectedIndex));
 
                 if (SelectedIndex != value)
                 {

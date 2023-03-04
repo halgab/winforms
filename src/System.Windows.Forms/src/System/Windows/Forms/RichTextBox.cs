@@ -624,10 +624,7 @@ namespace System.Windows.Forms
             {
                 if (rightMargin != value)
                 {
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(RightMargin), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(RightMargin));
 
                     rightMargin = value;
 
@@ -1221,13 +1218,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        value,
-                        string.Format(SR.InvalidLowBoundArgumentEx, nameof(SelectionRightIndent), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(SelectionRightIndent));
 
                 ForceHandleCreate();
                 var pf = new PARAFORMAT
@@ -2029,9 +2020,9 @@ namespace System.Windows.Forms
                 throw new ArgumentOutOfRangeException(nameof(start), start, string.Format(SR.InvalidBoundArgument, nameof(start), start, 0, textLength));
             }
 
-            if (end < start && end != -1)
+            if (end != -1)
             {
-                throw new ArgumentOutOfRangeException(nameof(end), end, string.Format(SR.InvalidLowBoundArgumentEx, nameof(end), end, nameof(start)));
+                ArgumentOutOfRangeException.ThrowIfLessThan(end, start);
             }
 
             // Don't do anything if we get nothing to look for

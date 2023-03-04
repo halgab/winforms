@@ -41,10 +41,7 @@ namespace System.Windows.Forms
             get { return _size; }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(Size), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(Size));
 
                 if (_size != value)
                 {

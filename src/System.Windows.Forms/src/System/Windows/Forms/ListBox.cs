@@ -266,10 +266,7 @@ namespace System.Windows.Forms
 
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(value), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(ColumnWidth));
 
                 if (_columnWidth != value)
                 {

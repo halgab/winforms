@@ -1114,10 +1114,7 @@ namespace System.Windows.Forms
                 throw new ArgumentException(string.Format(SR.DataGridView_InvalidDataGridViewElementStateCombination, nameof(includeFilter)));
             }
 
-            if (indexStart < -1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(indexStart), indexStart, string.Format(SR.InvalidLowBoundArgumentEx, nameof(indexStart), indexStart, -1));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(indexStart, -1);
 
             int index = indexStart + 1;
             while (index < items.Count && !((GetRowState(index) & includeFilter) == includeFilter))
@@ -1149,10 +1146,7 @@ namespace System.Windows.Forms
                 throw new ArgumentException(string.Format(SR.DataGridView_InvalidDataGridViewElementStateCombination, nameof(excludeFilter)));
             }
 
-            if (indexStart < -1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(indexStart), indexStart, string.Format(SR.InvalidLowBoundArgumentEx, nameof(indexStart), indexStart, -1));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(indexStart, -1);
 
             int index = indexStart + 1;
             while (index < items.Count && (!((GetRowState(index) & includeFilter) == includeFilter) || !((GetRowState(index) & excludeFilter) == 0)))
@@ -1171,10 +1165,7 @@ namespace System.Windows.Forms
                 throw new ArgumentException(string.Format(SR.DataGridView_InvalidDataGridViewElementStateCombination, nameof(includeFilter)));
             }
 
-            if (indexStart > items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(indexStart), indexStart, string.Format(SR.InvalidHighBoundArgumentEx, nameof(indexStart), indexStart, items.Count));
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(indexStart, items.Count);
 
             int index = indexStart - 1;
             while (index >= 0 && !((GetRowState(index) & includeFilter) == includeFilter))
@@ -1206,10 +1197,7 @@ namespace System.Windows.Forms
                 throw new ArgumentException(string.Format(SR.DataGridView_InvalidDataGridViewElementStateCombination, nameof(excludeFilter)));
             }
 
-            if (indexStart > items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(indexStart), indexStart, string.Format(SR.InvalidHighBoundArgumentEx, nameof(indexStart), indexStart, items.Count));
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(indexStart, items.Count);
 
             int index = indexStart - 1;
             while (index >= 0 && (!((GetRowState(index) & includeFilter) == includeFilter) || !((GetRowState(index) & excludeFilter) == 0)))

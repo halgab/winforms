@@ -85,6 +85,7 @@ namespace System.Windows.Forms
             {
                 if (_largeChange != value)
                 {
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(LargeChange));
                     if (value < 0)
                     {
                         throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(LargeChange), value, 0));
@@ -152,10 +153,7 @@ namespace System.Windows.Forms
 
                 if (_minimum != value)
                 {
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(Minimum), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(Minimum));
 
                     if (_maximum < value)
                     {
@@ -201,10 +199,7 @@ namespace System.Windows.Forms
             {
                 if (_smallChange != value)
                 {
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(SmallChange), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(SmallChange));
 
                     _smallChange = value;
                     _smallChangeSetExternally = true;

@@ -359,15 +359,8 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgument, nameof(FillWeight), value, 0));
-                }
-
-                if (value > (float)ushort.MaxValue)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidHighBoundArgumentEx, nameof(FillWeight), value, ushort.MaxValue));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, nameof(FillWeight));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(value, ushort.MaxValue, nameof(FillWeight));
 
                 if (DataGridView is not null)
                 {

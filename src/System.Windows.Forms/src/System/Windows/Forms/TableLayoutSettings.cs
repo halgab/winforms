@@ -105,10 +105,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(ColumnCount), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(ColumnCount));
 
                 TableLayout.ContainerInfo containerInfo = TableLayout.GetContainerInfo(Owner);
                 containerInfo.MaxColumns = value;
@@ -134,10 +131,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(RowCount), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(RowCount));
 
                 TableLayout.ContainerInfo containerInfo = TableLayout.GetContainerInfo(Owner);
                 containerInfo.MaxRows = value;

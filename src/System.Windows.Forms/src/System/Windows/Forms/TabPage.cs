@@ -224,10 +224,7 @@ namespace System.Windows.Forms
             get => ImageIndexer.Index;
             set
             {
-                if (value < -1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(ImageIndex), value, -1));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1, nameof(ImageIndex));
 
                 if (ParentInternal is TabControl parent)
                 {

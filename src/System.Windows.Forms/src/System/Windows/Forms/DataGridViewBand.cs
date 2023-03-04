@@ -191,29 +191,8 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    if (IsRow)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(DataGridViewRow.DividerHeight), value, 0));
-                    }
-                    else
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(DataGridViewColumn.DividerWidth), value, 0));
-                    }
-                }
-
-                if (value > MaxBandThickness)
-                {
-                    if (IsRow)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidHighBoundArgumentEx, nameof(DataGridViewRow.DividerHeight), value, MaxBandThickness));
-                    }
-                    else
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidHighBoundArgumentEx, nameof(DataGridViewColumn.DividerWidth), value, MaxBandThickness));
-                    }
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, IsRow ? nameof(DataGridViewRow.DividerHeight) : nameof(DataGridViewColumn.DividerWidth));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(value, MaxBandThickness, IsRow ? nameof(DataGridViewRow.DividerHeight) : nameof(DataGridViewColumn.DividerWidth));
 
                 if (value != DividerThickness)
                 {
@@ -666,17 +645,7 @@ namespace System.Windows.Forms
                     value = minimumThickness;
                 }
 
-                if (value > MaxBandThickness)
-                {
-                    if (IsRow)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidHighBoundArgumentEx, nameof(DataGridViewRow.Height), value, MaxBandThickness));
-                    }
-                    else
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidHighBoundArgumentEx, nameof(DataGridViewColumn.Width), value, MaxBandThickness));
-                    }
-                }
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(value, MaxBandThickness, IsRow ? nameof(DataGridViewRow.Height) : nameof(DataGridViewColumn.Width));
 
                 bool setThickness = true;
                 if (IsRow)

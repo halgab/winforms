@@ -523,10 +523,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < ImageList.Indexer.NoneIndex)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(ImageIndex), value, ImageList.Indexer.DefaultIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.NoneIndex, nameof(ImageIndex));
 
                 if (ImageIndexer.Index == value
                     && value != ImageList.Indexer.NoneIndex
@@ -939,10 +936,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < ImageList.Indexer.NoneIndex)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(SelectedImageIndex), value, ImageList.Indexer.DefaultIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.NoneIndex, nameof(SelectedImageIndex));
 
                 if (SelectedImageIndexer.Index == value
                     && value != ImageList.Indexer.NoneIndex

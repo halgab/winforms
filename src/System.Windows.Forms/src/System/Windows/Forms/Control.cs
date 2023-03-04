@@ -3384,7 +3384,7 @@ namespace System.Windows.Forms
             get => _tabIndex == -1 ? 0 : _tabIndex;
             set
             {
-                ArgumentOutOfRangeException.ThrowIfNegative(value);
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(TabIndex));
 
                 if (_tabIndex != value)
                 {

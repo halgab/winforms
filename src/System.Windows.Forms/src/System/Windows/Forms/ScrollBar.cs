@@ -216,10 +216,7 @@ namespace System.Windows.Forms
             {
                 if (_largeChange != value)
                 {
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(LargeChange), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(LargeChange));
 
                     _largeChange = value;
                     UpdateScrollInfo();
@@ -307,10 +304,7 @@ namespace System.Windows.Forms
             {
                 if (_smallChange != value)
                 {
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), string.Format(SR.InvalidLowBoundArgumentEx, nameof(SmallChange), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(SmallChange));
 
                     _smallChange = value;
                     UpdateScrollInfo();

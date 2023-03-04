@@ -273,11 +273,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < ImageList.Indexer.DefaultIndex)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value,
-                        string.Format(SR.InvalidLowBoundArgumentEx, nameof(TitleImageIndex), value, ImageList.Indexer.DefaultIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.DefaultIndex, nameof(TitleImageIndex));
 
                 if (ImageIndexer.Index == value && value != ImageList.Indexer.DefaultIndex)
                 {

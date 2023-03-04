@@ -505,7 +505,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.DefaultIndex);
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.DefaultIndex, nameof(ImageIndex));
 
                 if (value == _imageIndex.Index && value != ImageList.Indexer.DefaultIndex)
                 {

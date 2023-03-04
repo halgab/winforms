@@ -1170,12 +1170,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < ImageList.Indexer.DefaultIndex)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(value),
-                        string.Format(SR.InvalidLowBoundArgumentEx, nameof(ImageIndex), value, ImageList.Indexer.DefaultIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.DefaultIndex, nameof(ImageIndex));
 
                 ImageIndexer.Index = value;
                 _state[s_stateInvalidMirroredImage] = true;

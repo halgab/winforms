@@ -10,15 +10,8 @@ namespace System.Windows.Forms
     {
         public DataGridViewRowsRemovedEventArgs(int rowIndex, int rowCount)
         {
-            if (rowIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex), string.Format(SR.InvalidLowBoundArgumentEx, nameof(rowIndex), rowIndex.ToString(CultureInfo.CurrentCulture), 0));
-            }
-
-            if (rowCount < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowCount), string.Format(SR.InvalidLowBoundArgumentEx, nameof(rowCount), rowCount.ToString(CultureInfo.CurrentCulture), 1));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+            ArgumentOutOfRangeException.ThrowIfNegative(rowCount);
 
             RowIndex = rowIndex;
             RowCount = rowCount;

@@ -123,10 +123,7 @@ namespace System.Windows.Forms
             get { return columns; }
             set
             {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(Columns), value, 1));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1, nameof(Columns));
 
                 columns = value;
                 InvalidateLayout();
@@ -176,10 +173,7 @@ namespace System.Windows.Forms
             get { return rows; }
             set
             {
-                if (value < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(Rows), value, 1));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1, nameof(Rows));
 
                 rows = value;
                 InvalidateLayout();
@@ -248,10 +242,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(StartPage), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(StartPage));
 
                 int oldValue = StartPage;
                 startPage = value;

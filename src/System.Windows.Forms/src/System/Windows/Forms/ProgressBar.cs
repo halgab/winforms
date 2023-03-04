@@ -215,10 +215,7 @@ namespace System.Windows.Forms
             get => _marqueeAnimationSpeed;
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(MarqueeAnimationSpeed), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(MarqueeAnimationSpeed));
 
                 _marqueeAnimationSpeed = value;
                 if (!DesignMode)
@@ -261,10 +258,7 @@ namespace System.Windows.Forms
                 if (_maximum != value)
                 {
                     // Ensure that value is in the Win32 control's acceptable range
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(Maximum), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(Maximum));
 
                     if (_minimum > value)
                     {
@@ -302,10 +296,7 @@ namespace System.Windows.Forms
                 if (_minimum != value)
                 {
                     // Ensure that value is in the Win32 control's acceptable range
-                    if (value < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(Minimum), value, 0));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(Minimum));
 
                     if (_maximum < value)
                     {

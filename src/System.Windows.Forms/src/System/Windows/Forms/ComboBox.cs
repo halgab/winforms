@@ -462,7 +462,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, nameof(DropDownWidth));
 
                 if (Properties.GetInteger(PropDropDownWidth) != value)
                 {
@@ -499,7 +499,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, nameof(DropDownHeight));
 
                 if (Properties.GetInteger(PropDropDownHeight) != value)
                 {
@@ -670,7 +670,7 @@ namespace System.Windows.Forms
 
             set
             {
-                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, nameof(ItemHeight));
 
                 ResetHeightCache();
 
@@ -984,8 +984,8 @@ namespace System.Windows.Forms
                         itemCount = _itemsCollection.Count;
                     }
 
-                    ArgumentOutOfRangeException.ThrowIfNegative(value);
-                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, itemCount);
+                    ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(SelectedIndex));
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, itemCount, nameof(SelectedIndex));
 
                     if (IsHandleCreated)
                     {
@@ -1118,7 +1118,7 @@ namespace System.Windows.Forms
             }
             set
             {
-                ArgumentOutOfRangeException.ThrowIfNegative(value);
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(SelectionStart));
 
                 Select(value, SelectionLength);
             }

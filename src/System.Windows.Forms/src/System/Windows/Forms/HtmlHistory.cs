@@ -44,11 +44,8 @@ namespace System.Windows.Forms
 
         public void Back(int numberBack)
         {
-            if (numberBack < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberBack), numberBack, string.Format(SR.InvalidLowBoundArgumentEx, nameof(numberBack), numberBack, 0));
-            }
-            else if (numberBack > 0)
+            ArgumentOutOfRangeException.ThrowIfNegative(numberBack);
+            if (numberBack > 0)
             {
                 object oNumForward = (object)(-numberBack);
                 NativeOmHistory.Go(ref oNumForward);
@@ -57,11 +54,8 @@ namespace System.Windows.Forms
 
         public void Forward(int numberForward)
         {
-            if (numberForward < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberForward), numberForward, string.Format(SR.InvalidLowBoundArgumentEx, nameof(numberForward), numberForward, 0));
-            }
-            else if (numberForward > 0)
+            ArgumentOutOfRangeException.ThrowIfNegative(numberForward);
+            if (numberForward > 0)
             {
                 object oNumForward = (object)numberForward;
                 NativeOmHistory.Go(ref oNumForward);

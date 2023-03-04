@@ -145,10 +145,7 @@ namespace System.Windows.Forms
             get => _delayTimes[(int)PInvoke.TTDT_AUTOMATIC];
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(AutomaticDelay), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AutomaticDelay));
 
                 SetDelayTime((int)PInvoke.TTDT_AUTOMATIC, value);
             }
@@ -169,10 +166,7 @@ namespace System.Windows.Forms
             get => _delayTimes[(int)PInvoke.TTDT_AUTOPOP];
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(AutoPopDelay), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(AutoPopDelay));
 
                 SetDelayTime(PInvoke.TTDT_AUTOPOP, value);
             }
@@ -345,10 +339,7 @@ namespace System.Windows.Forms
             get => _delayTimes[(int)PInvoke.TTDT_INITIAL];
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(InitialDelay), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(InitialDelay));
 
                 SetDelayTime(PInvoke.TTDT_INITIAL, value);
             }
@@ -373,10 +364,7 @@ namespace System.Windows.Forms
             get => _delayTimes[(int)PInvoke.TTDT_RESHOW];
             set
             {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidLowBoundArgumentEx, nameof(ReshowDelay), value, 0));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(ReshowDelay));
 
                 SetDelayTime(PInvoke.TTDT_RESHOW, value);
             }
@@ -1409,11 +1397,7 @@ namespace System.Windows.Forms
         public void Show(string text, IWin32Window window, int duration)
         {
             ArgumentNullException.ThrowIfNull(window);
-
-            if (duration < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(duration), duration, string.Format(SR.InvalidLowBoundArgumentEx, nameof(duration), duration, 0));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(duration);
 
             if (IsWindowActive(window))
             {
@@ -1446,14 +1430,7 @@ namespace System.Windows.Forms
         public void Show(string text, IWin32Window window, Point point, int duration)
         {
             ArgumentNullException.ThrowIfNull(window);
-
-            if (duration < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(duration),
-                    duration,
-                    string.Format(SR.InvalidLowBoundArgumentEx, nameof(duration), duration, 0));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(duration);
 
             if (IsWindowActive(window))
             {
@@ -1490,14 +1467,7 @@ namespace System.Windows.Forms
         public void Show(string text, IWin32Window window, int x, int y, int duration)
         {
             ArgumentNullException.ThrowIfNull(window);
-
-            if (duration < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(duration),
-                    duration,
-                    string.Format(SR.InvalidLowBoundArgumentEx, nameof(duration), duration, 0));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(duration);
 
             if (IsWindowActive(window))
             {
@@ -1513,13 +1483,7 @@ namespace System.Windows.Forms
         internal void ShowKeyboardToolTip(string text, IKeyboardToolTip tool, int duration)
         {
             ArgumentNullException.ThrowIfNull(tool);
-
-            if (duration < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(duration),
-                    string.Format(SR.InvalidLowBoundArgumentEx, nameof(duration), (duration).ToString(CultureInfo.CurrentCulture), 0));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(duration);
 
             Rectangle toolRectangle = tool.GetNativeScreenRectangle();
             // At first, place the tooltip at the middle of the tool (default location).
