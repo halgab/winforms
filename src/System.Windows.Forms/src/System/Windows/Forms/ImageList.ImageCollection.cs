@@ -128,19 +128,15 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     return _owner.GetBitmap(index);
                 }
                 set
                 {
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     ArgumentNullException.ThrowIfNull(value);
 
@@ -547,10 +543,8 @@ namespace System.Windows.Forms
 
             public void RemoveAt(int index)
             {
-                if (index < 0 || index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                 AssertInvariant();
                 if (!PInvoke.ImageList.Remove(_owner, index))

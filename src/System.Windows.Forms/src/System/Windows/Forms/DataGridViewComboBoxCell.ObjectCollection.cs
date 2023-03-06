@@ -164,10 +164,8 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= InnerArray.Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, InnerArray.Count);
 
                     return InnerArray[index];
                 }
@@ -252,10 +250,8 @@ namespace System.Windows.Forms
 
                 ArgumentNullException.ThrowIfNull(item);
 
-                if (index < 0 || index > InnerArray.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), nameof(index)));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, InnerArray.Count);
 
                 // If the combo box is sorted, then just treat this like an add
                 // because we are going to twiddle the index anyway.
@@ -292,10 +288,8 @@ namespace System.Windows.Forms
                 //this.owner.CheckNoSharedCell();
                 owner.CheckNoDataSource();
 
-                if (index < 0 || index >= InnerArray.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, InnerArray.Count);
 
                 InnerArray.RemoveAt(index);
                 owner.OnItemsCollectionChanged();

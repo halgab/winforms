@@ -1077,10 +1077,8 @@ namespace System.Windows.Forms
 
         public virtual void RemoveAt(int index)
         {
-            if (index < 0 || index >= Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
             if (DataGridView.NoDimensionChangeAllowed)
             {

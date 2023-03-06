@@ -879,12 +879,8 @@ namespace System.Windows.Forms
             }
             set
             {
-                int itemCount = (_itemsCollection is null) ? 0 : _itemsCollection.Count;
-
-                if (value < -1 || value >= itemCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(SelectedIndex), value));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1, nameof(SelectedIndex));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(value, _itemsCollection?.Count ?? 0, nameof(SelectedIndex));
 
                 if (_selectionMode == SelectionMode.None)
                 {
@@ -1445,12 +1441,12 @@ namespace System.Windows.Forms
         /// </summary>
         public int GetItemHeight(int index)
         {
-            int itemCount = (_itemsCollection is null) ? 0 : _itemsCollection.Count;
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
 
             // Note: index == 0 is OK even if the ListBox currently has no items.
-            if (index < 0 || (index > 0 && index >= itemCount))
+            if (index > 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _itemsCollection?.Count ?? 0);
             }
 
             if (_drawMode != DrawMode.OwnerDrawVariable)
@@ -2198,11 +2194,8 @@ namespace System.Windows.Forms
         /// </summary>
         public void SetSelected(int index, bool value)
         {
-            int itemCount = (_itemsCollection is null) ? 0 : _itemsCollection.Count;
-            if (index < 0 || index >= itemCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _itemsCollection?.Count ?? 0);
 
             if (_selectionMode == SelectionMode.None)
             {

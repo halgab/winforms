@@ -209,10 +209,8 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= InnerArray.Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, InnerArray.Count);
 
                     return InnerArray.GetItem(index);
                 }
@@ -328,11 +326,8 @@ namespace System.Windows.Forms
             {
                 _owner.CheckNoDataSource();
 
-                if (index < 0 || index > InnerArray.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
-
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, InnerArray.Count);
                 ArgumentNullException.ThrowIfNull(item);
 
                 // If the List box is sorted, then nust treat this like an add
@@ -393,10 +388,8 @@ namespace System.Windows.Forms
             {
                 _owner.CheckNoDataSource();
 
-                if (index < 0 || index >= InnerArray.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, InnerArray.Count);
 
                 _owner.UpdateMaxItemWidth(InnerArray.GetItem(index), true);
 
@@ -419,11 +412,8 @@ namespace System.Windows.Forms
             internal void SetItemInternal(int index, object value)
             {
                 ArgumentNullException.ThrowIfNull(value);
-
-                if (index < 0 || index >= InnerArray.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, InnerArray.Count);
 
                 _owner.UpdateMaxItemWidth(InnerArray.GetItem(index), true);
                 InnerArray.SetItem(index, value);

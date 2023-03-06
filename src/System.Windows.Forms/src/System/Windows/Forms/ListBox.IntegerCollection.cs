@@ -263,10 +263,8 @@ namespace System.Windows.Forms
             /// </summary>
             public void RemoveAt(int index)
             {
-                if (index < 0 || index >= _count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _count);
 
                 _count--;
                 for (int i = index; i < _count; i++)
@@ -282,20 +280,16 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= _count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _count);
 
                     return _innerArray![index];
                 }
 
                 set
                 {
-                    if (index < 0 || index >= _count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _count);
 
                     _innerArray![index] = value;
                     _owner.UpdateCustomTabOffsets();

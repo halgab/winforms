@@ -107,6 +107,9 @@ namespace System.Windows.Forms
 
             set
             {
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1, nameof(SelectedIndex));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, Items.Count, nameof(SelectedIndex));
+
                 if (value < -1 || value >= Items.Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(SelectedIndex), value));
