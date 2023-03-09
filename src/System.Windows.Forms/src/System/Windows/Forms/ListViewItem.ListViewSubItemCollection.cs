@@ -45,19 +45,15 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     return _owner.subItems[index];
                 }
                 set
                 {
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     ListViewSubItem oldSubItem = _owner.subItems[index];
 
@@ -345,11 +341,8 @@ namespace System.Windows.Forms
 
             public void Insert(int index, ListViewSubItem item)
             {
-                if (index < 0 || index > Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
-
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, Count);
                 ArgumentNullException.ThrowIfNull(item);
 
                 item._owner = _owner;
@@ -391,10 +384,8 @@ namespace System.Windows.Forms
 
             public void RemoveAt(int index)
             {
-                if (index < 0 || index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                 // Remove ourselves as the owner.
                 _owner.subItems[index]._owner = null;

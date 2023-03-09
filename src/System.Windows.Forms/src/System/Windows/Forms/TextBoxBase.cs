@@ -1665,10 +1665,7 @@ namespace System.Windows.Forms
         /// </summary>
         public int GetFirstCharIndexFromLine(int lineNumber)
         {
-            if (lineNumber < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(lineNumber), lineNumber, string.Format(SR.InvalidArgument, nameof(lineNumber), lineNumber));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(lineNumber);
 
             return (int)PInvoke.SendMessage(this, (WM)EM.LINEINDEX, (WPARAM)lineNumber);
         }
@@ -1780,10 +1777,7 @@ namespace System.Windows.Forms
         /// </summary>
         public void Select(int start, int length)
         {
-            if (start < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(start), start, string.Format(SR.InvalidArgument, nameof(start), start));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(start);
 
             int textLen = TextLength;
 

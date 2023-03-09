@@ -1737,10 +1737,8 @@ namespace System.Windows.Forms
                     throw new InvalidEnumArgumentException(nameof(autoSizeColumnMode), (int)autoSizeColumnMode, typeof(DataGridViewAutoSizeColumnMode));
             }
 
-            if (columnIndex < 0 || columnIndex >= Columns.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(columnIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(columnIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(columnIndex, Columns.Count);
 
             if (autoSizeColumnMode == DataGridViewAutoSizeColumnMode.ColumnHeader && !ColumnHeadersVisible)
             {
@@ -1833,10 +1831,8 @@ namespace System.Windows.Forms
 
         protected void AutoResizeColumnHeadersHeight(int columnIndex, bool fixedRowHeadersWidth, bool fixedColumnWidth)
         {
-            if (columnIndex < -1 || columnIndex >= Columns.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(columnIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(columnIndex, -1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(columnIndex, Columns.Count);
 
             if (!ColumnHeadersVisible)
             {
@@ -1996,10 +1992,8 @@ namespace System.Windows.Forms
 
         protected void AutoResizeRow(int rowIndex, DataGridViewAutoSizeRowMode autoSizeRowMode, bool fixedWidth)
         {
-            if (rowIndex < 0 || rowIndex >= Rows.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, Rows.Count);
 
             // not using ClientUtils here because it's a flags enum, masking instead.
             if (((DataGridViewAutoSizeRowCriteriaInternal)autoSizeRowMode & InvalidDataGridViewAutoSizeRowCriteriaInternalMask) != 0)

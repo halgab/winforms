@@ -3245,10 +3245,8 @@ namespace System.Windows.Forms
         /// </summary>
         public void EnsureVisible(int index)
         {
-            if (index < 0 || index >= Items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Items.Count);
 
             if (IsHandleCreated)
             {
@@ -3274,10 +3272,8 @@ namespace System.Windows.Forms
 
         public ListViewItem? FindItemWithText(string text, bool includeSubItemsInSearch, int startIndex, bool isPrefixSearch)
         {
-            if (startIndex < 0 || startIndex >= Items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, string.Format(SR.InvalidArgument, nameof(startIndex), startIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startIndex, Items.Count);
 
             return FindItem(true, text, isPrefixSearch, new Point(0, 0), SearchDirectionHint.Down, startIndex, includeSubItemsInSearch);
         }
@@ -3637,10 +3633,8 @@ namespace System.Windows.Forms
 
         internal LIST_VIEW_ITEM_STATE_FLAGS GetItemState(int index, LIST_VIEW_ITEM_STATE_FLAGS mask)
         {
-            if (index < 0 || (VirtualMode && index >= VirtualListSize) || (!VirtualMode && index >= _itemCount))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, VirtualMode ? VirtualListSize : _itemCount);
 
             Debug.Assert(IsHandleCreated, "How did we add items without a handle?");
             return (LIST_VIEW_ITEM_STATE_FLAGS)(uint)PInvoke.SendMessage(this, (User32.WM)PInvoke.LVM_GETITEMSTATE, (WPARAM)index, (LPARAM)(uint)mask);
@@ -3656,10 +3650,8 @@ namespace System.Windows.Forms
         /// </summary>
         public Rectangle GetItemRect(int index, ItemBoundsPortion portion)
         {
-            if (index < 0 || index >= Items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Items.Count);
 
             // Valid values are 0x0 to 0x3
             SourceGenerated.EnumValidator.Validate(portion, nameof(portion));
@@ -3729,18 +3721,20 @@ namespace System.Windows.Forms
                 return Rectangle.Empty;
             }
 
-            if (itemIndex < 0 || itemIndex >= Items.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(itemIndex), itemIndex, string.Format(SR.InvalidArgument, nameof(itemIndex), itemIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(itemIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(itemIndex, Items.Count);
 
             int subItemCount = Items[itemIndex].SubItems.Count;
 
-            if (subItemIndex < 0
-                || (View == View.Tile && subItemIndex >= subItemCount)
-                || (View == View.Details && subItemIndex >= Columns.Count))
+            ArgumentOutOfRangeException.ThrowIfNegative(subItemIndex);
+            switch (View)
             {
-                throw new ArgumentOutOfRangeException(nameof(subItemIndex), subItemIndex, string.Format(SR.InvalidArgument, nameof(subItemIndex), subItemIndex));
+                case View.Tile:
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(subItemIndex, subItemCount);
+                    break;
+                case View.Details:
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(subItemIndex, Columns.Count);
+                    break;
             }
 
             //valid values are 0x0 to 0x3
@@ -5055,30 +5049,10 @@ namespace System.Windows.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void RedrawItems(int startIndex, int endIndex, bool invalidateOnly)
         {
-            if (VirtualMode)
-            {
-                if (startIndex < 0 || startIndex >= VirtualListSize)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, string.Format(SR.InvalidArgument, nameof(startIndex), startIndex));
-                }
-
-                if (endIndex < 0 || endIndex >= VirtualListSize)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(endIndex), endIndex, string.Format(SR.InvalidArgument, nameof(endIndex), endIndex));
-                }
-            }
-            else
-            {
-                if (startIndex < 0 || startIndex >= Items.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(startIndex), startIndex, string.Format(SR.InvalidArgument, nameof(startIndex), startIndex));
-                }
-
-                if (endIndex < 0 || endIndex >= Items.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(endIndex), endIndex, string.Format(SR.InvalidArgument, nameof(endIndex), endIndex));
-                }
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfNegative(endIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(startIndex, VirtualMode ? VirtualListSize : Items.Count);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(endIndex, VirtualMode ? VirtualListSize : Items.Count);
 
             if (startIndex > endIndex)
             {
@@ -5341,12 +5315,8 @@ namespace System.Windows.Forms
         /// </summary>
         internal void SetColumnWidth(int columnIndex, ColumnHeaderAutoResizeStyle headerAutoResize)
         {
-            if ((columnIndex < 0) ||
-                (columnIndex >= 0 && _columnHeaders is null) ||
-                (columnIndex >= _columnHeaders!.Length))
-            {
-                throw new ArgumentOutOfRangeException(nameof(columnIndex), columnIndex, string.Format(SR.InvalidArgument, nameof(columnIndex), columnIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(columnIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(columnIndex, _columnHeaders?.Length ?? 0);
 
             //valid values are 0x0 to 0x2
             SourceGenerated.EnumValidator.Validate(headerAutoResize, nameof(headerAutoResize));
@@ -5471,10 +5441,8 @@ namespace System.Windows.Forms
 
         internal void SetItemImage(int itemIndex, int imageIndex)
         {
-            if (itemIndex < 0 || (VirtualMode && itemIndex >= VirtualListSize) || (!VirtualMode && itemIndex >= _itemCount))
-            {
-                throw new ArgumentOutOfRangeException(nameof(itemIndex), itemIndex, string.Format(SR.InvalidArgument, nameof(itemIndex), itemIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(itemIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(itemIndex, VirtualMode ? VirtualListSize : _itemCount);
 
             if (!IsHandleCreated)
             {
@@ -5493,10 +5461,8 @@ namespace System.Windows.Forms
 
         internal void SetItemIndentCount(int index, int indentCount)
         {
-            if (index < 0 || (VirtualMode && index >= VirtualListSize) || (!VirtualMode && index >= _itemCount))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, VirtualMode ? VirtualListSize : _itemCount);
 
             if (!IsHandleCreated)
             {
@@ -5520,10 +5486,8 @@ namespace System.Windows.Forms
                 return;
             }
 
-            if (index < 0 || index >= _itemCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _itemCount);
 
             Debug.Assert(IsHandleCreated, "How did we add items without a handle?");
 
@@ -5533,10 +5497,8 @@ namespace System.Windows.Forms
 
         internal void SetItemState(int index, LIST_VIEW_ITEM_STATE_FLAGS state, LIST_VIEW_ITEM_STATE_FLAGS mask)
         {
-            if (index < -1 || (VirtualMode && index >= VirtualListSize) || (!VirtualMode && index >= _itemCount))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(index, -1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, VirtualMode ? VirtualListSize : _itemCount);
 
             if (!IsHandleCreated)
             {

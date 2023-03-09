@@ -52,10 +52,8 @@ namespace System.Windows.Forms
                     }
                     else
                     {
-                        if (displayIndex < 0 || displayIndex >= _owner._itemCount)
-                        {
-                            throw new ArgumentOutOfRangeException(nameof(displayIndex), displayIndex, string.Format(SR.InvalidArgument, nameof(displayIndex), displayIndex));
-                        }
+                        ArgumentOutOfRangeException.ThrowIfNegative(displayIndex);
+                        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(displayIndex, _owner._itemCount);
 
                         if (_owner.IsHandleCreated && !_owner.ListViewHandleDestroyed)
                         {
@@ -77,10 +75,8 @@ namespace System.Windows.Forms
                         throw new InvalidOperationException(SR.ListViewCantModifyTheItemCollInAVirtualListView);
                     }
 
-                    if (displayIndex < 0 || displayIndex >= _owner._itemCount)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(displayIndex), displayIndex, string.Format(SR.InvalidArgument, nameof(displayIndex), displayIndex));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(displayIndex);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(displayIndex, _owner._itemCount);
 
                     if (_owner.ExpectingMouseUp)
                     {
@@ -327,10 +323,8 @@ namespace System.Windows.Forms
                     count = _owner._itemCount;
                 }
 
-                if (index < 0 || index > count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, count);
 
                 if (_owner.VirtualMode)
                 {
@@ -397,10 +391,8 @@ namespace System.Windows.Forms
                     throw new InvalidOperationException(SR.ListViewCantRemoveItemsFromAVirtualListView);
                 }
 
-                if (index < 0 || index >= _owner._itemCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _owner._itemCount);
 
                 Debug.Assert(!_owner.FlipViewToLargeIconAndSmallIcon || Count == 0, "the FlipView... bit is turned off after adding 1 item.");
 

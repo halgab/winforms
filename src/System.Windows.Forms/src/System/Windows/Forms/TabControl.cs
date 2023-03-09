@@ -1067,10 +1067,8 @@ namespace System.Windows.Forms
 
         internal TabPage GetTabPage(int index)
         {
-            if (index < 0 || index >= TabCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, TabCount);
 
             return _tabPages[index];
         }
@@ -1116,9 +1114,10 @@ namespace System.Windows.Forms
         /// </summary>
         public Rectangle GetTabRect(int index)
         {
-            if (index < 0 || (index >= TabCount && !GetState(State.GetTabRectfromItemSize)))
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            if (!GetState(State.GetTabRectfromItemSize))
             {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, TabCount);
             }
 
             SetState(State.GetTabRectfromItemSize, false);
@@ -1174,10 +1173,8 @@ namespace System.Windows.Forms
         /// </summary>
         private void InsertItem(int index, TabPage tabPage)
         {
-            if (index < 0 || index > TabCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, TabCount);
 
             ArgumentNullException.ThrowIfNull(tabPage);
 
@@ -1607,10 +1604,8 @@ namespace System.Windows.Forms
 
         private void RemoveTabPage(int index)
         {
-            if (index < 0 || index >= TabCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, TabCount);
 
             if (index < _tabPages.Count)
             {
@@ -1662,11 +1657,8 @@ namespace System.Windows.Forms
 
         private void SetTabPage(int index, TabPage value)
         {
-            if (index < 0 || index >= TabCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-            }
-
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, TabCount);
             ArgumentNullException.ThrowIfNull(value);
 
             if (IsHandleCreated)

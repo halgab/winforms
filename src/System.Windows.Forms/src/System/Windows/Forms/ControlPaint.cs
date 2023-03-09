@@ -585,14 +585,10 @@ namespace System.Windows.Forms
             Color bottomColor, int bottomWidth, ButtonBorderStyle bottomStyle)
         {
             // Very general, and very slow
-            if (leftWidth < 0)
-                throw new ArgumentOutOfRangeException(nameof(leftWidth));
-            if (topWidth < 0)
-                throw new ArgumentOutOfRangeException(nameof(topWidth));
-            if (rightWidth < 0)
-                throw new ArgumentOutOfRangeException(nameof(rightWidth));
-            if (bottomWidth < 0)
-                throw new ArgumentOutOfRangeException(nameof(bottomWidth));
+            ArgumentOutOfRangeException.ThrowIfNegative(leftWidth);
+            ArgumentOutOfRangeException.ThrowIfNegative(topWidth);
+            ArgumentOutOfRangeException.ThrowIfNegative(rightWidth);
+            ArgumentOutOfRangeException.ThrowIfNegative(bottomWidth);
 
             int totalData = (topWidth + leftWidth + bottomWidth + rightWidth) * 2;
             Span<int> allData;
@@ -1476,10 +1472,8 @@ namespace System.Windows.Forms
             Color backColor)
         {
             ArgumentNullException.ThrowIfNull(graphics);
-            if (width < 0)
-                throw new ArgumentOutOfRangeException(nameof(width));
-            if (height < 0)
-                throw new ArgumentOutOfRangeException(nameof(height));
+            ArgumentOutOfRangeException.ThrowIfNegative(width);
+            ArgumentOutOfRangeException.ThrowIfNegative(height);
 
             RECT rcFrame = new RECT(0, 0, width, height);
             using Bitmap bitmap = new Bitmap(width, height);

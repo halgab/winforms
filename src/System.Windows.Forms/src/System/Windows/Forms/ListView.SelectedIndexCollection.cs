@@ -97,10 +97,8 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     if (_owner.IsHandleCreated)
                     {
@@ -261,10 +259,8 @@ namespace System.Windows.Forms
             {
                 if (_owner.VirtualMode)
                 {
-                    if (itemIndex < 0 || itemIndex >= _owner.VirtualListSize)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(itemIndex), itemIndex, string.Format(SR.InvalidArgument, nameof(itemIndex), itemIndex));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(itemIndex);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(itemIndex, _owner.VirtualListSize);
 
                     if (_owner.IsHandleCreated)
                     {
@@ -278,10 +274,8 @@ namespace System.Windows.Forms
                 }
                 else
                 {
-                    if (itemIndex < 0 || itemIndex >= _owner.Items.Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(itemIndex), itemIndex, string.Format(SR.InvalidArgument, nameof(itemIndex), itemIndex));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(itemIndex);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(itemIndex, _owner.Items.Count);
 
                     _owner.Items[itemIndex].Selected = true;
                     return Count;
@@ -326,10 +320,8 @@ namespace System.Windows.Forms
             {
                 if (_owner.VirtualMode)
                 {
-                    if (itemIndex < 0 || itemIndex >= _owner.VirtualListSize)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(itemIndex), itemIndex, string.Format(SR.InvalidArgument, nameof(itemIndex), itemIndex));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(itemIndex);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(itemIndex, _owner.VirtualListSize);
 
                     if (_owner.IsHandleCreated)
                     {
@@ -338,10 +330,8 @@ namespace System.Windows.Forms
                 }
                 else
                 {
-                    if (itemIndex < 0 || itemIndex >= _owner.Items.Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(itemIndex), itemIndex, string.Format(SR.InvalidArgument, nameof(itemIndex), itemIndex));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(itemIndex);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(itemIndex, _owner.Items.Count);
 
                     _owner.Items[itemIndex].Selected = false;
                 }

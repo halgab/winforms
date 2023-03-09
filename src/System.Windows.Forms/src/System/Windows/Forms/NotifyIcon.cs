@@ -549,10 +549,7 @@ namespace System.Windows.Forms
         /// </summary>
         public unsafe void ShowBalloonTip(int timeout, string tipTitle, string tipText, ToolTipIcon tipIcon)
         {
-            if (timeout < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(timeout), timeout, string.Format(SR.InvalidArgument, nameof(timeout), timeout));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(timeout);
 
             if (string.IsNullOrEmpty(tipText))
             {

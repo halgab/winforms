@@ -49,20 +49,15 @@ namespace System.Windows.Forms
         {
             get
             {
-                if (index < 0 || index >= owner.childCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, owner.childCount);
 
                 return owner.children[index];
             }
             set
             {
-                if (index < 0 || index >= owner.childCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
-
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, owner.childCount);
                 ArgumentNullException.ThrowIfNull(value);
 
                 TreeView tv = owner.treeView;

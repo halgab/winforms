@@ -413,10 +413,8 @@ namespace System.Windows.Forms
 
             public void Insert(int index, ColumnHeader value)
             {
-                if (index < 0 || index > Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(index, Count);
 
                 _owner.InsertColumn(index, value);
             }

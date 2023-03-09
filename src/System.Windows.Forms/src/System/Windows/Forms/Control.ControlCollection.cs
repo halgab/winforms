@@ -366,13 +366,8 @@ namespace System.Windows.Forms
             {
                 get
                 {
-                    //do some bounds checking here...
-                    if (index < 0 || index >= Count)
-                    {
-                        throw new ArgumentOutOfRangeException(
-                            nameof(index),
-                            string.Format(SR.IndexOutOfRange, index.ToString(CultureInfo.CurrentCulture)));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Count);
 
                     Control control = (Control)InnerList[index]!;
                     Debug.Assert(control is not null, "Why are we returning null controls from a valid index?");

@@ -2088,13 +2088,8 @@ namespace System.Windows.Forms
                 return ItemHeight;
             }
 
-            if (index < 0 || _itemsCollection is null || index >= _itemsCollection.Count)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(index),
-                    index,
-                    string.Format(SR.InvalidArgument, nameof(index), index));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _itemsCollection?.Count ?? 0);
 
             if (IsHandleCreated)
             {
