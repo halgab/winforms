@@ -2615,10 +2615,8 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0 || value >= Columns.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, Columns.Count);
 
                 if (!Columns[value].Visible)
                 {
@@ -2692,10 +2690,8 @@ namespace System.Windows.Forms
             }
             set
             {
-                if (value < 0 || value >= Rows.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(value);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, Rows.Count);
 
                 if ((Rows.GetRowState(value) & DataGridViewElementStates.Visible) == 0)
                 {

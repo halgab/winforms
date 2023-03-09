@@ -1473,10 +1473,8 @@ namespace System.Windows.Forms
             }
 
             // Header Cell classes override this implementation - this implementation is only for inner cells
-            if (rowIndex < 0 || rowIndex >= DataGridView.Rows.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
             // Assuming (like in other places in this class) that the formatted value is independent of the style colors.
             DataGridViewCellStyle dataGridViewCellStyle = GetInheritedStyle(null, rowIndex, false);
@@ -1875,10 +1873,8 @@ namespace System.Windows.Forms
         {
             if (DataGridView is not null)
             {
-                if (rowIndex < 0 || rowIndex >= DataGridView.Rows.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(rowIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
                 if (ColumnIndex < 0)
                 {
@@ -1947,10 +1943,8 @@ namespace System.Windows.Forms
             }
 
             // Header Cell classes override this implementation - this implementation is only for inner cells
-            if (rowIndex < 0 || rowIndex >= DataGridView.Rows.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
             Debug.Assert(OwningColumn is not null);
             Debug.Assert(OwningRow is not null);
@@ -2029,10 +2023,8 @@ namespace System.Windows.Forms
                 throw new InvalidOperationException(SR.DataGridView_CellNeedsDataGridViewForInheritedStyle);
             }
 
-            if (rowIndex < 0 || rowIndex >= DataGridView.Rows.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
             if (ColumnIndex < 0)
             {
@@ -2569,10 +2561,8 @@ namespace System.Windows.Forms
             DataGridView dataGridView = DataGridView;
             if (dataGridView is not null)
             {
-                if (rowIndex < 0 || rowIndex >= dataGridView.Rows.Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(rowIndex));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, dataGridView.Rows.Count);
 
                 if (ColumnIndex < 0)
                 {

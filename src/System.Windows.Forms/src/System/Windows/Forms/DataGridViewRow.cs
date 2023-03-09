@@ -1290,15 +1290,13 @@ namespace System.Windows.Forms
                 throw new InvalidEnumArgumentException(nameof(autoSizeRowMode), (int)autoSizeRowMode, typeof(DataGridViewAutoSizeRowMode));
             }
 
-            if (!(DataGridView is null || (rowIndex >= 0 && rowIndex < DataGridView.Rows.Count)))
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
-
             if (DataGridView is null)
             {
                 return -1;
             }
+
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
 
             int preferredRowThickness = 0, preferredCellThickness;
             // take into account the preferred height of the header cell if displayed and cared about
@@ -1376,9 +1374,10 @@ namespace System.Windows.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public virtual DataGridViewElementStates GetState(int rowIndex)
         {
-            if (!(DataGridView is null || (rowIndex >= 0 && rowIndex < DataGridView.Rows.Count)))
+            if (DataGridView is not null)
             {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
+                ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(rowIndex, DataGridView.Rows.Count);
             }
 
             if (DataGridView is null || DataGridView.Rows.SharedRow(rowIndex).Index != -1)

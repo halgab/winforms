@@ -244,10 +244,7 @@ namespace System.Windows.Forms
 
             public override AccessibleObject? GetChild(int index)
             {
-                if (index < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index));
-                }
+                ArgumentOutOfRangeException.ThrowIfNegative(index);
 
                 if (_owningDataGridViewRow is null)
                 {

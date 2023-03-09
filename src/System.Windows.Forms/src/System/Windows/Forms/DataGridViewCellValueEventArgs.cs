@@ -16,15 +16,8 @@ namespace System.Windows.Forms
 
         public DataGridViewCellValueEventArgs(int columnIndex, int rowIndex)
         {
-            if (columnIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(columnIndex));
-            }
-
-            if (rowIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rowIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(columnIndex);
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
 
             ColumnIndex = columnIndex;
             RowIndex = rowIndex;

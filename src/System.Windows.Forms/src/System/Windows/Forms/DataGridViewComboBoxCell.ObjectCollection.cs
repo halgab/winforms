@@ -174,10 +174,8 @@ namespace System.Windows.Forms
                     //this.owner.CheckNoSharedCell();
                     owner.CheckNoDataSource();
 
-                    if (index < 0 || index >= InnerArray.Count)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(index), index, string.Format(SR.InvalidArgument, nameof(index), index));
-                    }
+                    ArgumentOutOfRangeException.ThrowIfNegative(index);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, InnerArray.Count);
 
                     InnerArray[index] = value.OrThrowIfNull();
                     owner.OnItemsCollectionChanged();
