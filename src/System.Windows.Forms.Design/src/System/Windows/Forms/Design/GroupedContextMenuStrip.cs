@@ -4,14 +4,13 @@
 
 #nullable disable
 
-using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace System.Windows.Forms.Design
 {
     internal class GroupedContextMenuStrip : ContextMenuStrip
     {
-        private StringCollection _groupOrdering;
+        private List<string> _groupOrdering;
         private ContextMenuStripGroupCollection _groups;
         private bool _populated;
 
@@ -24,25 +23,9 @@ namespace System.Windows.Forms.Design
         {
         }
 
-        public ContextMenuStripGroupCollection Groups
-        {
-            get
-            {
-                _groups ??= new ContextMenuStripGroupCollection();
+        public ContextMenuStripGroupCollection Groups => _groups ??= new ContextMenuStripGroupCollection();
 
-                return _groups;
-            }
-        }
-
-        public StringCollection GroupOrdering
-        {
-            get
-            {
-                _groupOrdering ??= new StringCollection();
-
-                return _groupOrdering;
-            }
-        }
+        public List<string> GroupOrdering => _groupOrdering ??= new List<string>();
 
         // merges all the items which are currently in the groups into the items collection.
         public void Populate()
