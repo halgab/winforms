@@ -255,18 +255,8 @@ namespace System.Windows.Forms
                         _items[i].ToolTipShown = toolTipShown;
                     }
                 }
-#if DEBUG
-                int shownTooltips = 0;
-                for (int j = 0; j < _items.Count; j++)
-                {
-                    if (_items[j].ToolTipShown)
-                    {
-                        shownTooltips++;
-                    }
-                }
 
-                Debug.Assert(shownTooltips <= 1);
-#endif
+                Debug.Assert(_items.Count(i => i.ToolTipShown) <= 1);
             }
 
             /// <summary>

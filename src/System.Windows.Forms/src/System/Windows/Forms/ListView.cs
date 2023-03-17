@@ -2432,7 +2432,7 @@ namespace System.Windows.Forms
             }
         }
 
-#if DEBUG
+        [Conditional("DEBUG")]
         private void CheckDisplayIndices()
         {
             // sanity check
@@ -2448,7 +2448,6 @@ namespace System.Windows.Forms
             int colsCount = Columns.Count;
             Debug.Assert(sumOfDisplayIndices == (colsCount - 1) * colsCount / 2, "display indices out of whack");
         }
-#endif
 
         private void CleanPreviousBackgroundImageFiles()
         {
@@ -3975,9 +3974,8 @@ namespace System.Windows.Forms
 
             SetDisplayIndices(indices);
 
-#if DEBUG
             CheckDisplayIndices();
-#endif
+
             // in Tile view the ColumnHeaders collection is used for the Tile Information
             // recreate the handle in that case
             if (IsHandleCreated && View == View.Tile)
@@ -4226,12 +4224,8 @@ namespace System.Windows.Forms
                         lvItem.mask |= LIST_VIEW_ITEM_FLAGS.LVIF_GROUPID;
                         lvItem.iGroupId = GetNativeGroupId(li);
 
-#if DEBUG
-                        IntPtr result = PInvoke.SendMessage(this, (User32.WM)PInvoke.LVM_ISGROUPVIEWENABLED);
-                        Debug.Assert(result != IntPtr.Zero, "Groups not enabled");
-                        result = PInvoke.SendMessage(this, (User32.WM)PInvoke.LVM_HASGROUP, (WPARAM)lvItem.iGroupId);
-                        Debug.Assert(result != IntPtr.Zero, $"Doesn't contain group id: {lvItem.iGroupId}");
-#endif
+                        Debug.Assert(PInvoke.SendMessage(this, (User32.WM)PInvoke.LVM_ISGROUPVIEWENABLED) != IntPtr.Zero, "Groups not enabled");
+                        Debug.Assert(PInvoke.SendMessage(this, (User32.WM)PInvoke.LVM_HASGROUP, (WPARAM)lvItem.iGroupId) != IntPtr.Zero, $"Doesn't contain group id: {lvItem.iGroupId}");
                     }
 
                     // Make sure that our columns memory is big enough. If not, then realloc it.
@@ -6306,9 +6300,7 @@ namespace System.Windows.Forms
                             movedHdr!.DisplayIndexInternal = to;
                             indices[movedHdr.Index] = movedHdr.DisplayIndexInternal;
                             SetDisplayIndices(indices);
-#if DEBUG
                             CheckDisplayIndices();
-#endif
                         }
                     }
                 }
@@ -6366,11 +6358,8 @@ namespace System.Windows.Forms
                     int compensateForColumnResize = CompensateColumnHeaderResize(m, columnResizeCancelled);
                     if (compensateForColumnResize != 0)
                     {
-#if DEBUG
-                        NMHEADERW* header = (NMHEADERW*)(nint)m.LParamInternal;
-                        Debug.Assert(header->iItem == 0, "we only need to compensate for the first column resize");
+                        Debug.Assert(((NMHEADERW*)(nint)m.LParamInternal)->iItem == 0, "we only need to compensate for the first column resize");
                         Debug.Assert(_columnHeaders!.Length > 0, "there should be a column that we need to compensate for");
-#endif
 
                         ColumnHeader col = _columnHeaders![0];
                         col.Width += compensateForColumnResize;

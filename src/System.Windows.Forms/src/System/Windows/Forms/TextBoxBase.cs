@@ -934,19 +934,9 @@ namespace System.Windows.Forms
 
 #if DEBUG
             {
-                string t = WindowText;
-                int len;
-
                 end = start + length - 1;
 
-                if (t is null)
-                {
-                    len = 0;
-                }
-                else
-                {
-                    len = t.Length;
-                }
+                int len = WindowText?.Length ?? 0;
 
                 Debug.Assert(end <= len,
                     $"SelectionEnd is outside the set of valid caret positions for the current WindowText (end ={end}, WindowText.Length ={len})");

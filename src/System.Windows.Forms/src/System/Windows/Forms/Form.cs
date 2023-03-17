@@ -4563,9 +4563,8 @@ namespace System.Windows.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected override bool ProcessDialogChar(char charCode)
         {
-#if DEBUG
             s_controlKeyboardRouting.TraceVerbose($"Form.ProcessDialogChar [{charCode}]");
-#endif
+
             // If we're the top-level form or control, we need to do the mnemonic handling
             //
             if (IsMdiChild && charCode != ' ')
@@ -5797,18 +5796,14 @@ namespace System.Windows.Forms
                     if (mdiControlStrip.MergedMenu is not null)
                     {
 #if DEBUG
-                        int numWindowListItems = 0;
-                        if (MdiWindowListStrip is not null && MdiWindowListStrip.MergedMenu is not null && MdiWindowListStrip.MergedMenu.MdiWindowListItem is not null)
-                        {
-                            numWindowListItems = MdiWindowListStrip.MergedMenu.MdiWindowListItem.DropDownItems.Count;
-                        }
+                        int numWindowListItems = MdiWindowListStrip?.MergedMenu?.MdiWindowListItem?.DropDownItems.Count ?? 0;
 #endif
 
                         ToolStripManager.RevertMergeInternal(mdiControlStrip.MergedMenu, mdiControlStrip, /*revertMDIStuff*/true);
 
 #if DEBUG
                         // double check that RevertMerge doesnt accidentally revert more than it should.
-                        if (MdiWindowListStrip is not null && MdiWindowListStrip.MergedMenu is not null && MdiWindowListStrip.MergedMenu.MdiWindowListItem is not null)
+                        if (MdiWindowListStrip?.MergedMenu?.MdiWindowListItem is not null)
                         {
                             Debug.Assert(numWindowListItems == MdiWindowListStrip.MergedMenu.MdiWindowListItem.DropDownItems.Count, "Calling RevertMerge modified the mdiwindowlistitem");
                         }

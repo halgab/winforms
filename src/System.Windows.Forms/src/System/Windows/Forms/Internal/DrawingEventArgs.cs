@@ -50,13 +50,10 @@ namespace System.Windows.Forms
         {
             ArgumentValidation.ThrowIfNull(dc);
 
-#if DEBUG
-            OBJ_TYPE type = (OBJ_TYPE)PInvoke.GetObjectType(dc);
-            Debug.Assert(type == OBJ_TYPE.OBJ_DC
-                || type == OBJ_TYPE.OBJ_ENHMETADC
-                || type == OBJ_TYPE.OBJ_MEMDC
-                || type == OBJ_TYPE.OBJ_METADC);
-#endif
+            Debug.Assert((OBJ_TYPE)PInvoke.GetObjectType(dc) is OBJ_TYPE.OBJ_DC
+                or OBJ_TYPE.OBJ_ENHMETADC
+                or OBJ_TYPE.OBJ_MEMDC
+                or OBJ_TYPE.OBJ_METADC);
 
             _hdc = dc;
             _graphics = null;

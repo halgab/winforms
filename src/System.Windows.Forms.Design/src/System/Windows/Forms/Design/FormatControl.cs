@@ -666,9 +666,8 @@ namespace System.Windows.Forms.Design
 
             public override void PushFormatStringIntoFormatType(string formatString)
             {
-#if DEBUG
                 Debug.Assert(Parse(formatString), "we only push valid strings");
-#endif // DEBUG
+
                 if (formatString.Equals("N0"))
                 {
                     _owner.decimalPlacesUpDown.Value = 0;
@@ -807,9 +806,8 @@ namespace System.Windows.Forms.Design
 
             public override void PushFormatStringIntoFormatType(string formatString)
             {
-#if DEBUG
                 Debug.Assert(Parse(formatString), "we only push valid strings");
-#endif // DEBUG
+
                 if (formatString.Equals("C0"))
                 {
                     _owner.decimalPlacesUpDown.Value = 0;
@@ -937,9 +935,8 @@ namespace System.Windows.Forms.Design
 
             public override void PushFormatStringIntoFormatType(string formatString)
             {
-#if DEBUG
                 Debug.Assert(Parse(formatString), "we only push valid strings");
-#endif // DEBUG
+
                 int selectedIndex = -1;
 
                 if (formatString.Equals("d"))
@@ -1090,9 +1087,8 @@ namespace System.Windows.Forms.Design
 
             public override void PushFormatStringIntoFormatType(string formatString)
             {
-#if DEBUG
                 Debug.Assert(Parse(formatString), "we only push valid strings");
-#endif // DEBUG
+
                 if (formatString.Equals("E0"))
                 {
                     _owner.decimalPlacesUpDown.Value = 0;

@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#if DEBUG
 using System.Diagnostics;
-#endif
 using System.Diagnostics.CodeAnalysis;
 
 namespace System.Windows.Forms
@@ -27,10 +25,8 @@ namespace System.Windows.Forms
         {
             get
             {
-#if DEBUG
-                ListItem? item = (ListItem?)_itemList.SelectedItem;
-                Debug.Assert(item is not null, "No item selected!");
-#endif
+                Debug.Assert((ListItem?)_itemList.SelectedItem is not null, "No item selected!");
+
                 return _active;
             }
         }

@@ -65,8 +65,7 @@ namespace System.Windows.Forms
                 false /*computeErrorIconBounds*/,
                 false /*paint*/);
 
-#if DEBUG
-            Rectangle contentBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
@@ -78,9 +77,7 @@ namespace System.Windows.Forms
                 DataGridViewPaintParts.ContentForeground,
                 true /*computeContentBounds*/,
                 false /*computeErrorIconBounds*/,
-                false /*paint*/);
-            Debug.Assert(contentBoundsDebug.Equals(contentBounds));
-#endif
+                false /*paint*/).Equals(contentBounds));
 
             return contentBounds;
         }
@@ -115,24 +112,19 @@ namespace System.Windows.Forms
                 true /*computeErrorIconBounds*/,
                 false /*paint*/);
 
-#if DEBUG
-            object value = GetValue(rowIndex);
-
-            Rectangle errorBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
                 cellState,
-                value,
+                GetValue(rowIndex),
                 GetErrorText(rowIndex),
                 cellStyle,
                 dgvabsEffective,
                 DataGridViewPaintParts.ContentForeground,
                 false /*computeContentBounds*/,
                 true /*computeErrorIconBounds*/,
-                false /*paint*/);
-            Debug.Assert(errorBoundsDebug.Equals(errorBounds));
-#endif
+                false /*paint*/).Equals(errorBounds));
 
             return errorBounds;
         }

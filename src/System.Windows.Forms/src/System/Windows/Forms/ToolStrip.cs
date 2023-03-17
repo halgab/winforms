@@ -4644,9 +4644,7 @@ namespace System.Windows.Forms
         /// </summary>
         private void SnapFocus(HWND otherHwnd)
         {
-#if DEBUG
-            Debug.WriteLineIf(s_snapFocusDebug.TraceVerbose, $"{!Environment.StackTrace.Contains("FocusInternal")}", "who is setting focus to us?");
-#endif
+            Debug.WriteLineIf(s_snapFocusDebug!.TraceVerbose, $"{!Environment.StackTrace.Contains("FocusInternal")}", "who is setting focus to us?");
             // we need to know who sent us focus so we know who to send it back to later.
 
             if (!TabStop && !IsDropDown)

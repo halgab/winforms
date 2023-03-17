@@ -944,8 +944,7 @@ namespace System.Windows.Forms
                 false /*computeDropDownButtonRect*/,
                 false /*paint*/);
 
-#if DEBUG
-            Rectangle contentBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
@@ -959,9 +958,7 @@ namespace System.Windows.Forms
                 true  /*computeContentBounds*/,
                 false /*computeErrorIconBounds*/,
                 false /*computeDropDownButtonRect*/,
-                false /*paint*/);
-            Debug.Assert(contentBoundsDebug.Equals(contentBounds));
-#endif
+                false /*paint*/).Equals(contentBounds));
 
             return contentBounds;
         }
@@ -1051,8 +1048,7 @@ namespace System.Windows.Forms
                 false /*computeDropDownButtonRect*/,
                 false /*paint*/);
 
-#if DEBUG
-            Rectangle errorIconBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
@@ -1066,9 +1062,7 @@ namespace System.Windows.Forms
                 false /*computeContentBounds*/,
                 true  /*computeErrorBounds*/,
                 false /*computeDropDownButtonRect*/,
-                false /*paint*/);
-            Debug.Assert(errorIconBoundsDebug.Equals(errorIconBounds));
-#endif
+                false /*paint*/).Equals(errorIconBounds));
 
             return errorIconBounds;
         }

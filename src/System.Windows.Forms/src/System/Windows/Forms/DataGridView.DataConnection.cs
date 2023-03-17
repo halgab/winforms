@@ -404,7 +404,7 @@ namespace System.Windows.Forms
                 return _props[boundColumnIndex].PropertyType;
             }
 
-#if DEBUG
+            [Conditional("DEBUG")]
             private void CheckRowCount(ListChangedEventArgs e)
             {
                 if (e.ListChangedType != ListChangedType.Reset)
@@ -417,7 +417,6 @@ namespace System.Windows.Forms
                 Debug.Assert(DataBoundRowsCount() == CurrencyManager.List.Count || (_owner.Columns.Count == 0 && dataGridViewRowsCount == 0),
                              "there should be the same number of rows in the dataGridView's Row Collection as in the back end list");
             }
-#endif // DEBUG
 
             private void currencyManager_ListChanged(object sender, ListChangedEventArgs e)
             {
@@ -437,9 +436,7 @@ namespace System.Windows.Forms
 
                 _lastListCount = CurrencyManager.Count;
 
-#if DEBUG
                 CheckRowCount(e);
-#endif // DEBUG
             }
 
             private void ProcessListChanged(ListChangedEventArgs e)
@@ -666,9 +663,7 @@ namespace System.Windows.Forms
                             }
                             else
                             {
-#if DEBUG
                                 Debug.Fail("fail in debug builds so we can catch this situation in the check in suites");
-#endif // DEBUG
                                 throw new InvalidOperationException();
                             }
 

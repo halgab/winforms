@@ -282,23 +282,19 @@ namespace System.Windows.Forms
                 true  /*computeErrorIconBounds*/,
                 false /*paint*/);
 
-#if DEBUG
-            object value = GetValue(rowIndex);
-            Rectangle errorIconBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
                 cellState,
-                GetFormattedValue(value, rowIndex, ref cellStyle, null, null, DataGridViewDataErrorContexts.Formatting),
+                GetFormattedValue(GetValue(rowIndex), rowIndex, ref cellStyle, null, null, DataGridViewDataErrorContexts.Formatting),
                 GetErrorText(rowIndex),
                 cellStyle,
                 dgvabsEffective,
                 DataGridViewPaintParts.ContentForeground,
                 false /*computeContentBounds*/,
                 true  /*computeErrorIconBounds*/,
-                false /*paint*/);
-            Debug.Assert(errorIconBoundsDebug.Equals(errorIconBounds));
-#endif
+                false /*paint*/).Equals(errorIconBounds));
 
             return errorIconBounds;
         }

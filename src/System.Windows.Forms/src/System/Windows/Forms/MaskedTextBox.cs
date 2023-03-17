@@ -2787,13 +2787,9 @@ namespace System.Windows.Forms
         {
             Debug.Assert(!_flagState[IS_NULL_MASK], "This method must be called when a Mask is provided.");
 
-#if DEBUG
-            if (ReadOnly || _maskedTextProvider.IsPassword)
-            {
-                // This should have been already handled by the ReadOnly, PasswordChar and ImeMode properties.
-                Debug.Assert(ImeMode == ImeMode.Disable, "IME enabled when in RO or Pwd mode.");
-            }
-#endif
+            // This should have been already handled by the ReadOnly, PasswordChar and ImeMode properties.
+            Debug.Assert(!(ReadOnly || _maskedTextProvider.IsPassword) || ImeMode == ImeMode.Disable, "IME enabled when in RO or Pwd mode.");
+
             // Non-Korean IMEs complete composition when all characters in the string has been composed (when user hits enter);
             // Currently, we don't support checking the composition string characters because it would require similar logic
             // as the MaskedTextBox itself.

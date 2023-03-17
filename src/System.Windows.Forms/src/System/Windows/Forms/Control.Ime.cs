@@ -1059,18 +1059,15 @@ namespace System.Windows.Forms
         [Conditional("DEBUG")]
         internal static void TraceImeStatus(Control ctl)
         {
-#if DEBUG
             if (ctl.IsHandleCreated)
             {
                 TraceImeStatus(ctl.Handle);
             }
-#endif
         }
 
         [Conditional("DEBUG")]
         private static void TraceImeStatus(IntPtr handle)
         {
-#if DEBUG
             if (CompModSwitches.ImeMode.Level >= TraceLevel.Info)
             {
                 string status = "?";
@@ -1138,7 +1135,6 @@ namespace System.Windows.Forms
 
                 Debug.WriteLine(status);
             }
-#endif
         }
 
         /// <summary>

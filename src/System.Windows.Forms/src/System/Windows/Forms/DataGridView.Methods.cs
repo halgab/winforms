@@ -20455,12 +20455,7 @@ namespace System.Windows.Forms
                 return;
             }
 
-#if DEBUG
-            DataGridViewCell dataGridViewCell = CurrentCellInternal;
-            Debug.Assert(dataGridViewCell is not null);
-            Debug.Assert(dataGridViewCell.ColumnIndex == _ptCurrentCell.X);
-            Debug.Assert(dataGridViewCell.RowIndex == _ptCurrentCell.Y || dataGridViewCell.RowIndex == -1);
-#endif
+            Debug.Assert(CurrentCellInternal is not null && CurrentCellInternal.ColumnIndex == _ptCurrentCell.X && (CurrentCellInternal.RowIndex == _ptCurrentCell.Y || CurrentCellInternal.RowIndex == -1));
 
             Rectangle editingZone = _layout.Data;
             if (editingZone.Width == 0 || editingZone.Height == 0)

@@ -548,7 +548,7 @@ namespace System.Windows.Forms
         private bool AssignActiveControlInternal(Control? value)
         {
 #if DEBUG
-            if (value is null || (value is not null && value.ParentInternal is not null && !value.ParentInternal.IsContainerControl))
+            if (value is null || (value.ParentInternal is not null && !value.ParentInternal.IsContainerControl))
             {
                 Debug.Assert(value is null || (value.ParentInternal is not null && this == value.ParentInternal.GetContainerControl()));
             }

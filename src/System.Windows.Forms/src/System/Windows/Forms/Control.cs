@@ -9539,9 +9539,7 @@ namespace System.Windows.Forms
         /// </summary>
         protected internal virtual bool ProcessMnemonic(char charCode)
         {
-#if DEBUG
             s_controlKeyboardRouting.TraceVerbose($"Control.ProcessMnemonic [0x{((int)charCode):X}]");
-#endif
             return false;
         }
 

@@ -4581,16 +4581,7 @@ namespace System.Windows.Forms.PropertyGridInternal
             CompModSwitches.DebugGridView.TraceVerbose($"\tlabelWidth :{_labelWidth}");
             CompModSwitches.DebugGridView.TraceVerbose($"\tlabelRatio :{_labelRatio}");
             CompModSwitches.DebugGridView.TraceVerbose($"\trowHeight  :{RowHeight}");
-#if DEBUG
-            if (rgipesAll is null)
-            {
-                CompModSwitches.DebugGridView.TraceVerbose("\tIPE Count  :(null)");
-            }
-            else
-            {
-                CompModSwitches.DebugGridView.TraceVerbose($"\tIPE Count  :{rgipesAll.Count}");
-            }
-#endif
+            CompModSwitches.DebugGridView.TraceVerbose(rgipesAll is null ? $"\tIPE Count  :(null)" : $"\tIPE Count  :{rgipesAll.Count}");
         }
 
         private void SetCommitError(ErrorState error)

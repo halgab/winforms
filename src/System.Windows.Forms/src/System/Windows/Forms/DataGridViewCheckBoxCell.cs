@@ -536,23 +536,19 @@ namespace System.Windows.Forms
                 false /*computeErrorIconBounds*/,
                 false /*paint*/);
 
-#if DEBUG
-            object value = GetValue(rowIndex);
-            Rectangle checkBoxBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
                 cellState,
-                GetEditedFormattedValue(value, rowIndex, ref cellStyle, DataGridViewDataErrorContexts.Formatting),
+                GetEditedFormattedValue(GetValue(rowIndex), rowIndex, ref cellStyle, DataGridViewDataErrorContexts.Formatting),
                 GetErrorText(rowIndex),
                 cellStyle,
                 dgvabsEffective,
                 DataGridViewPaintParts.ContentForeground,
                 true  /*computeContentBounds*/,
                 false /*computeErrorIconBounds*/,
-                false /*paint*/);
-            Debug.Assert(checkBoxBoundsDebug.Equals(checkBoxBounds));
-#endif
+                false /*paint*/).Equals(checkBoxBounds));
 
             return checkBoxBounds;
         }

@@ -546,8 +546,7 @@ namespace System.Windows.Forms
                 false /*computeErrorIconBounds*/,
                 false /*paint*/);
 
-#if DEBUG
-            Rectangle linkBoundsDebug = PaintPrivate(graphics,
+            Debug.Assert(PaintPrivate(graphics,
                 cellBounds,
                 cellBounds,
                 rowIndex,
@@ -559,9 +558,7 @@ namespace System.Windows.Forms
                 DataGridViewPaintParts.ContentForeground,
                 true  /*computeContentBounds*/,
                 false /*computeErrorIconBounds*/,
-                false /*paint*/);
-            Debug.Assert(linkBoundsDebug.Equals(linkBounds));
-#endif
+                false /*paint*/).Equals(linkBounds));
 
             return linkBounds;
         }

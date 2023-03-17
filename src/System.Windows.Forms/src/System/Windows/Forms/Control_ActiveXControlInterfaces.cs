@@ -257,18 +257,16 @@ public unsafe partial class Control :
         short sVerb = unchecked((short)iVerb);
         iVerb = sVerb;
 
-#if DEBUG
-        if (CompModSwitches.ActiveX.TraceInfo)
-        {
-            Debug.WriteLine("AxSource:DoVerb {");
-            Debug.WriteLine($"     verb: {iVerb}");
-            Debug.WriteLine($"     msg: {*lpmsg}");
-            Debug.WriteLine($"     activeSite: {*pActiveSite}");
-            Debug.WriteLine($"     index: {lindex}");
-            Debug.WriteLine($"     hwndParent: {hwndParent}");
-            Debug.WriteLine($"     posRect: {(lprcPosRect is null ? "null" : lprcPosRect->ToString())}");
-        }
-#endif
+        Debug.WriteLineIf(CompModSwitches.ActiveX.TraceInfo,
+            $$"""
+                    AxSource:DoVerb {
+                         verb: {{iVerb}}
+                         msg: {{*lpmsg}}
+                         activeSite: {{*pActiveSite}}
+                         index: {{lindex}}
+                         hwndParent: {{hwndParent}}
+                         posRect: {{(lprcPosRect is null ? "null" : lprcPosRect->ToString())}}
+                    """);
 
         Debug.Indent();
         try

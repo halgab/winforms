@@ -392,12 +392,7 @@ namespace System.Windows.Forms
 
         internal void OnUIDeactivate(WebBrowserBase site)
         {
-#if DEBUG
-            if (siteUIActive is not null)
-            {
-                Debug.Assert(siteUIActive == site, "deactivating when not active...");
-            }
-#endif // DEBUG
+            Debug.Assert(siteUIActive is null || siteUIActive == site, "deactivating when not active...");
 
             siteUIActive = null;
             site.RemoveSelectionHandler();
