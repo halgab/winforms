@@ -4,7 +4,6 @@
 
 #nullable disable
 
-using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -20,7 +19,7 @@ namespace System.Windows.Forms.Design.Behavior
     {
         private struct ResizeComponent
         {
-            public object resizeControl;
+            public Control resizeControl;
             public Rectangle resizeBounds;
             public SelectionRules resizeRules;
         }
@@ -207,15 +206,15 @@ namespace System.Windows.Forms.Design.Behavior
             //check to see if the current designer participate with SnapLines cache the control bounds
             for (int i = 0; i < _resizeComponents.Length; i++)
             {
-                _resizeComponents[i].resizeBounds = ((Control)(_resizeComponents[i].resizeControl)).Bounds;
+                _resizeComponents[i].resizeBounds = _resizeComponents[i].resizeControl.Bounds;
                 if (useSnapLines)
                 {
-                    components.Add((Control)_resizeComponents[i].resizeControl);
+                    components.Add(_resizeComponents[i].resizeControl);
                 }
 
                 if (_serviceProvider.GetService(typeof(IDesignerHost)) is IDesignerHost designerHost)
                 {
-                    if (designerHost.GetDesigner(_resizeComponents[i].resizeControl as Component) is ControlDesigner designer)
+                    if (designerHost.GetDesigner(_resizeComponents[i].resizeControl) is ControlDesigner designer)
                     {
                         _resizeComponents[i].resizeRules = designer.SelectionRules;
                     }
@@ -261,7 +260,7 @@ namespace System.Windows.Forms.Design.Behavior
             else if (_resizeComponents.Length > 0)
             {
                 //try to get the parents grid and snap settings
-                if (_resizeComponents[0].resizeControl is Control control && control.Parent is not null)
+                if (_resizeComponents[0].resizeControl is { Parent: not null } control)
                 {
                     PropertyDescriptor snapProp = TypeDescriptor.GetProperties(control.Parent)["SnapToGrid"];
                     if (snapProp is not null && (bool)snapProp.GetValue(control.Parent))
@@ -319,10 +318,10 @@ namespace System.Windows.Forms.Design.Behavior
             _primaryControl = selSvc.PrimarySelection as Control;
 
             // Since we don't know exactly how many valid objects we are going to have we use this temp
-            ArrayList components = new ArrayList();
+            List<Control> components = new List<Control>();
             foreach (object o in selSvc.GetSelectedComponents())
             {
-                if (o is Control)
+                if (o is Control control)
                 {
                     //don't drag locked controls
                     PropertyDescriptor prop = TypeDescriptor.GetProperties(o)["Locked"];
@@ -334,7 +333,7 @@ namespace System.Windows.Forms.Design.Behavior
                         }
                     }
 
-                    components.Add(o);
+                    components.Add(control);
                 }
             }
 
@@ -373,7 +372,7 @@ namespace System.Windows.Forms.Design.Behavior
                         //make sure we get rid of the selection rectangle
                         for (int i = 0; !_captureLost && i < _resizeComponents.Length; i++)
                         {
-                            Control control = _resizeComponents[i].resizeControl as Control;
+                            Control control = _resizeComponents[i].resizeControl;
                             Rectangle borderRect = BehaviorService.ControlRectInAdornerWindow(control);
                             if (!borderRect.IsEmpty)
                             {
@@ -534,7 +533,7 @@ namespace System.Windows.Forms.Design.Behavior
                 }
             }
 
-            Control targetControl = _resizeComponents[0].resizeControl as Control;
+            Control targetControl = _resizeComponents[0].resizeControl;
             _lastMouseLoc = mouseLoc;
             _lastMouseAbs = new Point(mouseLoc.X, mouseLoc.Y);
             PInvoke.ClientToScreen(_behaviorService.AdornerWindowControl, ref _lastMouseAbs);
@@ -605,7 +604,7 @@ namespace System.Windows.Forms.Design.Behavior
             Color backColor = targetControl.Parent is not null ? targetControl.Parent.BackColor : Color.Empty;
             for (int i = 0; i < _resizeComponents.Length; i++)
             {
-                Control control = _resizeComponents[i].resizeControl as Control;
+                Control control = _resizeComponents[i].resizeControl;
                 Rectangle bounds = control.Bounds;
                 Rectangle oldBounds = bounds;
                 // We need to compute the offset based on the original cached Bounds ... ListBox doesnt allow drag on the top boundary if this is not done when it is "IntegralHeight"
@@ -861,24 +860,24 @@ namespace System.Windows.Forms.Design.Behavior
                         PropertyDescriptor propLeft = TypeDescriptor.GetProperties(_resizeComponents[0].resizeControl)["Left"];
                         for (int i = 0; i < _resizeComponents.Length; i++)
                         {
-                            if (propWidth is not null && ((Control)_resizeComponents[i].resizeControl).Width != _resizeComponents[i].resizeBounds.Width)
+                            if (propWidth is not null && _resizeComponents[i].resizeControl.Width != _resizeComponents[i].resizeBounds.Width)
                             {
-                                propWidth.SetValue(_resizeComponents[i].resizeControl, ((Control)_resizeComponents[i].resizeControl).Width);
+                                propWidth.SetValue(_resizeComponents[i].resizeControl, _resizeComponents[i].resizeControl.Width);
                             }
 
-                            if (propHeight is not null && ((Control)_resizeComponents[i].resizeControl).Height != _resizeComponents[i].resizeBounds.Height)
+                            if (propHeight is not null && _resizeComponents[i].resizeControl.Height != _resizeComponents[i].resizeBounds.Height)
                             {
-                                propHeight.SetValue(_resizeComponents[i].resizeControl, ((Control)_resizeComponents[i].resizeControl).Height);
+                                propHeight.SetValue(_resizeComponents[i].resizeControl, _resizeComponents[i].resizeControl.Height);
                             }
 
-                            if (propTop is not null && ((Control)_resizeComponents[i].resizeControl).Top != _resizeComponents[i].resizeBounds.Y)
+                            if (propTop is not null && _resizeComponents[i].resizeControl.Top != _resizeComponents[i].resizeBounds.Y)
                             {
-                                propTop.SetValue(_resizeComponents[i].resizeControl, ((Control)_resizeComponents[i].resizeControl).Top);
+                                propTop.SetValue(_resizeComponents[i].resizeControl, _resizeComponents[i].resizeControl.Top);
                             }
 
-                            if (propLeft is not null && ((Control)_resizeComponents[i].resizeControl).Left != _resizeComponents[i].resizeBounds.X)
+                            if (propLeft is not null && _resizeComponents[i].resizeControl.Left != _resizeComponents[i].resizeBounds.X)
                             {
-                                propLeft.SetValue(_resizeComponents[i].resizeControl, ((Control)_resizeComponents[i].resizeControl).Left);
+                                propLeft.SetValue(_resizeComponents[i].resizeControl, _resizeComponents[i].resizeControl.Left);
                             }
 
                             if (_resizeComponents[i].resizeControl == _primaryControl && _statusCommandUI is not null)
