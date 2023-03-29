@@ -287,16 +287,12 @@ namespace System.Windows.Forms.Design.Behavior
                 bodyAdorner = selMgr.BodyGlyphAdorner;
             }
 
-            ArrayList glyphsToRemove = new ArrayList();
+            List<Glyph> glyphsToRemove = new List<Glyph>();
             foreach (ControlBodyGlyph body in bodyAdorner.Glyphs)
             {
-                Control ctl = body.RelatedComponent as Control;
-                if (ctl is not null)
+                if (body.RelatedComponent is Control { AllowDrop: false })
                 {
-                    if (!ctl.AllowDrop)
-                    {
-                        glyphsToRemove.Add(body);
-                    }
+                    glyphsToRemove.Add(body);
                 }
             }
 
