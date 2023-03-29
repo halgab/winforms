@@ -358,18 +358,18 @@ namespace System.ComponentModel.Design.Serialization
                         }
                     }
 
-                    Hashtable assemblies = new Hashtable(_objects.Count);
+                    HashSet<Assembly> assemblies = new(_objects.Count);
                     foreach (object obj in _objects.Keys)
                     {
                         // Save off the assembly for this object
                         Assembly a = obj.GetType().Assembly;
-                        assemblies[a] = null;
+                        assemblies.Add(a);
                     }
 
                     _assemblies = new AssemblyName[assemblies.Count];
                     int idx = 0;
 
-                    foreach (Assembly a in assemblies.Keys)
+                    foreach (Assembly a in assemblies)
                     {
                         _assemblies[idx++] = a.GetName(true);
                     }
