@@ -22,7 +22,7 @@ namespace System.Windows.Forms
         /// </summary>
         public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         {
-            if (sourceType == typeof(string) && context is not null && context.Instance is ListViewItem)
+            if (sourceType == typeof(string) && context?.Instance is ListViewItem)
             {
                 return true;
             }
@@ -41,7 +41,7 @@ namespace System.Windows.Forms
                 return true;
             }
 
-            if (destinationType == typeof(string) && context is not null && context.Instance is ListViewItem)
+            if (destinationType == typeof(string) && context?.Instance is ListViewItem)
             {
                 return true;
             }
@@ -54,19 +54,16 @@ namespace System.Windows.Forms
         /// </summary>
         public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         {
-            if (value is string)
+            if (value is string s)
             {
-                string text = ((string)value).Trim();
-                if (context is not null && context.Instance is not null)
+                string text = s.Trim();
+                if (context?.Instance is ListViewItem item && item.ListView is not null)
                 {
-                    if (context.Instance is ListViewItem item && item.ListView is not null)
+                    foreach (ListViewGroup group in item.ListView.Groups)
                     {
-                        foreach (ListViewGroup group in item.ListView.Groups)
+                        if (group.Header == text)
                         {
-                            if (group.Header == text)
-                            {
-                                return group;
-                            }
+                            return group;
                         }
                     }
                 }
@@ -91,10 +88,8 @@ namespace System.Windows.Forms
         {
             ArgumentNullException.ThrowIfNull(destinationType);
 
-            if (destinationType == typeof(InstanceDescriptor) && value is ListViewGroup)
+            if (destinationType == typeof(InstanceDescriptor) && value is ListViewGroup group)
             {
-                ListViewGroup group = (ListViewGroup)value;
-
                 // Header
                 ConstructorInfo ctor = typeof(ListViewGroup).GetConstructor(new Type[] { typeof(string), typeof(HorizontalAlignment) })!;
                 Debug.Assert(ctor is not null, "Expected the constructor to exist.");
@@ -116,7 +111,7 @@ namespace System.Windows.Forms
         /// </summary>
         public override StandardValuesCollection? GetStandardValues(ITypeDescriptorContext? context)
         {
-            if (context is not null && context.Instance is ListViewItem item && item.ListView is not null)
+            if (context?.Instance is ListViewItem item && item.ListView is not null)
             {
                 ListViewGroup[] list = new ListViewGroup[item.ListView.Groups.Count + 1];
                 item.ListView.Groups.CopyTo(list, 0);
