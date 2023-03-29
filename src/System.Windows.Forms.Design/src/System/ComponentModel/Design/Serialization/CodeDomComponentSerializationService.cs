@@ -612,11 +612,11 @@ namespace System.ComponentModel.Design.Serialization
             private class ComponentListCodeDomSerializer : CodeDomSerializer
             {
                 internal static ComponentListCodeDomSerializer s_instance = new ComponentListCodeDomSerializer();
-                private Hashtable _statementsTable;
+                private Dictionary<string, object> _statementsTable;
                 private Dictionary<string, List<CodeExpression>> _expressions;
                 private Hashtable _objectState; // only used during deserialization
                 private bool _applyDefaults = true;
-                private readonly Hashtable _nameResolveGuard = new Hashtable();
+                private readonly HashSet<string> _nameResolveGuard = new();
 
                 public override object Deserialize(IDesignerSerializationManager manager, object state)
                 {
@@ -680,20 +680,14 @@ namespace System.ComponentModel.Design.Serialization
 
                     methodMap.Add(completeStatements);
                     methodMap.Combine();
-                    _statementsTable = new Hashtable();
+                    _statementsTable = new Dictionary<string, object>();
 
                     // generate statement table keyed on component name
                     FillStatementTable(manager, _statementsTable, mappedStatements);
 
                     // We need to also ensure that for every entry in the statement table we have a corresponding entry in objectNames.  Otherwise, we won't deserialize completely.
-                    ArrayList completeNames = new ArrayList(objectNames);
-                    foreach (string mappedKey in _statementsTable.Keys)
-                    {
-                        if (!completeNames.Contains(mappedKey))
-                        {
-                            completeNames.Add(mappedKey);
-                        }
-                    }
+                    string[] completeNames = new string[_statementsTable.Count];
+                    _statementsTable.Keys.CopyTo(completeNames, 0);
 
                     _objectState = new Hashtable(objectState.Keys.Count);
                     foreach (DictionaryEntry de in objectState)
@@ -720,12 +714,11 @@ namespace System.ComponentModel.Design.Serialization
                 private void OnResolveName(object sender, ResolveNameEventArgs e)
                 {
                     //note: this recursionguard does not fix the problem, but rather avoids a stack overflow which will bring down VS and cause loss of data.
-                    if (_nameResolveGuard.ContainsKey(e.Name))
+                    if (!_nameResolveGuard.Add(e.Name))
                     {
                         return;
                     }
 
-                    _nameResolveGuard.Add(e.Name, true);
                     try
                     {
                         IDesignerSerializationManager manager = (IDesignerSerializationManager)sender;
@@ -862,7 +855,8 @@ namespace System.ComponentModel.Design.Serialization
                     // If it doesn't contain an OrderedCodeStatementsCollection this means one of two things:
                     // 1. We already resolved this name and shoved an instance in there.  In this case we just return the instance
                     // 2. There are no statements corresponding to this name, but there might be expressions that have never been deserialized, so we check for that and deserialize those.
-                    if (_statementsTable[name] is OrderedCodeStatementCollection statements)
+                    _statementsTable.TryGetValue(name, out object statementObject);
+                    if (statementObject is OrderedCodeStatementCollection statements)
                     {
                         _objectState[name] = null;
                         _statementsTable[name] = null; // prevent recursion
@@ -967,7 +961,7 @@ namespace System.ComponentModel.Design.Serialization
                     }
                     else
                     {
-                        resolved = _statementsTable[name] is not null;
+                        resolved = statementObject is not null;
                         if (!resolved)
                         {
                             // this is condition 2 of the comment at the start of this method.
@@ -1015,7 +1009,7 @@ namespace System.ComponentModel.Design.Serialization
                             }
                         }
 
-                        if (!(resolved || (!resolved && !canInvokeManager)))
+                        if (!resolved && canInvokeManager)
                         {
                             manager.ReportError(new CodeDomSerializerException(string.Format(SR.CodeDomComponentSerializationServiceDeserializationError, name), manager));
                             Debug.Fail($"No statements or instance for name and no lone expressions: {name}");
