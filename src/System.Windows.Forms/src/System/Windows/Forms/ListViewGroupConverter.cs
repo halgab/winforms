@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
@@ -119,13 +118,8 @@ namespace System.Windows.Forms
         {
             if (context is not null && context.Instance is ListViewItem item && item.ListView is not null)
             {
-                var list = new ArrayList();
-                foreach (ListViewGroup group in item.ListView.Groups)
-                {
-                    list.Add(group);
-                }
-
-                list.Add(null);
+                ListViewGroup[] list = new ListViewGroup[item.ListView.Groups.Count + 1];
+                item.ListView.Groups.CopyTo(list, 0);
                 return new StandardValuesCollection(list);
             }
 
