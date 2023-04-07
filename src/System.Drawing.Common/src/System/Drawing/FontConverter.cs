@@ -260,9 +260,9 @@ public class FontConverter : TypeConverter
         string? size = null;
         string? units = null;
 
-        text = text.Trim();
+        ReadOnlySpan<char> textSpan = text.AsSpan().Trim();
 
-        int length = text.Length;
+        int length = textSpan.Length;
         int splitPoint;
 
         if (length > 0)
@@ -271,25 +271,23 @@ public class FontConverter : TypeConverter
             // last comma, unit and decimal value may not appear.  We need to make it ####.##CC
             for (splitPoint = 0; splitPoint < length; splitPoint++)
             {
-                if (char.IsLetter(text[splitPoint]))
+                if (char.IsLetter(textSpan[splitPoint]))
                 {
                     break;
                 }
             }
 
-            char[] trimChars = new char[] { separator, ' ' };
+            ReadOnlySpan<char> trimChars = new char[] { separator, ' ' };
 
-            if (splitPoint > 0)
-            {
-                size = text.Substring(0, splitPoint);
-                // Trimming spaces between size and units.
-                size = size.Trim(trimChars);
+                if (splitPoint > 0)
+                {
+                    // Trimming spaces between size and units.
+                    size = textSpan.Slice(0, splitPoint).Trim(trimChars).ToString();
             }
 
             if (splitPoint < length)
             {
-                units = text.Substring(splitPoint);
-                units = units.TrimEnd(trimChars);
+                units = textSpan.Slice(splitPoint).TrimEnd(trimChars).ToString();
             }
         }
 

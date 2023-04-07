@@ -43,7 +43,7 @@ internal class TableLayoutPanelCellPositionTypeConverter : TypeConverter
             // Parse 2 integer values.
             culture ??= CultureInfo.CurrentCulture;
 
-            string[] tokens = stringValue.Split(new char[] { culture.TextInfo.ListSeparator[0] });
+            string[] tokens = stringValue.Split(culture.TextInfo.ListSeparator[0]);
             int[] values = new int[tokens.Length];
 
             if (values.Length != 2)

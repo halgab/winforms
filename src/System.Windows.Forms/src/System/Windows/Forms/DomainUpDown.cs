@@ -261,7 +261,7 @@ public partial class DomainUpDown : UpDownBase
         return MatchIndex(text, complete, _domainIndex);
     }
 
-    internal int MatchIndex(string text, bool complete, int startPosition)
+    internal int MatchIndex(ReadOnlySpan<char> text, bool complete, int startPosition)
     {
         // Make sure domain values exist
         if (_domainItems is null)
@@ -297,21 +297,17 @@ public partial class DomainUpDown : UpDownBase
         int matchIndex = -1;
         bool found = false;
 
-        if (!complete)
-        {
-            text = text.ToUpper(CultureInfo.InvariantCulture);
-        }
-
-        // Attempt to match the string with Items[index]
-        do
-        {
+            // Attempt to match the string with Items[index]
+            do
+            {
+                ReadOnlySpan<char> itemAsString = Items[index]!.ToString();
             if (complete)
             {
-                found = Items[index]!.ToString()!.Equals(text);
+                found = itemAsString.Equals(text, StringComparison.InvariantCulture);
             }
             else
             {
-                found = Items[index]!.ToString()!.ToUpper(CultureInfo.InvariantCulture).StartsWith(text);
+                found = itemAsString.StartsWith(text, StringComparison.InvariantCultureIgnoreCase);
             }
 
             if (found)
@@ -350,8 +346,8 @@ public partial class DomainUpDown : UpDownBase
     {
         if (ReadOnly)
         {
-            char[] character = new char[] { e.KeyChar };
-            UnicodeCategory uc = char.GetUnicodeCategory(character[0]);
+            char character = e.KeyChar;
+            UnicodeCategory uc = char.GetUnicodeCategory(character);
 
             if (uc == UnicodeCategory.LetterNumber
                 || uc == UnicodeCategory.LowercaseLetter
@@ -362,7 +358,7 @@ public partial class DomainUpDown : UpDownBase
                 || uc == UnicodeCategory.UppercaseLetter)
             {
                 // Attempt to match the character to a domain item
-                int matchIndex = MatchIndex(new string(character), false, _domainIndex + 1);
+                int matchIndex = MatchIndex(new ReadOnlySpan<char>(in character), false, _domainIndex + 1);
                 if (matchIndex != -1)
                 {
                     // Select the matching domain item

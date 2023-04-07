@@ -325,5 +325,35 @@ internal sealed partial class WindowsFormsUtils
         {
             return defaultNameValue;
         }
+
+        /// <summary>
+        ///  Converts the given string to a byte array.
+        /// </summary>
+        public static byte[] FromBase64WrappedString(string text)
+        {
+            int firstBlank = text.AsSpan().IndexOfAny(' ', '\r', '\n');
+            if (firstBlank != -1)
+            {
+                StringBuilder sb = new StringBuilder(text.Length);
+                sb.Append(text.AsSpan(0, firstBlank));
+                foreach (var ch in text.AsSpan(firstBlank))
+                {
+                    switch (ch)
+                    {
+                        case ' ':
+                        case '\r':
+                        case '\n':
+                            break;
+                        default:
+                            sb.Append(ch);
+                            break;
+                    }
+                }
+
+                text = sb.ToString();
+            }
+
+            return Convert.FromBase64String(text);
+        }
     }
 }

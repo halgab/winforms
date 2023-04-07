@@ -10,15 +10,14 @@ using static Windows.Win32.UI.Shell.FILEOPENDIALOGOPTIONS;
 
 namespace System.Windows.Forms;
 
-/// <summary>
-///  Displays a dialog window from which the user can select a file.
-/// </summary>
-[DefaultEvent(nameof(FileOk))]
-[DefaultProperty(nameof(FileName))]
-public abstract partial class FileDialog : CommonDialog
-{
-    private const int FileBufferSize = 8192;
-    private static readonly char[] s_wildcards = new char[] { '*', '?' };
+    /// <summary>
+    ///  Displays a dialog window from which the user can select a file.
+    /// </summary>
+    [DefaultEvent(nameof(FileOk))]
+    [DefaultProperty(nameof(FileName))]
+    public abstract partial class FileDialog : CommonDialog
+    {
+        private const int FileBufferSize = 8192;
 
     protected static readonly object EventFileOk = new(); // Don't rename (public API)
 
@@ -633,7 +632,7 @@ public abstract partial class FileDialog : CommonDialog
                         "File.GetExtension should return something that starts with '.'");
 
                     // We don't want to append the extension if it contains wild cards
-                    string s = extensions[j].IndexOfAny(s_wildcards) == -1
+                    string s = extensions[j].AsSpan().IndexOfAny('*', '?') == -1
                         ? $"{fileName.AsSpan()[..^currentExtension.Length]}.{extensions[j]}"
                         : fileName[..^currentExtension.Length];
 

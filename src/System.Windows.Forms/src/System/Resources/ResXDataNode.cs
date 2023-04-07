@@ -17,8 +17,6 @@ namespace System.Resources;
 
 public sealed class ResXDataNode : ISerializable
 {
-    private static readonly char[] s_specialChars = new char[] { ' ', '\r', '\n' };
-
     private DataNodeInfo? _nodeInfo;
 
     private string? _name;
@@ -359,7 +357,7 @@ public sealed class ResXDataNode : ISerializable
         {
             // Handle byte[]'s, which are stored as base-64 encoded strings. We can't hard-code byte[] type
             // name due to version number updates & potential whitespace issues with ResX files.
-            return FromBase64WrappedString(dataNodeInfo.ValueData);
+            return WindowsFormsUtils.FromBase64WrappedString(dataNodeInfo.ValueData);
         }
 
         TypeConverter converter = TypeDescriptor.GetConverter(type);
@@ -404,7 +402,7 @@ public sealed class ResXDataNode : ISerializable
                 && !string.IsNullOrEmpty(typeName)
                 && TypeDescriptor.GetConverter(ResolveTypeName(typeName)) is { } converter
                 && converter.CanConvertFrom(typeof(byte[]))
-                && FromBase64WrappedString(dataNodeInfo.ValueData) is { } serializedData)
+                && WindowsFormsUtils.FromBase64WrappedString(dataNodeInfo.ValueData) is { } serializedData)
             {
                 return converter.ConvertFrom(serializedData);
             }
@@ -633,31 +631,6 @@ public sealed class ResXDataNode : ISerializable
     ///  Retrieves the object that is stored by this node by searching the specified assemblies.
     /// </summary>
     public object? GetValue(AssemblyName[]? names) => GetValue(new AssemblyNamesTypeResolutionService(names));
-
-    private static byte[] FromBase64WrappedString(string text)
-    {
-        if (text.IndexOfAny(s_specialChars) != -1)
-        {
-            StringBuilder builder = new(text.Length);
-            foreach (char c in text)
-            {
-                switch (c)
-                {
-                    case ' ':
-                    case '\r':
-                    case '\n':
-                        break;
-                    default:
-                        builder.Append(c);
-                        break;
-                }
-            }
-
-            return Convert.FromBase64String(builder.ToString());
-        }
-
-        return Convert.FromBase64String(text);
-    }
 
     private static Type? ResolveType(string typeName, ITypeResolutionService? typeResolver)
     {

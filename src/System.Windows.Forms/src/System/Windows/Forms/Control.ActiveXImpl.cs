@@ -527,35 +527,8 @@ public partial class Control
         }
 
         /// <summary>
-        ///  Converts the given string to a byte array.
+        ///  Implements IViewObject2::GetAdvise.
         /// </summary>
-        private static byte[] FromBase64WrappedString(string text)
-        {
-            if (text.AsSpan().ContainsAny(s_whitespace))
-            {
-                StringBuilder sb = new StringBuilder(text.Length);
-                for (int i = 0; i < text.Length; i++)
-                {
-                    switch (text[i])
-                    {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                            break;
-                        default:
-                            sb.Append(text[i]);
-                            break;
-                    }
-                }
-
-                return Convert.FromBase64String(sb.ToString());
-            }
-            else
-            {
-                return Convert.FromBase64String(text);
-            }
-        }
-
         /// <inheritdoc cref="IViewObject.GetAdvise(uint*, uint*, IAdviseSink**)"/>
         internal unsafe HRESULT GetAdvise(DVASPECT* pAspects, ADVF* pAdvf, IAdviseSink** ppAdvSink)
         {
@@ -1217,7 +1190,7 @@ public partial class Control
                 }
                 else if (converter.CanConvertFrom(typeof(byte[])))
                 {
-                    newValue = converter.ConvertFrom(null, CultureInfo.InvariantCulture, FromBase64WrappedString(value));
+                    newValue = converter.ConvertFrom(null, CultureInfo.InvariantCulture, WindowsFormsUtils.FromBase64WrappedString(value));
                 }
 
                 Debug.WriteLineIf(CompModSwitches.ActiveX.TraceInfo, $"Converter returned {newValue}");
