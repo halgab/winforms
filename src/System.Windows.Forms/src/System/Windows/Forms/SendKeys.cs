@@ -348,11 +348,11 @@ public partial class SendKeys
     /// <summary>
     ///  Given the string, match the keyword to a VK. Return -1 if we don't match anything.
     /// </summary>
-    private static int MatchKeyword(string keyword)
+    private static int MatchKeyword(ReadOnlySpan<char> keyword)
     {
         for (int i = 0; i < s_keywords.Length; i++)
         {
-            if (string.Equals(s_keywords[i].Keyword, keyword, StringComparison.OrdinalIgnoreCase))
+            if (keyword.Equals(s_keywords[i].Keyword, StringComparison.OrdinalIgnoreCase))
             {
                 return s_keywords[i].VK;
             }
@@ -444,7 +444,7 @@ public partial class SendKeys
                     }
 
                     // Have our KEYWORD. Verify it's one we know about.
-                    string keyName = keys.Substring(i + 1, j - (i + 1));
+                    ReadOnlySpan<char> keyName = keys.AsSpan(i + 1, j - (i + 1));
 
                     // See if we have a space, which would mean a repeat count.
                     if (char.IsWhiteSpace(keys[j]))

@@ -1917,7 +1917,7 @@ public partial class RichTextBox : TextBoxBase
             //including the kashida.
             char kashida = (char)0x640;
             string text = Text;
-            string foundString = text.Substring(position, str.Length);
+            ReadOnlySpan<char> foundString = text.AsSpan(position, str.Length);
             int startIndex = foundString.IndexOf(kashida);
             if (startIndex == -1)
             {
@@ -2879,9 +2879,7 @@ public partial class RichTextBox : TextBoxBase
             encodedBytes = (CodePagesEncodingProvider.Instance.GetEncoding(0) ?? Encoding.UTF8).GetBytes(str);
         }
 
-        _editStream = new MemoryStream(encodedBytes.Length);
-        _editStream.Write(encodedBytes, 0, encodedBytes.Length);
-        _editStream.Position = 0;
+        _editStream = new MemoryStream(encodedBytes);
         StreamIn(_editStream, flags);
     }
 

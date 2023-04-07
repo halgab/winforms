@@ -1623,7 +1623,11 @@ internal class ToolStripDesigner : ControlDesigner
                 serviceProvider);
             if (!string.IsNullOrEmpty(nameOfRandomItem) && char.IsUpper(nameOfRandomItem[0]))
             {
-                name = char.ToUpper(name[0], CultureInfo.InvariantCulture) + name.Substring(1);
+                name = string.Create(name.Length, name, static (span, name) =>
+                    {
+                        span[0] = char.ToUpper(name[0], CultureInfo.InvariantCulture);
+                        name.AsSpan(1).CopyTo(span.Slice(1));
+                    });
             }
         }
 

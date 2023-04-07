@@ -20,7 +20,7 @@ public partial class RichTextBoxes : Form
     private void Form1_Load(object sender, EventArgs e)
     {
         richTextBox2.Rtf = @"{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang4105{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
-{\*\generator Riched20 10.0.17134}\viewkind4\uc1 
+{\*\generator Riched20 10.0.17134}\viewkind4\uc1
 {\field{\*\fldinst { HYPERLINK ""http://www.google.com"" }}{\fldrslt {Click here}}}
 \pard\sa200\sl276\slmult1\f0\fs22\lang9  for more information.\par
 This is a \v #data#\v0 custom link with hidden text before the link.\par
@@ -57,20 +57,20 @@ This is a custom link\v #data#\v0  with hidden text after the link.\par
     private string ReportLinkClickedEventArgs(object sender, LinkClickedEventArgs e)
     {
         var control = (RichTextBox)sender;
-        var prefix = control.Text.Remove(e.LinkStart);
-        var content = control.Text.Substring(e.LinkStart, e.LinkLength);
-        var suffix = control.Text.Substring(e.LinkStart + e.LinkLength);
+        var prefix = control.Text.AsSpan(0, e.LinkStart);
+        var content = control.Text.AsSpan(e.LinkStart, e.LinkLength);
+        var suffix = control.Text.AsSpan(e.LinkStart + e.LinkLength);
 
         var index = prefix.LastIndexOf('\n');
         if (index >= 0)
         {
-            prefix = prefix.Substring(index + 1);
+            prefix = prefix.Slice(index + 1);
         }
 
         index = suffix.IndexOf('\n');
         if (index >= 0)
         {
-            suffix = suffix.Remove(index);
+            suffix = suffix.Slice(0, index);
         }
 
         return

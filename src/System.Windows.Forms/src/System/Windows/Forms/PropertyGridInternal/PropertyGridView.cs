@@ -1568,18 +1568,18 @@ internal sealed partial class PropertyGridView :
             int index = GetCurrentValueIndex(gridEntry);
 
             object[] values = gridEntry.GetPropertyValueList();
-            string letter = new(new char[] { keyChar });
+            ReadOnlySpan<char> letter = new ReadOnlySpan<char>(in keyChar);
             for (int i = 0; i < values.Length; i++)
             {
                 object currentValue = values[(i + index + 1) % values.Length];
                 string text = gridEntry.GetPropertyTextValue(currentValue);
-                if (text is not null && text.Length > 0 && string.Equals(text.Substring(0, 1), letter, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    CommitValue(currentValue);
-                    if (EditTextBox.Focused)
+                if (!string.IsNullOrEmpty(text) && text.AsSpan(0, 1).Equals(letter, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        EditTextBox.SelectAll();
-                    }
+                        CommitValue(currentValue);
+                        if (EditTextBox.Focused)
+                        {
+                            EditTextBox.SelectAll();
+                        }
 
                     return true;
                 }

@@ -422,22 +422,23 @@ public partial class ResXResourceReader : IResourceReader
             Type readerType = typeof(ResXResourceReader);
             Type writerType = typeof(ResXResourceWriter);
 
-            string? readerTypeName = _resHeaderReaderType;
-            string? writerTypeName = _resHeaderWriterType;
-            if (readerTypeName is not null && readerTypeName.IndexOf(',') != -1)
+            ReadOnlySpan<char> readerTypeName = _resHeaderReaderType;
+            ReadOnlySpan<char> writerTypeName = _resHeaderWriterType;
+
+                int commaIndex = readerTypeName.IndexOf(',');
+                if (commaIndex != -1)
             {
-                readerTypeName = readerTypeName.Split(',')[0].Trim();
+                readerTypeName = readerTypeName.Slice(0, commaIndex).Trim();
             }
 
-            if (writerTypeName is not null && writerTypeName.IndexOf(',') != -1)
+            commaIndex = writerTypeName.IndexOf(',');
+                if (commaIndex != -1)
             {
-                writerTypeName = writerTypeName.Split(',')[0].Trim();
+                writerTypeName = writerTypeName.Slice(0, commaIndex).Trim();
             }
 
-            if (readerTypeName is not null &&
-                writerTypeName is not null &&
-                readerTypeName.Equals(readerType.FullName) &&
-                writerTypeName.Equals(writerType.FullName))
+            if (readerTypeName.Equals(readerType.FullName, StringComparison.Ordinal) &&
+                writerTypeName.Equals(writerType.FullName, StringComparison.Ordinal))
             {
                 validFile = true;
             }
@@ -622,7 +623,7 @@ public partial class ResXResourceReader : IResourceReader
         return typeName[(indexStart + 2)..];
     }
 
-    private static string GetTypeFromTypeName(string typeName)
+    private static ReadOnlySpan<char> GetTypeFromTypeName(ReadOnlySpan<char> typeName)
     {
         int indexStart = typeName.IndexOf(',');
         return typeName[..indexStart];

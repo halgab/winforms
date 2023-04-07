@@ -656,14 +656,15 @@ internal class UiaTextRange : ITextRangeProvider
             // may provide incorrect start and end point for some broken lines.
             int lineTextLength = lineEndIndex - lineStartIndex + 1;
 
-            // If the line is empty (just contains transition to the next line),
-            // we need to offset the start point on end of line width (equals 2 px)
-            // to show its rectangle in RTL mode. For LTR mode
-            // `GetPositionFromCharForUpperRightCorner` do it for us.
-            // Also, we have to check the line text length, because Windows may provide
-            // incorrect endpoints for RTL TextBox, in this case we will catch an exception.
-            if (lineTextLength > 0
-                && (text.Substring(lineStartIndex, lineTextLength) == Environment.NewLine
+            ReadOnlySpan<char> textSpan = text.AsSpan(lineStartIndex, lineTextLength);
+
+                // If the line is empty (just contains transition to the next line),
+                // we need to offset the start point on end of line width (equals 2 px)
+                // to show its rectangle in RTL mode. For LTR mode
+                // `GetPositionFromCharForUpperRightCorner` do it for us.
+                // Also, we have to check the line text length, because Windows may provide
+                // incorrect endpoints for RTL TextBox, in this case we will catch an exception.
+                if ((textSpan.Equals(Environment.NewLine, StringComparison.Ordinal)
                     // Or if the range takes more space, than owning control rectangle.
                     // One of the case is when there is a RTL line divided by space (not '\n').
                     || lineEndPoint.X > clippingRectangle.Right))
@@ -677,7 +678,7 @@ internal class UiaTextRange : ITextRangeProvider
             // If Windows provided incorrect coordinates for endpoints in RTL mode.
             if (lineEndPoint.X <= lineStartPoint.X && lineTextLength > 0)
             {
-                if (string.IsNullOrWhiteSpace(text.Substring(lineStartIndex, lineTextLength)))
+                if (textSpan.Trim().IsEmpty)
                 {
                     // If the line contains whitespaces only, they are in RTL order,
                     // so just swap start and end points, taken from Windows.

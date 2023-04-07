@@ -634,7 +634,7 @@ public abstract partial class FileDialog : CommonDialog
 
                     // We don't want to append the extension if it contains wild cards
                     string s = extensions[j].IndexOfAny(s_wildcards) == -1
-                        ? $"{fileName[..^currentExtension.Length]}.{extensions[j]}"
+                        ? $"{fileName.AsSpan()[..^currentExtension.Length]}.{extensions[j]}"
                         : fileName[..^currentExtension.Length];
 
                     if (!fileMustExist || FileExists(s))

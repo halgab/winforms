@@ -60,19 +60,21 @@ internal static class DisposalTracking
 
         private static string GetFriendlyTypeName(Type type)
         {
-            string friendlyName = type.Name;
             if (type.IsGenericType)
             {
+                ReadOnlySpan<char> friendlyName = type.Name;
                 int backtick = friendlyName.IndexOf('`');
                 if (backtick != -1)
                 {
-                    friendlyName = friendlyName.Remove(backtick);
+                    friendlyName = friendlyName.Slice(0, backtick);
                 }
 
-                friendlyName += $"<{string.Join(",", type.GetGenericArguments().Select(GetFriendlyTypeName))}>";
+                return $"{friendlyName}<{string.Join(",", type.GetGenericArguments().Select(GetFriendlyTypeName))}>";
             }
-
-            return friendlyName;
+            else
+            {
+                return type.Name;
+            }
         }
     }
 #endif

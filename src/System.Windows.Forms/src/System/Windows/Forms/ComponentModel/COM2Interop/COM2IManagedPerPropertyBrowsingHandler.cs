@@ -85,21 +85,22 @@ internal sealed unsafe class Com2IManagedPerPropertyBrowsingHandler : Com2Extend
                 // Couldn't find the type by name, try to parse it as a fully qualified field name
                 // and look at that field for the type.
 
-                string assemblyName = string.Empty;
+                ReadOnlySpan<char> assemblyName = string.Empty;
+                ReadOnlySpan<char> attributeName = typeName;
 
-                int comma = typeName.LastIndexOf(',');
+                int comma = attributeName.LastIndexOf(',');
 
                 if (comma != -1)
                 {
-                    assemblyName = typeName[comma..];
-                    typeName = typeName[..comma];
+                    assemblyName = attributeName[comma..];
+                    attributeName = attributeName[..comma];
                 }
 
                 string fieldName;
-                int lastDot = typeName.LastIndexOf('.');
+                int lastDot = attributeName.LastIndexOf('.');
                 if (lastDot != -1)
                 {
-                    fieldName = typeName[(lastDot + 1)..];
+                    fieldName = attributeName[(lastDot + 1)..].ToString();
                 }
                 else
                 {
@@ -109,8 +110,8 @@ internal sealed unsafe class Com2IManagedPerPropertyBrowsingHandler : Com2Extend
 
                 // Try to get the field value
                 type = assembly is null
-                    ? Type.GetType(string.Concat(typeName.AsSpan(0, lastDot), assemblyName))
-                    : assembly.GetType(string.Concat(typeName.AsSpan(0, lastDot), assemblyName));
+                    ? Type.GetType(string.Concat(attributeName.Slice(0, lastDot), assemblyName))
+                    : assembly.GetType(string.Concat(attributeName.Slice(0, lastDot), assemblyName));
 
                 if (type is null)
                 {
@@ -124,7 +125,7 @@ internal sealed unsafe class Com2IManagedPerPropertyBrowsingHandler : Com2Extend
                     continue;
                 }
 
-                if (type.GetField(fieldName) is { } field && field.IsStatic)
+                if (type.GetField(fieldName) is { IsStatic: true } field)
                 {
                     if (field.GetValue(null) is Attribute attribute)
                     {

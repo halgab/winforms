@@ -540,7 +540,7 @@ public class ResXResourceWriter : IResourceWriter
         }
     }
 
-    private static string GetTypeName(string typeName)
+    private static ReadOnlySpan<char> GetTypeName(ReadOnlySpan<char> typeName)
     {
         int indexStart = typeName.IndexOf(',');
         return (indexStart == -1) ? typeName : typeName[..indexStart];

@@ -94,13 +94,13 @@ internal class ResXSerializationBinder : SerializationBinder
                 if (pos > 0 && pos < assemblyQualifiedTypeName.Length - 1)
                 {
                     // Set the custom assembly name.
-                    assemblyName = assemblyQualifiedTypeName[(pos + 1)..].TrimStart();
+                    assemblyName = assemblyQualifiedTypeName.AsSpan()[(pos + 1)..].TrimStart().ToString();
 
                     // Customize the type name only if it changed.
-                    string newTypeName = assemblyQualifiedTypeName[..pos];
-                    typeName = string.Equals(newTypeName, serializedType.FullName, StringComparison.Ordinal)
+                    ReadOnlySpan<char> newTypeName = assemblyQualifiedTypeName.AsSpan(0, pos);
+                    typeName = newTypeName.Equals(serializedType.FullName, StringComparison.Ordinal)
                         ? null
-                        : newTypeName;
+                        : newTypeName.ToString();
 
                     return;
                 }

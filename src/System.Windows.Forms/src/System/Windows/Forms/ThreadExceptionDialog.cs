@@ -400,12 +400,6 @@ public class ThreadExceptionDialog : Form
             return s;
         }
 
-        int i = s.Length;
-        while (i > 0 && s[i - 1] == '.')
-        {
-            i--;
-        }
-
-        return s.Substring(0, i);
+            return s.TrimEnd('.');
     }
 }

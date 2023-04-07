@@ -94,7 +94,7 @@ internal class AssemblyNamesTypeResolutionService : ITypeResolutionService
             int pos = name.IndexOf(',');
             if (pos > 0 && pos < name.Length - 1)
             {
-                string fullName = name[(pos + 1)..].Trim();
+                string fullName = name.AsSpan()[(pos + 1)..].Trim().ToString();
                 AssemblyName? assemblyName = null;
                 try
                 {
