@@ -26,17 +26,16 @@ public class OpacityConverter : TypeConverter
         return base.CanConvertFrom(context, sourceType);
     }
 
-    /// <summary>
-    ///  Converts the given object to the converter's native type.
-    /// </summary>
-    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
-    {
-        if (value is string valueString)
+        /// <summary>
+        ///  Converts the given object to the converter's native type.
+        /// </summary>
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         {
-            string text = valueString.Replace('%', ' ').Trim();
-            double val = double.Parse(text, CultureInfo.CurrentCulture);
-            int indexOfPercent = valueString.IndexOf('%');
-            if (indexOfPercent > 0 && (val >= 0.0 && val <= 1.0))
+            if (value is string valueString)
+            {
+                string text = valueString.Replace('%', ' ').Trim();
+                double val = double.Parse(text, CultureInfo.CurrentCulture);
+                if (valueString.Contains('%') && val is >= 0.0 and <= 1.0)
             {
                 val /= 100.0;
                 text = val.ToString(CultureInfo.CurrentCulture);

@@ -1874,7 +1874,7 @@ internal abstract partial class GridEntry : GridItem, ITypeDescriptorContext
 
         ValueToolTipLocation = doToolTip ? new Point(rect.X + 2, rect.Y - 1) : InvalidPoint;
 
-        static bool HasMultipleLines(string value) => value.IndexOf('\n') > 0 || value.IndexOf('\r') > 0;
+        static bool HasMultipleLines(string value) => value.Contains('\n') || value.Contains('\r');
     }
 
     public virtual bool OnComponentChanging()

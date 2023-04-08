@@ -81,28 +81,28 @@ internal class AssemblyNamesTypeResolutionService : ITypeResolutionService
         }
 
         // Missed in cache, try to resolve the type from the reference assemblies.
-        if (name.IndexOf(',') != -1)
+        int pos = name.IndexOf(',');
+            if (pos != -1)
         {
             result = Type.GetType(name, false, ignoreCase);
         }
 
-        if (result is null && _names is not null)
-        {
-            // If the type is assembly qualified name, we sort the assembly names
-            // to put assemblies with same name in the front so that they can
-            // be searched first.
-            int pos = name.IndexOf(',');
-            if (pos > 0 && pos < name.Length - 1)
+            if (result is null && _names is not null)
             {
-                string fullName = name.AsSpan()[(pos + 1)..].Trim().ToString();
-                AssemblyName? assemblyName = null;
-                try
+                // If the type is assembly qualified name, we sort the assembly names
+                // to put assemblies with same name in the front so that they can
+                // be searched first.
+                if (pos > 0 && pos < name.Length - 1)
                 {
-                    assemblyName = new AssemblyName(fullName);
-                }
-                catch
-                {
-                }
+                    string fullName = name.AsSpan()[(pos + 1)..].Trim().ToString();
+                    AssemblyName? assemblyName = null;
+                    try
+                    {
+                        assemblyName = new AssemblyName(fullName);
+                    }
+                    catch
+                    {
+                    }
 
                 if (assemblyName is not null)
                 {

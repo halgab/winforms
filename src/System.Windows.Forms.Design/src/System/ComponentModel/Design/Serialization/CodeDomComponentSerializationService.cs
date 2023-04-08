@@ -792,9 +792,9 @@ public sealed class CodeDomComponentSerializationService : ComponentSerializatio
                 if (name is not null && manager is not null)
                 {
                     bool moreChunks = true;
-                    Debug.Assert(name.IndexOf('.') > 0, "ResolvedNestedName accepts only nested names!");
-                    // We need to resolve the first chunk using the manager. other chunks will be resolved within the nested containers.
                     int firstIndex = name.IndexOf('.', 0);
+                        Debug.Assert(firstIndex > 0, "ResolvedNestedName accepts only nested names!");
+                        // We need to resolve the first chunk using the manager. other chunks will be resolved within the nested containers.
                     outerComponent = name.Substring(0, firstIndex);
                     curComp = manager.GetInstance(outerComponent) as IComponent;
 
@@ -837,7 +837,7 @@ public sealed class CodeDomComponentSerializationService : ComponentSerializatio
                 bool resolved = false;
                 object[] state = (object[])_objectState[name];
                 // Check for a nested name. Components that are sited within NestedContainers need to be looked up in their nested container, and won't be resolvable directly via the manager.
-                if (name.IndexOf('.') > 0)
+                if (name.Contains('.'))
                 {
                     string parentName = null;
                     IComponent nestedComp = ResolveNestedName(manager, name, ref parentName);
