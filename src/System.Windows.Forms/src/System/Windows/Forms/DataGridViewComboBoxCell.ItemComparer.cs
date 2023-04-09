@@ -19,9 +19,9 @@ namespace System.Windows.Forms
 
             public int Compare(object? item1, object? item2)
             {
-                if (IComparerHelpers.CompareReturnIfNull(item1, item2, out int? returnValue))
+                if (IComparerHelpers.CompareReturnIfNull(item1, item2, out int returnValue))
                 {
-                    return (int)returnValue;
+                    return returnValue;
                 }
 
                 string itemName1 = dataGridViewComboBoxCell.GetItemDisplayText(item1);

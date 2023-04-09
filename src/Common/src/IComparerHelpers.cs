@@ -8,11 +8,11 @@ namespace System
 {
     internal static class IComparerHelpers
     {
-        public static bool CompareReturnIfNull<T>([NotNullWhen(false)] T x, [NotNullWhen(false)] T y, [NotNullWhen(true)] out int? compareReturnValue)
+        public static bool CompareReturnIfNull<T>([NotNullWhen(false)] T x, [NotNullWhen(false)] T y, out int compareReturnValue)
         {
             if (x is not null && y is not null)
             {
-                compareReturnValue = null;
+                compareReturnValue = default;
                 return false;
             }
 

@@ -476,9 +476,9 @@ namespace System.Windows.Forms
 
             int IComparer<Entry>.Compare(Entry? entry1, Entry? entry2)
             {
-                if (IComparerHelpers.CompareReturnIfNull(entry1, entry2, out int? returnValue))
+                if (IComparerHelpers.CompareReturnIfNull(entry1, entry2, out int returnValue))
                 {
-                    return (int)returnValue;
+                    return returnValue;
                 }
 
                 string? itemName1 = _owner.GetItemText(entry1.Item);

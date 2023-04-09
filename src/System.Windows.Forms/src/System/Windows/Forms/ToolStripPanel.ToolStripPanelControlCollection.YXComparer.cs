@@ -20,9 +20,9 @@ namespace System.Windows.Forms
                     Control? one = first as Control;
                     Control? two = second as Control;
 
-                    if (IComparerHelpers.CompareReturnIfNull(one, two, out int? returnValue))
+                    if (IComparerHelpers.CompareReturnIfNull(one, two, out int returnValue))
                     {
-                        return (int)returnValue;
+                        return returnValue;
                     }
 
                     if (one.Bounds.Y < two.Bounds.Y)

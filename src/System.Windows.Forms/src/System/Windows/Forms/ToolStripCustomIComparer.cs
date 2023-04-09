@@ -8,9 +8,9 @@ namespace System.Windows.Forms
     {
         public int Compare(ToolStrip? x, ToolStrip? y)
         {
-            if (IComparerHelpers.CompareReturnIfNull(x, y, out int? returnValue))
+            if (IComparerHelpers.CompareReturnIfNull(x, y, out int returnValue))
             {
-                return (int)returnValue;
+                return returnValue;
             }
 
             if (x.GetType() == y.GetType())

@@ -13,9 +13,9 @@ namespace System.Windows.Forms
         {
             public int Compare(ControlTabOrderHolder? x, ControlTabOrderHolder? y)
             {
-                if (IComparerHelpers.CompareReturnIfNull(x, y, out int? returnValue))
+                if (IComparerHelpers.CompareReturnIfNull(x, y, out int returnValue))
                 {
-                    return (int)returnValue;
+                    return returnValue;
                 }
 
                 int delta = x._newOrder - y._newOrder;

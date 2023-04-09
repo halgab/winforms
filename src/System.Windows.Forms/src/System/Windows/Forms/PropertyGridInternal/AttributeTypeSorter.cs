@@ -17,9 +17,9 @@ namespace System.Windows.Forms.PropertyGridInternal
 
         public int Compare(Attribute? x, Attribute? y)
         {
-            if (IComparerHelpers.CompareReturnIfNull(x, y, out int? returnValue))
+            if (IComparerHelpers.CompareReturnIfNull(x, y, out int returnValue))
             {
-                return (int)returnValue;
+                return returnValue;
             }
 
             return string.Compare(GetTypeIdString(x), GetTypeIdString(y), ignoreCase: false, CultureInfo.InvariantCulture);
