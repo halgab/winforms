@@ -880,8 +880,7 @@ public static partial class StronglyTypedResourceBuilder
 
             // Ignore WinForms design time and hierarchy information. Skip resources starting with $ or >>, like
             // "$this.Text", ">>$this.Name" or ">>treeView1.Parent".
-            if ((key.Length > 0 && key[0] == '$') ||
-                (key.Length > 1 && key[0] == '>' && key[1] == '>'))
+            if (key.StartsWith('$') || key.StartsWith(">>", StringComparison.Ordinal))
             {
                 continue;
             }

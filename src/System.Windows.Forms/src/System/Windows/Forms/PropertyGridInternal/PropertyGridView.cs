@@ -633,18 +633,9 @@ internal sealed partial class PropertyGridView :
             return -1;
         }
 
-        // Find the grid entry and return its ID
-
-        for (int index = 0; index < entries.Count; ++index)
-        {
-            if (entries[index].Equals(gridEntry))
-            {
-                return index;
-            }
+            // Find the grid entry and return its ID
+            return entries.IndexOf(gridEntry);
         }
-
-        return -1;
-    }
 
     internal void AccessibilitySelect(GridEntry entry)
     {
@@ -3609,15 +3600,7 @@ internal sealed partial class PropertyGridView :
             _allGridEntries.CopyTo(entries, 0);
 
             // Find the index of the gridEntry that fired the event in our main list.
-            int parentIndex = -1;
-            for (int i = 0; i < entries.Length; i++)
-            {
-                if (entries[i] == parent)
-                {
-                    parentIndex = i;
-                    break;
-                }
-            }
+            int parentIndex = Array.IndexOf(entries, parent);
 
             Debug.Assert(parentIndex != -1, "parent GridEntry not found in allGridEntries");
 

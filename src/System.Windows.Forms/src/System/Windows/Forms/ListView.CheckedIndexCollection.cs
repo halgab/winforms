@@ -169,17 +169,8 @@ public partial class ListView
 
         public int IndexOf(int checkedIndex)
         {
-            int[] indices = IndicesArray;
-            for (int index = 0; index < indices.Length; ++index)
-            {
-                if (indices[index] == checkedIndex)
-                {
-                    return index;
-                }
+            return Array.IndexOf(IndicesArray, checkedIndex);
             }
-
-            return -1;
-        }
 
         int IList.IndexOf(object? checkedIndex)
         {

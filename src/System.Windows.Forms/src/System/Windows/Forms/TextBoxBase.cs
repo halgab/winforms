@@ -594,24 +594,18 @@ public abstract partial class TextBoxBase : Control
     {
         get
         {
-            string text = Text;
+            ReadOnlySpan<char> text = Text;
             List<string> list = new();
 
-            int lineStart = 0;
-            while (lineStart < text.Length)
+                while (!text.IsEmpty)
             {
-                int lineEnd = lineStart;
-                for (; lineEnd < text.Length; lineEnd++)
-                {
-                    char c = text[lineEnd];
-                    if (c == '\r' || c == '\n')
+                int lineEnd = text.IndexOfAny('\r', '\n');
+                    if (lineEnd < 0)
                     {
-                        break;
-                    }
+                    lineEnd = text.Length;
                 }
 
-                string line = text.Substring(lineStart, lineEnd - lineStart);
-                list.Add(line);
+                    list.Add(text.Slice(0, lineEnd).ToString());
 
                 // Treat "\r", "\r\n", and "\n" as new lines
                 if (lineEnd < text.Length && text[lineEnd] == '\r')
@@ -624,11 +618,11 @@ public abstract partial class TextBoxBase : Control
                     lineEnd++;
                 }
 
-                lineStart = lineEnd;
+                text = text.Slice(lineEnd);
             }
 
             // Corner case -- last character in Text is a new line; need to add blank line to list
-            if (text.Length > 0 && (text[text.Length - 1] == '\r' || text[text.Length - 1] == '\n'))
+            if (text.Length > 0 && (text[text.Length - 1] is '\r' or '\n'))
             {
                 list.Add(string.Empty);
             }

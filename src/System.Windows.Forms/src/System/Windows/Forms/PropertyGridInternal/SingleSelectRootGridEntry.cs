@@ -64,7 +64,7 @@ internal class SingleSelectRootGridEntry : GridEntry, IRootGridEntry
                 return;
             }
 
-            bool same = true;
+            bool same;
 
             if (_browsableAttributes is not null && value is not null && _browsableAttributes.Count == value.Count)
             {
@@ -76,14 +76,7 @@ internal class SingleSelectRootGridEntry : GridEntry, IRootGridEntry
 
                 Array.Sort(currentAttributes, AttributeTypeSorter);
                 Array.Sort(newAttributes, AttributeTypeSorter);
-                for (int i = 0; i < currentAttributes.Length; i++)
-                {
-                    if (!currentAttributes[i].Equals(newAttributes[i]))
-                    {
-                        same = false;
-                        break;
-                    }
-                }
+                same = currentAttributes.AsSpan().SequenceEqual(newAttributes);
             }
             else
             {

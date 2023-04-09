@@ -1866,8 +1866,8 @@ internal class CommandSet : IDisposable
 
                                         if (shorterList.Count > 0 && longerList.Count > 0)
                                         {
-                                            int shortIndex = Math.Max(0, shorterList.Count - 1);
-                                            int longIndex = Math.Max(0, longerList.Count - 1);
+                                            int shortIndex = shorterList.Count - 1;
+                                            int longIndex = longerList.Count - 1;
                                             while (shortIndex >= 0 && longIndex >= 0)
                                             {
                                                 if (shorterList[shortIndex] != longerList[longIndex])

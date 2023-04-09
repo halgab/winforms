@@ -1464,15 +1464,8 @@ public partial class LinkLabel : Label, IButtonControl
         int focusIndex = -1;
         if (_focusLink is not null)
         {
-            for (int i = 0; i < _links.Count; i++)
-            {
-                if (_links[i] == _focusLink)
-                {
-                    focusIndex = i;
-                    break;
-                }
+            focusIndex = _links.IndexOf(_focusLink);
             }
-        }
 
         focusIndex = GetNextLinkIndex(focusIndex, forward);
         if (focusIndex != -1)
@@ -1658,14 +1651,7 @@ public partial class LinkLabel : Label, IButtonControl
             return;
         }
 
-        int focusIndex = -1;
-        for (int i = 0; i < _links.Count; i++)
-        {
-            if (_links[i] == focusLink)
-            {
-                focusIndex = i;
-            }
-        }
+        int focusIndex = _links.IndexOf(focusLink);
 
         AccessibilityNotifyClients(AccessibleEvents.Focus, focusIndex);
 

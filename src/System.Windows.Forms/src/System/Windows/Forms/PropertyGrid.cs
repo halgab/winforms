@@ -3041,17 +3041,10 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
             // Check new button and uncheck old button.
             _viewSortButtons[_selectedViewSort].Checked = false;
 
-            // Find the new button in the list.
-            int index;
-            for (index = 0; index < _viewSortButtons.Length; index++)
-            {
-                if (_viewSortButtons[index] == sender)
-                {
-                    break;
-                }
-            }
+                // Find the new button in the list.
+                int index = Array.IndexOf(_viewSortButtons, sender as ToolStripButton);
 
-            _selectedViewSort = index;
+            _selectedViewSort = index >= 0 ? index : _viewSortButtons.Length;
             _viewSortButtons[_selectedViewSort].Checked = true;
 
             switch (_selectedViewSort)

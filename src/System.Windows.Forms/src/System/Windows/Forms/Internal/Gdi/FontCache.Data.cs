@@ -68,7 +68,7 @@ internal sealed partial class FontCache
             string familyName = font.FontFamily.Name;
 
             // Strip vertical-font mark from the name if needed.
-            if (familyName is not null && familyName.Length > 1 && familyName[0] == '@')
+            if (familyName is not null && familyName.StartsWith('@'))
             {
                 familyName = familyName.Substring(1);
             }

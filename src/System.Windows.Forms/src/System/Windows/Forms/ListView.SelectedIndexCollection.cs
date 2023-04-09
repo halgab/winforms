@@ -191,17 +191,8 @@ public partial class ListView
 
         public int IndexOf(int selectedIndex)
         {
-            int[] indices = IndicesArray;
-            for (int index = 0; index < indices.Length; ++index)
-            {
-                if (indices[index] == selectedIndex)
-                {
-                    return index;
-                }
+            return Array.IndexOf(IndicesArray, selectedIndex);
             }
-
-            return -1;
-        }
 
         int IList.IndexOf(object? selectedIndex)
         {

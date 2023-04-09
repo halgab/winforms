@@ -24,10 +24,14 @@ internal sealed class UnicodeCharBuffer
 
     public string GetString()
     {
-        int i = _offset;
-        while (i < _buffer.Length && _buffer[i] != 0)
-        {
-            i++;
+        int i = _buffer.AsSpan(_offset).IndexOf((char)0);
+            if (i < 0)
+            {
+                i = _buffer.Length;
+            }
+            else
+            {
+                i += _offset;
         }
 
         string result = new(_buffer, _offset, i - _offset);

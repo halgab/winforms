@@ -356,17 +356,8 @@ public partial class ListView
                 throw new InvalidOperationException(SR.ListViewCantAccessSelectedItemsCollectionWhenInVirtualMode);
             }
 
-            ListViewItem[] items = SelectedItemArray;
-            for (int index = 0; index < items.Length; ++index)
-            {
-                if (items[index] == item)
-                {
-                    return index;
-                }
+            return Array.IndexOf(SelectedItemArray, item);
             }
-
-            return -1;
-        }
 
         int IList.IndexOf(object? item)
         {

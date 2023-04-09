@@ -227,13 +227,12 @@ internal static unsafe partial class Com2TypeInfoProcessor
     {
         int defaultProperty = -1;
         List<Com2PropertyDescriptor> propList = new();
-        Guid[] typeGuids = new Guid[typeInfos.Length];
 
+        Span<uint> versions = stackalloc uint[2];
         for (int i = 0; i < typeInfos.Length; i++)
         {
             ITypeInfo* typeInfo = typeInfos[i];
 
-            uint[] versions = new uint[2];
             Guid typeGuid = GetGuidForTypeInfo(typeInfo, versions);
             Com2PropertyDescriptor[]? properties = null;
 
@@ -292,7 +291,7 @@ internal static unsafe partial class Com2TypeInfoProcessor
         return new Com2Properties(comObject, propList.ToArray(), defaultProperty);
     }
 
-    private static unsafe Guid GetGuidForTypeInfo(ITypeInfo* typeInfo, uint[]? versions)
+    private static unsafe Guid GetGuidForTypeInfo(ITypeInfo* typeInfo, Span<uint> versions)
     {
         TYPEATTR* pTypeAttr = null;
         HRESULT hr = typeInfo->GetTypeAttr(&pTypeAttr);
@@ -303,7 +302,7 @@ internal static unsafe partial class Com2TypeInfoProcessor
 
         try
         {
-            if (versions is not null)
+            if (versions != default)
             {
                 versions[0] = pTypeAttr->wMajorVerNum;
                 versions[1] = pTypeAttr->wMinorVerNum;

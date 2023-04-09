@@ -115,15 +115,8 @@ public sealed class ImageListStreamer : ISerializable, IDisposable
 #if DEBUG
         byte[] debugCompare = Decompress(output);
         Debug.Assert(debugCompare.Length == input.Length, "RLE Compression in ImageListStreamer is broken.");
-        int debugMaxCompare = input.Length;
-        for (int debugIdx = 0; debugIdx < debugMaxCompare; debugIdx++)
-        {
-            if (debugCompare[debugIdx] != input[debugIdx])
-            {
-                Debug.Fail($"RLE Compression failure in ImageListStreamer at byte offset {debugIdx}");
-                break;
-            }
-        }
+        int debugIdx = input.AsSpan().CommonPrefixLength(debugCompare);
+            Debug.Assert(debugIdx == input.Length, $"RLE Compression failure in ImageListStreamer at byte offset {debugIdx}");
 #endif
 
         return output;

@@ -3533,16 +3533,8 @@ public partial class ListView : Control
             return -1;
         }
 
-        for (int i = 0; i < _columnHeaders.Length; i++)
-        {
-            if (_columnHeaders[i] == ch)
-            {
-                return i;
-            }
+        return Array.IndexOf(_columnHeaders, ch);
         }
-
-        return -1;
-    }
 
     /// <summary>
     ///  Returns the current ListViewItem corresponding to the specific

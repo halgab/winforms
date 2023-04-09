@@ -210,17 +210,8 @@ public partial class ListView
                 throw new InvalidOperationException(SR.ListViewCantAccessCheckedItemsCollectionWhenInVirtualMode);
             }
 
-            ListViewItem[] items = ItemArray;
-            for (int index = 0; index < items.Length; ++index)
-            {
-                if (items[index] == item)
-                {
-                    return index;
-                }
+            return Array.IndexOf(ItemArray, item);
             }
-
-            return -1;
-        }
 
         /// <summary>
         ///  The zero-based index of the first occurrence of value within the entire CollectionBase, if found; otherwise, -1.

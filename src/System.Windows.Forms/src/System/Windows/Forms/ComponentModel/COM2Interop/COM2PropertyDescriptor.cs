@@ -124,15 +124,11 @@ internal unsafe partial class Com2PropertyDescriptor : PropertyDescriptor, IClon
         // Check if this is hidden from metadata.
         CanShow = true;
 
-        if (attributes is not null)
+        if (attributes is not null && !hrHidden)
         {
-            for (int i = 0; i < attributes.Length; i++)
+            if (Array.IndexOf(attributes, BrowsableAttribute.No) >= 0)
             {
-                if (attributes[i].Equals(BrowsableAttribute.No) && !hrHidden)
-                {
-                    CanShow = false;
-                    break;
-                }
+                CanShow = false;
             }
         }
 

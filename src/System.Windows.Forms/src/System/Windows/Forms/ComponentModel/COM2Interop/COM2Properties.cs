@@ -258,26 +258,11 @@ internal sealed class Com2Properties
 
         bool valid = _weakObjectReference.TryGetTarget(out object? target);
 
-        // Check the version information for each ITypeInfo the object exposes.
-        if (target is not null && checkVersions)
-        {
-            (ushort, ushort, ushort, ushort)[] newTypeInfoVersions = GetTypeInfoVersions(target);
-            if (newTypeInfoVersions.Length != _typeInfoVersions.Length)
+            // Check the version information for each ITypeInfo the object exposes.
+            if (target is not null && checkVersions)
             {
-                valid = false;
-            }
-            else
-            {
-                // Compare each version number to the old one.
-                for (int i = 0; i < newTypeInfoVersions.Length; i++)
-                {
-                    if (newTypeInfoVersions[i] != _typeInfoVersions[i])
-                    {
-                        valid = false;
-                        break;
-                    }
-                }
-            }
+                (ushort, ushort, ushort, ushort)[] newTypeInfoVersions = GetTypeInfoVersions(target);
+                valid = newTypeInfoVersions.AsSpan().SequenceEqual(_typeInfoVersions);
 
             if (!valid)
             {

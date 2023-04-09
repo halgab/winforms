@@ -321,16 +321,7 @@ public class DataGridViewCellCollection : BaseCollection, IList
             throw new InvalidOperationException(SR.DataGridViewCellCollection_OwningRowAlreadyBelongsToDataGridView);
         }
 
-        int cellIndex = -1;
-        int itemsCount = _items.Count;
-        for (int i = 0; i < itemsCount; ++i)
-        {
-            if (_items[i] == cell)
-            {
-                cellIndex = i;
-                break;
-            }
-        }
+        int cellIndex = _items.IndexOf(cell);
 
         if (cellIndex == -1)
         {
