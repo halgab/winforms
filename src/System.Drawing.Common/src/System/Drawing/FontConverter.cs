@@ -164,13 +164,12 @@ public class FontConverter : TypeConverter
 
         culture ??= CultureInfo.CurrentCulture;
 
-        char separator = culture.TextInfo.ListSeparator[0]; // For vi-VN: ','
-        string fontName = font; // start with the assumption that only the font name was provided.
-        string? style = null;
-        string? sizeStr;
-        float fontSize = 8.25f;
-        FontStyle fontStyle = FontStyle.Regular;
-        GraphicsUnit units = GraphicsUnit.Point;
+            char separator = culture.TextInfo.ListSeparator[0]; // For vi-VN: ','
+            string fontName = font; // start with the assumption that only the font name was provided.
+            string? style = null;
+            float fontSize = 8.25f;
+            FontStyle fontStyle = FontStyle.Regular;
+            GraphicsUnit units = GraphicsUnit.Point;
 
         // Get the index of the first separator (would indicate the end of the name in the string).
         int nameIndex = font.IndexOf(separator);
@@ -189,18 +188,19 @@ public class FontConverter : TypeConverter
             // depending on the culture, we'll parse it last.
             int styleIndex = culture.CompareInfo.IndexOf(font, StylePrefix, CompareOptions.IgnoreCase);
 
-            if (styleIndex != -1)
-            {
-                // style found.
-                style = font.Substring(styleIndex);
+            ReadOnlySpan<char> sizeStr;
+                if (styleIndex != -1)
+                {
+                    // style found.
+                    style = font.Substring(styleIndex);
 
                 // Get the mid-substring containing the size information.
-                sizeStr = font.Substring(nameIndex + 1, styleIndex - nameIndex - 1);
+                sizeStr = font.AsSpan(nameIndex + 1, styleIndex - nameIndex - 1);
             }
             else
             {
                 // no style.
-                sizeStr = font.Substring(nameIndex + 1);
+                sizeStr = font.AsSpan(nameIndex + 1);
             }
 
             // Parse size.
