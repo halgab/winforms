@@ -229,12 +229,11 @@ public class FontConverter : TypeConverter
             {
                 // Parse FontStyle
                 style = style.Substring(6); // style string always starts with style=
-                string[] styleTokens = style.Split(separator);
+                string[] styleTokens = style.Split(separator, StringSplitOptions.TrimEntries);
 
-                for (int tokenCount = 0; tokenCount < styleTokens.Length; tokenCount++)
-                {
-                    string styleText = styleTokens[tokenCount];
-                    styleText = styleText.Trim();
+                    for (int tokenCount = 0; tokenCount < styleTokens.Length; tokenCount++)
+                    {
+                        string styleText = styleTokens[tokenCount];
 
                     fontStyle |= Enum.Parse<FontStyle>(styleText, true);
 
@@ -255,39 +254,39 @@ public class FontConverter : TypeConverter
         static TypeConverter GetFloatConverter() => TypeDescriptor.GetConverter(typeof(float));
     }
 
-    private static (string?, string?) ParseSizeTokens(string text, char separator)
+    private static (string?, string?) ParseSizeTokens(ReadOnlySpan<char> text, char separator)
     {
         string? size = null;
         string? units = null;
 
-        ReadOnlySpan<char> textSpan = text.AsSpan().Trim();
+            text = text.Trim();
 
-        int length = textSpan.Length;
-        int splitPoint;
+        int length = text.Length;
 
-        if (length > 0)
+        if (!text.IsEmpty)
         {
             // text is expected to have a format like " 8,25pt, ". Leading and trailing spaces (trimmed above),
             // last comma, unit and decimal value may not appear.  We need to make it ####.##CC
+                int splitPoint;
             for (splitPoint = 0; splitPoint < length; splitPoint++)
             {
-                if (char.IsLetter(textSpan[splitPoint]))
+                if (char.IsLetter(text[splitPoint]))
                 {
                     break;
                 }
             }
 
-            ReadOnlySpan<char> trimChars = new char[] { separator, ' ' };
+            ReadOnlySpan<char> trimChars = stackalloc char[] { separator, ' ' };
 
                 if (splitPoint > 0)
                 {
                     // Trimming spaces between size and units.
-                    size = textSpan.Slice(0, splitPoint).Trim(trimChars).ToString();
+                    size = text.Slice(0, splitPoint).Trim(trimChars).ToString();
             }
 
             if (splitPoint < length)
             {
-                units = textSpan.Slice(splitPoint).TrimEnd(trimChars).ToString();
+                units = text.Slice(splitPoint).TrimEnd(trimChars).ToString();
             }
         }
 

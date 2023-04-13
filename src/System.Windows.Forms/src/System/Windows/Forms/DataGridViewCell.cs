@@ -2545,7 +2545,7 @@ public abstract partial class DataGridViewCell : DataGridViewElement, ICloneable
     {
         if (WindowsFormsUtils.ContainsMnemonic(toolTipText))
         {
-            toolTipText = string.Join("", toolTipText.Split('&'));
+            toolTipText = string.Concat(toolTipText.Split('&'));
         }
 
         return toolTipText;

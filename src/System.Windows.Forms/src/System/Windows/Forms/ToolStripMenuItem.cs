@@ -144,7 +144,7 @@ public partial class ToolStripMenuItem : ToolStripDropDownItem
         if (text is not null)
         {
             // separate out the two fields.
-            string[] textFields = text.Split('\t');
+            string[] textFields = text.Split('\t', 3);
 
             if (textFields.Length >= 1)
             {

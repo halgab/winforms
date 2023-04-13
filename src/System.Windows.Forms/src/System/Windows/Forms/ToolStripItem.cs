@@ -2005,7 +2005,7 @@ public abstract partial class ToolStripItem : BindableComponent,
                 if (WindowsFormsUtils.ContainsMnemonic(toolText))
                 {
                     // this shouldn't be called a lot so we can take the perf hit here.
-                    toolText = string.Join(string.Empty, toolText.Split('&'));
+                    toolText = string.Concat(toolText.Split('&'));
                 }
 
                 return toolText;

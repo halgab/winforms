@@ -174,7 +174,7 @@ public class KeysConverter : TypeConverter, IComparer
                 {
                     // Key was not found in our dictionary.  See if it is a valid value in
                     // the Keys enum.
-                    currentKey = (Keys)Enum.Parse(typeof(Keys), token);
+                    currentKey = Enum.Parse<Keys>(token);
                 }
 
                 if ((currentKey & Keys.KeyCode) != 0)
