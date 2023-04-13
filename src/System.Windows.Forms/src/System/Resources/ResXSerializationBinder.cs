@@ -50,16 +50,16 @@ internal class ResXSerializationBinder : SerializationBinder
             return type;
         }
 
-        string[] typeParts = typeName.Split(',');
+        string[] typeParts = typeName.Split(',', StringSplitOptions.TrimEntries);
 
-        if (typeParts is not null && typeParts.Length > 2)
+        if (typeParts.Length > 2)
         {
-            string partialName = typeParts[0].Trim();
+            string partialName = typeParts[0];
 
             // Strip out the version.
             for (int i = 1; i < typeParts.Length; ++i)
             {
-                string typePart = typeParts[i].Trim();
+                string typePart = typeParts[i];
                 if (!typePart.StartsWith("Version=", StringComparison.Ordinal)
                     && !typePart.StartsWith("version=", StringComparison.Ordinal))
                 {
@@ -71,7 +71,7 @@ internal class ResXSerializationBinder : SerializationBinder
             type = _typeResolver.GetType(partialName);
 
             // If that didn't work, try the simple name.
-            type ??= _typeResolver.GetType(typeParts[0].Trim());
+            type ??= _typeResolver.GetType(typeParts[0]);
         }
 
         // Hand back what we found or null to let the default loader take over.
@@ -94,7 +94,7 @@ internal class ResXSerializationBinder : SerializationBinder
                 if (pos > 0 && pos < assemblyQualifiedTypeName.Length - 1)
                 {
                     // Set the custom assembly name.
-                    assemblyName = assemblyQualifiedTypeName.AsSpan()[(pos + 1)..].TrimStart().ToString();
+                    assemblyName = assemblyQualifiedTypeName.AsSpan(pos + 1).TrimStart().ToString();
 
                     // Customize the type name only if it changed.
                     ReadOnlySpan<char> newTypeName = assemblyQualifiedTypeName.AsSpan(0, pos);

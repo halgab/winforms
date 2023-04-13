@@ -45,10 +45,10 @@ public partial class ResXFileRef
 
             string[]? result = null;
 
-            stringValue = stringValue.Trim();
+            ReadOnlySpan<char> text = stringValue.AsSpan().Trim();
             string fileName;
-            string remainingString;
-            if (stringValue.StartsWith('"'))
+            ReadOnlySpan<char> remainingString;
+            if (text[0] == '"')
             {
                 int lastIndexOfQuote = stringValue.LastIndexOf('"');
                 if (lastIndexOfQuote - 1 < 0)
@@ -57,35 +57,38 @@ public partial class ResXFileRef
                 }
 
                 // Remove the quotes in " ..... "
-                fileName = stringValue[1..lastIndexOfQuote];
+                fileName = text[1..lastIndexOfQuote].ToString();
                 if (lastIndexOfQuote + 2 > stringValue.Length)
                 {
                     throw new ArgumentException(nameof(stringValue));
                 }
 
-                remainingString = stringValue[(lastIndexOfQuote + 2)..];
+                remainingString = text[(lastIndexOfQuote + 2)..];
             }
             else
             {
-                int nextSemiColumn = stringValue.IndexOf(';');
+                int nextSemiColumn = text.IndexOf(';');
                 if (nextSemiColumn == -1)
                 {
                     throw new ArgumentException(nameof(stringValue));
                 }
 
-                fileName = stringValue[..nextSemiColumn];
-                if (nextSemiColumn + 1 > stringValue.Length)
+                fileName = text[..nextSemiColumn].ToString();
+                if (nextSemiColumn + 1 > text.Length)
                 {
                     throw new ArgumentException(nameof(stringValue));
                 }
 
-                remainingString = stringValue[(nextSemiColumn + 1)..];
+                remainingString = text[(nextSemiColumn + 1)..];
             }
 
-            string[] parts = remainingString.Split(';');
-            result = parts.Length > 1
-                ? (new string[] { fileName, parts[0], parts[1] })
-                : parts.Length > 0 ? (new string[] { fileName, parts[0] }) : (new string[] { fileName });
+            Span<Range> parts = stackalloc Range[3];
+                int partsCount = remainingString.Split(parts, ';');
+                result = partsCount > 1
+                ? (new string[] { fileName, remainingString[parts[0]].ToString(), remainingString[parts[1]].ToString() })
+                : partsCount > 0
+                        ? (new string[] { fileName, remainingString[parts[0]].ToString() })
+                        : (new string[] { fileName });
 
             return result;
         }

@@ -644,17 +644,19 @@ public sealed class ResXDataNode : ISerializable
             resolvedType = typeResolver.GetType(typeName, false);
             if (resolvedType is null)
             {
-                string[] typeParts = typeName.Split(',', 3, StringSplitOptions.TrimEntries);
+                Span<Range> typeParts = stackalloc Range[3];
+                    ReadOnlySpan<char> typeNameAsSpan = typeName.AsSpan();
+                    int typePartsCount = typeNameAsSpan.Split(typeParts, ',', StringSplitOptions.TrimEntries);
 
                 // Break up the type name from the rest of the assembly strong name.
-                if (typeParts is not null && typeParts.Length >= 2)
+                if (typePartsCount >= 2)
                 {
-                    resolvedType = typeResolver.GetType($"{typeParts[0]}, {typeParts[1]}", false);
+                    resolvedType = typeResolver.GetType($"{typeNameAsSpan[typeParts[0]]}, {typeNameAsSpan[typeParts[1]]}", false);
                 }
             }
         }
 
-        return resolvedType ??= Type.GetType(typeName, throwOnError: false);
+        return resolvedType ?? Type.GetType(typeName, throwOnError: false);
     }
 
     void ISerializable.GetObjectData(SerializationInfo si, StreamingContext context)
