@@ -47,9 +47,9 @@ public class MarginsConverter : ExpandableObjectConverter
     {
         if (value is string strValue)
         {
-            string text = strValue.Trim();
+            ReadOnlySpan<char> text = strValue.AsSpan().Trim();
 
-            if (text.Length == 0)
+            if (text.IsEmpty)
             {
                 return null;
             }
@@ -57,18 +57,18 @@ public class MarginsConverter : ExpandableObjectConverter
             {
                 // Parse 4 integer values.
                 culture ??= CultureInfo.CurrentCulture;
-                char sep = culture.TextInfo.ListSeparator[0];
-                string[] tokens = text.Split(sep);
-                int[] values = new int[tokens.Length];
+                Span<int> values = stackalloc int[4];
+                Span<Range> tokens = stackalloc Range[values.Length + 1];
+                    int tokensCount = text.Split(tokens, culture.TextInfo.ListSeparator[0]);
+                if (tokensCount != values.Length)
+                    {
+                        throw new ArgumentException(SR.Format(SR.TextParseFailedFormat, strValue, "left, right, top, bottom"));
+                    }
                 TypeConverter intConverter = GetIntConverter();
                 for (int i = 0; i < values.Length; i++)
                 {
                     // Note: ConvertFromString will raise exception if value cannot be converted.
-                    values[i] = (int)intConverter.ConvertFromString(context, culture, tokens[i])!;
-                }
-                if (values.Length != 4)
-                {
-                    throw new ArgumentException(SR.Format(SR.TextParseFailedFormat, text, "left, right, top, bottom"));
+                    values[i] = (int)intConverter.ConvertFromString(context, culture, text[tokens[i]].ToString())!;
                 }
                 return new Margins(values[0], values[1], values[2], values[3]);
             }
