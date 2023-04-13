@@ -34,8 +34,8 @@ internal class TableLayoutPanelCellPositionTypeConverter : TypeConverter
     {
         if (value is string stringValue)
         {
-            stringValue = stringValue.Trim();
-            if (stringValue.Length == 0)
+            ReadOnlySpan<char> text = stringValue.AsSpan().Trim();
+            if (text.IsEmpty)
             {
                 return null;
             }
@@ -43,10 +43,9 @@ internal class TableLayoutPanelCellPositionTypeConverter : TypeConverter
             // Parse 2 integer values.
             culture ??= CultureInfo.CurrentCulture;
 
-            string[] tokens = stringValue.Split(culture.TextInfo.ListSeparator[0]);
-            int[] values = new int[tokens.Length];
+            Span<int> values = stackalloc int[2];
 
-            if (values.Length != 2)
+            if (!TypeConverterHelper.TryParseAsSpan(context, culture, text, values))
             {
                 throw new ArgumentException(
                     string.Format(
@@ -56,15 +55,8 @@ internal class TableLayoutPanelCellPositionTypeConverter : TypeConverter
                     nameof(value));
             }
 
-            TypeConverter intConverter = TypeDescriptor.GetConverter(typeof(int));
-            for (int i = 0; i < values.Length; i++)
-            {
-                // Note: ConvertFromString will raise exception if value cannot be converted.
-                values[i] = (int)intConverter.ConvertFromString(context, culture, tokens[i])!;
+                return new TableLayoutPanelCellPosition(values[0], values[1]);
             }
-
-            return new TableLayoutPanelCellPosition(values[0], values[1]);
-        }
 
         return base.ConvertFrom(context, culture, value);
     }
