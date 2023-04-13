@@ -33,8 +33,8 @@ public class OpacityConverter : TypeConverter
         {
             if (value is string valueString)
             {
-                string text = valueString.Replace('%', ' ').Trim();
-                double val = double.Parse(text, CultureInfo.CurrentCulture);
+                string text = valueString.Replace('%', ' ');
+                double val = double.Parse(text.AsSpan().Trim(), CultureInfo.CurrentCulture);
                 if (valueString.Contains('%') && val is >= 0.0 and <= 1.0)
             {
                 val /= 100.0;
@@ -64,7 +64,7 @@ public class OpacityConverter : TypeConverter
             }
 
             // Now check to see if it is within our bounds.
-            if (percent < 0.0 || percent > 1.0)
+            if (percent is < 0.0 or > 1.0)
             {
                 throw new FormatException(
                     string.Format(SR.InvalidBoundArgument,
