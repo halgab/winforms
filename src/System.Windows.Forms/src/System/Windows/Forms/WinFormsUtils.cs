@@ -332,24 +332,21 @@ internal sealed partial class WindowsFormsUtils
         /// </summary>
         public static byte[] FromBase64WrappedString(string text)
         {
-            int firstBlank = text.AsSpan().IndexOfAny(' ', '\r', '\n');
-            if (firstBlank != -1)
+            ReadOnlySpan<char> toTrim = stackalloc char[] { ' ', '\r', '\n' };
+            ReadOnlySpan<char> current = text.AsSpan().Trim(toTrim);
+            int index = current.IndexOfAny(toTrim);
+            if (index != -1)
             {
                 StringBuilder sb = new StringBuilder(text.Length);
-                sb.Append(text.AsSpan(0, firstBlank));
-                foreach (var ch in text.AsSpan(firstBlank))
+                do
                 {
-                    switch (ch)
-                    {
-                        case ' ':
-                        case '\r':
-                        case '\n':
-                            break;
-                        default:
-                            sb.Append(ch);
-                            break;
-                    }
+                    sb.Append(current.Slice(0, index));
+                    current = current.Slice(index + 1).TrimStart(toTrim);
+                    index = current.IndexOfAny(toTrim);
                 }
+                while (index < 0);
+
+                sb.Append(current);
 
                 text = sb.ToString();
             }

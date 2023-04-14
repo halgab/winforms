@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Design;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace System.Resources;
 
@@ -54,7 +55,7 @@ internal class ResXSerializationBinder : SerializationBinder
 
         if (typeParts.Length > 2)
         {
-            string partialName = typeParts[0];
+            StringBuilder partialName = null;
 
             // Strip out the version.
             for (int i = 1; i < typeParts.Length; ++i)
@@ -63,14 +64,15 @@ internal class ResXSerializationBinder : SerializationBinder
                 if (!typePart.StartsWith("Version=", StringComparison.Ordinal)
                     && !typePart.StartsWith("version=", StringComparison.Ordinal))
                 {
-                    partialName = $"{partialName}, {typePart}";
+                    (partialName ??= new StringBuilder(typeParts[0])).Append($", {typePart}");
                 }
             }
 
-            // Try the name without the version.
-            type = _typeResolver.GetType(partialName);
+            if (partialName is not null)
+            {
+                type = _typeResolver.GetType(partialName.ToString());
+            }
 
-            // If that didn't work, try the simple name.
             type ??= _typeResolver.GetType(typeParts[0]);
         }
 

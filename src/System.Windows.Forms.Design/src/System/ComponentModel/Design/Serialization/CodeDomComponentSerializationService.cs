@@ -837,7 +837,7 @@ public sealed class CodeDomComponentSerializationService : ComponentSerializatio
                 bool resolved = false;
                 object[] state = (object[])_objectState[name];
                 // Check for a nested name. Components that are sited within NestedContainers need to be looked up in their nested container, and won't be resolvable directly via the manager.
-                if (name.Contains('.'))
+                if (name.IndexOf('.') > 0)
                 {
                     string parentName = null;
                     IComponent nestedComp = ResolveNestedName(manager, name, ref parentName);

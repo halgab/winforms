@@ -999,7 +999,7 @@ public class BindingSource : Component,
             }
 
             // Handle brackets
-            if (currentSpan[0] == '[')
+            if (!currentSpan.IsEmpty && currentSpan[0] == '[')
             {
                 currentSpan = currentSpan[^1] == ']'
                     ? currentSpan[1..^1]
