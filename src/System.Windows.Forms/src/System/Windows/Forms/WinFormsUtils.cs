@@ -193,42 +193,41 @@ internal sealed partial class WindowsFormsUtils
 #endif
     }
 
-    /// <summary>
-    ///  Retrieves the mnemonic from a given string, or zero if no mnemonic.
-    ///  As used by the Control.Mnemonic to get mnemonic from Control.Text.
-    /// </summary>
-    public static char GetMnemonic(string? text, bool convertToUpperCase)
-    {
-        char mnemonic = '\0';
-        if (text is not null)
+        /// <summary>
+        ///  Retrieves the mnemonic from a given string, or zero if no mnemonic.
+        ///  As used by the Control.Mnemonic to get mnemonic from Control.Text.
+        /// </summary>
+        public static char GetMnemonic(string? text, bool convertToUpperCase)
         {
-            int len = text.Length;
-            for (int i = 0; i < len - 1; i++)
-            {
-                if (text[i] == '&')
+            if (!string.IsNullOrEmpty(text))
+        {
+            int index = 0;
+
+                do
                 {
-                    if (text[i + 1] == '&')
+                    index = text.IndexOf('&', index) + 1;
+
+                if (index == 0 || index >= text.Length)
                     {
-                        // we have an escaped &, so we need to skip it.
-                        i++;
-                        continue;
+                        break;
                     }
 
-                    if (convertToUpperCase)
+                    if (text[index] == '&')
                     {
-                        mnemonic = char.ToUpper(text[i + 1], CultureInfo.CurrentCulture);
+                        // we have an escaped &, so we need to skip it.
+                        index += 1;
                     }
                     else
                     {
-                        mnemonic = char.ToLower(text[i + 1], CultureInfo.CurrentCulture);
+                    return convertToUpperCase
+                            ? char.ToUpper(text[index], CultureInfo.CurrentCulture)
+                            : char.ToLower(text[index], CultureInfo.CurrentCulture);
                     }
-
-                    break;
                 }
-            }
+                while (index < text.Length);
         }
 
-        return mnemonic;
+        return '\0';
     }
 
     /// <summary>

@@ -1422,21 +1422,18 @@ public abstract partial class DataGridViewCell : DataGridViewElement, ICloneable
                     output.Write("<br>");
                     break;
                 //
-                default:
-                    // The seemingly arbitrary 160 comes from RFC
-                    // Code taken from ASP.NET file xsp\System\Web\httpserverutility.cs
-                    // Don't entity encode high chars (160 to 256)
-                    if (ch >= 160 && ch < 256)
-                    {
+                case >= (char)160 and < (char)256:
+                        // The seemingly arbitrary 160 comes from RFC
+                        // Code taken from ASP.NET file xsp\System\Web\httpserverutility.cs
+                        // Don't entity encode high chars (160 to 256)
                         output.Write("&#");
                         output.Write(((int)ch).ToString(NumberFormatInfo.InvariantInfo));
                         output.Write(';');
                         break;
-                    }
-
-                    output.Write(ch);
-                    break;
-            }
+                    default:
+                        output.Write(ch);
+                        break;
+                }
 
             prevCh = ch;
         }

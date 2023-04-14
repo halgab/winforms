@@ -233,26 +233,37 @@ namespace System.Windows.Forms;
                 extensions.Add(_defaultExtension);
             }
 
-            if (filter is not null)
+                if (filter is not null && FilterIndex > 0)
             {
-                string[] tokens = filter.Split('|');
+                Range[] tokens = new Range[FilterIndex * 2];
+                    int tokensCount = filter.AsSpan().Split(tokens, '|');
 
-                if ((FilterIndex * 2) - 1 >= tokens.Length)
+                if ((FilterIndex * 2) - 1 >= tokensCount)
                 {
                     throw new InvalidOperationException(SR.FileDialogInvalidFilterIndex);
                 }
 
-                if (FilterIndex > 0)
-                {
-                    string[] exts = tokens[(FilterIndex * 2) - 1].Split(';');
-                    foreach (string ext in exts)
+                ReadOnlySpan<char> extensionString = filter.AsSpan()[tokens[(FilterIndex * 2) - 1]];
+                    while (!extensionString.IsEmpty)
                     {
-                        int i = SupportMultiDottedExtensions ? ext.IndexOf('.') : ext.LastIndexOf('.');
-                        if (i >= 0)
+                        int semiColumnIndex = extensionString.IndexOf(';');
+
+                        ReadOnlySpan<char> currentChunk = semiColumnIndex == -1
+                            ? extensionString
+                            : extensionString.Slice(0, semiColumnIndex);
+
+                        int dotIndex = SupportMultiDottedExtensions ? currentChunk.IndexOf('.') : currentChunk.LastIndexOf('.');
+                        if (dotIndex >= 0)
                         {
-                            extensions.Add(ext[(i + 1)..]);
+                            extensions.Add(currentChunk[(dotIndex + 1)..].ToString());
                         }
-                    }
+
+                        if (semiColumnIndex == -1)
+                        {
+                            break;
+                        }
+
+                        extensionString = extensionString.Slice(semiColumnIndex + 1);
                 }
             }
 
