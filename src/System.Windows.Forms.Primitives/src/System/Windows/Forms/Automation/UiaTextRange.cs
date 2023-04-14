@@ -678,7 +678,7 @@ internal class UiaTextRange : ITextRangeProvider
             // If Windows provided incorrect coordinates for endpoints in RTL mode.
             if (lineEndPoint.X <= lineStartPoint.X && lineTextLength > 0)
             {
-                if (textSpan.Trim().IsEmpty)
+                if (textSpan.IsWhiteSpace())
                 {
                     // If the line contains whitespaces only, they are in RTL order,
                     // so just swap start and end points, taken from Windows.

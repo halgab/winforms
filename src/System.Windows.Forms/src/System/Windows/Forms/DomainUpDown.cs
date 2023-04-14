@@ -303,7 +303,7 @@ public partial class DomainUpDown : UpDownBase
                 ReadOnlySpan<char> itemAsString = Items[index]!.ToString();
             if (complete)
             {
-                found = itemAsString.Equals(text, StringComparison.InvariantCulture);
+                found = itemAsString.Equals(text, StringComparison.Ordinal);
             }
             else
             {

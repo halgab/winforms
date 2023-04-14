@@ -144,20 +144,21 @@ public partial class ToolStripMenuItem : ToolStripDropDownItem
         if (text is not null)
         {
             // separate out the two fields.
-            string[] textFields = text.Split('\t', 3);
+            Span<Range> textFields = stackalloc Range[3];
+                int fieldCount = text.AsSpan().Split(textFields, '\t');
 
-            if (textFields.Length >= 1)
+            if (fieldCount >= 1)
             {
-                Text = textFields[0];
+                Text = text[textFields[0]];
             }
 
-            if (textFields.Length >= 2)
+            if (fieldCount >= 2)
             {
                 // We don't care about the shortcut here, the OS is going to
                 // handle it for us by sending a WM_(SYS)COMMAND during TranslateAccelerator
                 // Just display whatever the OS would have.
                 ShowShortcutKeys = true;
-                ShortcutKeyDisplayString = textFields[1];
+                ShortcutKeyDisplayString = text[textFields[1]];
             }
         }
     }

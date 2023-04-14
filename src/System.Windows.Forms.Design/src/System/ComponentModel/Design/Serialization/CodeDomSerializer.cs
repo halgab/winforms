@@ -321,19 +321,19 @@ public class CodeDomSerializer : CodeDomSerializerBase
 
                 if (name is not null)
                 {
+                    int dotIndex;
                     Trace(TraceLevel.Verbose, $"Object is reference ({name}) Creating reference expression");
                     // Check to see if this is a reference to the root component.  If it is, then use "this".
                     if (manager.TryGetContext(out RootContext? root) && root.Value == value)
                     {
                         expression = root.Expression;
                     }
-                    else
-                    {
+                    else{
                         int dotIndex = name.IndexOf('.');
-                        if (referenceName && dotIndex != -1)
-                        {
-                            // if it's a reference name with a dot, we've actually got a property here...
-                            expression = new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(s_thisRef, name.Substring(0, dotIndex)), name.Substring(dotIndex + 1));
+                        if (referenceName && dotIndex  != -1)
+                    {
+                        // if it's a reference name with a dot, we've actually got a property here...
+                        expression = new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(s_thisRef, name.Substring(0, dotIndex)), name.Substring(dotIndex + 1));
                         }
                         else
                         {

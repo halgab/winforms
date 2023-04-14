@@ -1807,14 +1807,9 @@ internal abstract partial class GridEntry : GridItem, ITypeDescriptorContext
             text = text.Substring(0, MaximumLengthOfPropertyString);
         }
 
-        int textWidth = GetValueTextWidth(text, g, GetFont(valueModified));
-        bool doToolTip = false;
-
-        // Check if text contains multiple lines.
-        if (textWidth >= rect.Width || HasMultipleLines(text))
-        {
-            doToolTip = true;
-        }
+            int textWidth = GetValueTextWidth(text, g, GetFont(valueModified));
+            // Check if text contains multiple lines.
+            bool doToolTip = textWidth >= rect.Width || HasMultipleLines(text);
 
         if (Rectangle.Intersect(rect, clipRect).IsEmpty)
         {
@@ -1874,7 +1869,7 @@ internal abstract partial class GridEntry : GridItem, ITypeDescriptorContext
 
         ValueToolTipLocation = doToolTip ? new Point(rect.X + 2, rect.Y - 1) : InvalidPoint;
 
-        static bool HasMultipleLines(string value) => value.Contains('\n') || value.Contains('\r');
+        static bool HasMultipleLines(ReadOnlySpan<char> value) => value.IndexOfAny('\n', '\r') > 0;
     }
 
     public virtual bool OnComponentChanging()

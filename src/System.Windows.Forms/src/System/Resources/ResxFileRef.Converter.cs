@@ -83,14 +83,14 @@ public partial class ResXFileRef
             }
 
             Span<Range> parts = stackalloc Range[3];
-                int partsCount = remainingString.Split(parts, ';');
-                result = partsCount > 1
-                ? (new string[] { fileName, remainingString[parts[0]].ToString(), remainingString[parts[1]].ToString() })
-                : partsCount > 0
-                        ? (new string[] { fileName, remainingString[parts[0]].ToString() })
-                        : (new string[] { fileName });
+            int partsCount = remainingString.Split(parts, ';');
 
-            return result;
+            return partsCount switch
+            {
+                > 1 => new string[] { fileName, remainingString[parts[0]].ToString(), remainingString[parts[1]].ToString() },
+                1 => new string[] { fileName, remainingString[parts[0]].ToString() },
+                _ => new string[] { fileName }
+            };
         }
 
         public override object? ConvertFrom(

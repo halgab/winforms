@@ -231,21 +231,19 @@ public class FontConverter : TypeConverter
                 style = style.Substring(6); // style string always starts with style=
                 string[] styleTokens = style.Split(separator, StringSplitOptions.TrimEntries);
 
-                    for (int tokenCount = 0; tokenCount < styleTokens.Length; tokenCount++)
+                    foreach (string styleText in styleTokens)
                     {
-                        string styleText = styleTokens[tokenCount];
-
-                    fontStyle |= Enum.Parse<FontStyle>(styleText, true);
+                        fontStyle |= Enum.Parse<FontStyle>(styleText, true);
 
                     // Enum.IsDefined doesn't do what we want on flags enums...
-                    FontStyle validBits = FontStyle.Regular | FontStyle.Bold | FontStyle.Italic | FontStyle.Underline | FontStyle.Strikeout;
-                    if ((fontStyle | validBits) != validBits)
-                    {
-                        throw new InvalidEnumArgumentException(nameof(style), (int)fontStyle, typeof(FontStyle));
+                    const FontStyle validBits = FontStyle.Regular | FontStyle.Bold | FontStyle.Italic | FontStyle.Underline | FontStyle.Strikeout;
+                        if ((fontStyle | validBits) != validBits)
+                        {
+                            throw new InvalidEnumArgumentException(nameof(style), (int)fontStyle, typeof(FontStyle));
+                        }
                     }
                 }
             }
-        }
 
         return new Font(fontName, fontSize, fontStyle, units);
 

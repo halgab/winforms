@@ -483,7 +483,7 @@ public sealed partial class HtmlDocument
                 if (index >= 0)
                 {
                     // The string is of the form: #ff00a0. Skip past the #
-                    ReadOnlySpan<char> hexColor = strColor.AsSpan()[(index + 1)..];
+                    ReadOnlySpan<char> hexColor = strColor.AsSpan(index + 1);
                     // The actual color is non-transparent. So set alpha = 255.
                     return Color.FromArgb(255, Color.FromArgb(int.Parse(hexColor, NumberStyles.HexNumber, CultureInfo.InvariantCulture)));
                 }

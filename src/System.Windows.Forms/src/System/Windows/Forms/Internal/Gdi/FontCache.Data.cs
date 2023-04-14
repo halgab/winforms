@@ -65,12 +65,12 @@ internal sealed partial class FontCache
         /// </summary>
         private static unsafe HFONT FromFont(Font font, FONT_QUALITY quality = FONT_QUALITY.DEFAULT_QUALITY)
         {
-            string familyName = font.FontFamily.Name;
+            ReadOnlySpan<char> familyName = font.FontFamily.Name;
 
             // Strip vertical-font mark from the name if needed.
-            if (familyName is not null && familyName.StartsWith('@'))
+            if (!familyName.IsEmpty && familyName[0] == '@')
             {
-                familyName = familyName.Substring(1);
+                familyName = familyName.Slice(1);
             }
 
             // Now, creating it using the Font.SizeInPoints makes it GraphicsUnit-independent.

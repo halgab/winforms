@@ -54,12 +54,10 @@ internal class ListViewGroupConverter : TypeConverter
         public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         {
             if (value is string valueStr)
-        {
-            ReadOnlySpan<char> text = valueStr.AsSpan().Trim();
-            if (context is not null && context.Instance is not null)
             {
-                if (context.Instance is ListViewItem item && item.ListView is not null)
+                if (context?.Instance is ListViewItem item && item.ListView is not null)
                 {
+                    ReadOnlySpan<char> text = valueStr.AsSpan().Trim();
                     foreach (ListViewGroup group in item.ListView.Groups)
                     {
                         if (text.Equals(group.Header, StringComparison.Ordinal))
@@ -69,7 +67,6 @@ internal class ListViewGroupConverter : TypeConverter
                     }
                 }
             }
-        }
 
         if (value is null || value.Equals(SR.toStringNone))
         {
