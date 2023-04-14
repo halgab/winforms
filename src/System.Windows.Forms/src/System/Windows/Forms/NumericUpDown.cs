@@ -463,35 +463,38 @@ public partial class NumericUpDown : UpDownBase, ISupportInitialize
         string groupSeparator = numberFormatInfo.NumberGroupSeparator;
         string negativeSign = numberFormatInfo.NegativeSign;
 
-        string keyInput = e.KeyChar.ToString();
+        char keyInput = e.KeyChar;
+            ReadOnlySpan<char> keySpan = new ReadOnlySpan<char>(in keyInput);
 
-        if (char.IsDigit(e.KeyChar))
+        if (Hexadecimal && char.IsAsciiHexDigit(keyInput))
+            {
+                // Hexadecimal digits are OK
+            }
+            else if (char.IsDigit(keyInput))
         {
             // Digits are OK
         }
-        else if (keyInput.Equals(decimalSeparator) || keyInput.Equals(groupSeparator) || keyInput.Equals(negativeSign))
+        else if (keySpan.Equals(decimalSeparator, StringComparison.Ordinal) ||
+                     keySpan.Equals(groupSeparator, StringComparison.Ordinal) ||
+                     keySpan.Equals(negativeSign, StringComparison.Ordinal))
         {
             // Decimal separator is OK
         }
-        else if (e.KeyChar == '\b')
+        else if (keyInput == '\b')
         {
             // Backspace key is OK
+            }
+            else if ((ModifierKeys & (Keys.Control | Keys.Alt)) != 0)
+            {
+                // Let the edit control handle control and alt key combinations
+            }
+            else
+            {
+                // Eat this invalid key and beep
+                e.Handled = true;
+                PInvoke.MessageBeep(MESSAGEBOX_STYLE.MB_OK);
+            }
         }
-        else if (Hexadecimal && ((e.KeyChar >= 'a' && e.KeyChar <= 'f') || (e.KeyChar >= 'A' && e.KeyChar <= 'F')))
-        {
-            // Hexadecimal digits are OK
-        }
-        else if ((ModifierKeys & (Keys.Control | Keys.Alt)) != 0)
-        {
-            // Let the edit control handle control and alt key combinations
-        }
-        else
-        {
-            // Eat this invalid key and beep
-            e.Handled = true;
-            PInvoke.MessageBeep(MESSAGEBOX_STYLE.MB_OK);
-        }
-    }
 
     /// <summary>
     ///  Raises the <see cref="OnValueChanged"/> event.

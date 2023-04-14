@@ -2118,8 +2118,7 @@ public partial class TabControl : Control
     private unsafe int SendMessage(uint msg, int wParam, TabPage tabPage)
     {
         TCITEMW tcitem = default;
-        string text = tabPage.Text;
-        PrefixAmpersands(ref text);
+        string text = PrefixAmpersands(tabPage.Text);
         if (text is not null)
         {
             tcitem.mask |= TCITEMHEADERA_MASK.TCIF_TEXT;
@@ -2137,7 +2136,7 @@ public partial class TabControl : Control
         }
     }
 
-    private static void PrefixAmpersands(ref string value)
+    private static string PrefixAmpersands(string value)
     {
         // Due to a comctl32 problem, ampersands underline the next letter in the
         // text string, but the accelerators don't work.
@@ -2145,37 +2144,38 @@ public partial class TabControl : Control
         // so that they actually appear as ampersands.
         if (string.IsNullOrEmpty(value))
         {
-            return;
+            return value;
         }
 
         // If there are no ampersands, we don't need to do anything here
-        int firstAmpersand = value.IndexOf('&');
-        if (firstAmpersand < 0)
+        int index = value.IndexOf('&') + 1;
+        if (index <= 0)
         {
-            return;
+            return value;
         }
 
         // Insert extra ampersands
         StringBuilder newString = new();
-        newString.Append(value.AsSpan(0, firstAmpersand));
-        for (int i = firstAmpersand; i < value.Length; ++i)
+        ReadOnlySpan<char> current = value.AsSpan();
+
+            do
         {
-            if (value[i] == '&')
-            {
-                if (i < value.Length - 1 && value[i + 1] == '&')
+            newString.Append(current.Slice(0, index));
+                newString.Append('&');
+
+                if (index < current.Length && value[index] == '&')
                 {
                     // Skip the second ampersand
-                    ++i;
+                    index++;
                 }
 
-                newString.Append("&&");
+                current = current.Slice(index);
+                index = current.IndexOf('&') + 1;
             }
-            else
-            {
-                newString.Append(value[i]);
-            }
-        }
+            while (index > 0);
 
-        value = newString.ToString();
+            newString.Append(current);
+
+        return newString.ToString();
     }
 }

@@ -3103,9 +3103,11 @@ public partial class RichTextBox : TextBoxBase
 
         BufferScope<char> buffer = new(maxLength);
         GETTEXTEX* pGt = &gt;
-        fixed (char* b = buffer)
-        {
-            int actualLength = (int)PInvoke.SendMessage(this, PInvoke.EM_GETTEXTEX, (WPARAM)pGt, (LPARAM)b);
+        int actualLength;
+            fixed (char* b = buffer)
+            {
+                actualLength = (int)PInvoke.SendMessage(this, PInvoke.EM_GETTEXTEX, (WPARAM)pGt, (LPARAM)b);
+            }
 
             // The default behaviour of EM_GETTEXTEX is to normalise line endings to '\r'
             // (see: GT_DEFAULT, https://docs.microsoft.com/windows/win32/api/richedit/ns-richedit-gettextex#members),
@@ -3113,21 +3115,11 @@ public partial class RichTextBox : TextBoxBase
             // but unable to ask for '\n'. Unless GT.USECRLF was set, convert '\r' with '\n' to retain the original behaviour.
             if (!flags.HasFlag(GETTEXTEX_FLAGS.GT_USECRLF))
             {
-                int index = 0;
-                while (index < actualLength)
-                {
-                    if (b[index] == '\r')
-                    {
-                        b[index] = '\n';
-                    }
-
-                    index++;
-                }
+                buffer[..actualLength].Replace('\r', '\n');
             }
 
             return buffer[..actualLength].ToString();
         }
-    }
 
     private void UpdateOleCallback()
     {

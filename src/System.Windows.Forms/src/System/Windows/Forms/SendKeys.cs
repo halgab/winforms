@@ -446,14 +446,13 @@ public partial class SendKeys
                     // Have our KEYWORD. Verify it's one we know about.
                     ReadOnlySpan<char> keyName = keys.AsSpan(i + 1, j - (i + 1));
 
-                    // See if we have a space, which would mean a repeat count.
-                    if (char.IsWhiteSpace(keys[j]))
-                    {
-                        int digit;
-                        while (j < keysLen && char.IsWhiteSpace(keys[j]))
+                        // See if we have a space, which would mean a repeat count.
+                        if (char.IsWhiteSpace(keys[j]))
                         {
-                            j++;
-                        }
+                            while (j < keysLen && char.IsWhiteSpace(keys[j]))
+                            {
+                                j++;
+                            }
 
                         if (j >= keysLen)
                         {
@@ -462,11 +461,11 @@ public partial class SendKeys
 
                         if (char.IsDigit(keys[j]))
                         {
-                            digit = j;
-                            while (j < keysLen && char.IsDigit(keys[j]))
-                            {
-                                j++;
-                            }
+                            int digit = j;
+                                while (j < keysLen && char.IsDigit(keys[j]))
+                                {
+                                    j++;
+                                }
 
                             repeat = int.Parse(keys.AsSpan(digit, j - digit), CultureInfo.InvariantCulture);
                         }

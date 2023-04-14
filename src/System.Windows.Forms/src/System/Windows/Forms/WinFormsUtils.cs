@@ -120,30 +120,32 @@ internal sealed partial class WindowsFormsUtils
     ///  without underlining anything.
     ///  Fish &amp; Chips --> Fish &amp;&amp; Chips
     /// </summary>
-    internal static string? EscapeTextWithAmpersands(string? text)
-    {
-        if (text is null)
+    [return: NotNullIfNotNull(nameof(text))]
+        internal static string? EscapeTextWithAmpersands(string? text)
         {
-            return null;
-        }
+            if (text is null)
+            {
+                return null;
+            }
 
-        int index = text.IndexOf('&');
-        if (index == -1)
+        int index = text.IndexOf('&') + 1;
+        if (index == 0)
         {
             return text;
         }
 
-        StringBuilder str = new StringBuilder(text.Length);
-        str.Append(text.AsSpan(0, index));
-        for (; index < text.Length; ++index)
-        {
-            if (text[index] == '&')
+        ReadOnlySpan<char> current = text.AsSpan();
+            StringBuilder str = new StringBuilder(text.Length);
+            do
             {
+                str.Append(current.Slice(0, index));
                 str.Append('&');
+            current = current.Slice(index);
+            index = current.IndexOf('&') + 1;
             }
+            while (index > 0);
 
-            str.Append(text[index]);
-        }
+            str.Append(current);
 
         return str.ToString();
     }

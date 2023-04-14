@@ -6751,26 +6751,21 @@ public unsafe partial class Control :
             return false;
         }
 
-        if (text is not null)
+        if (!string.IsNullOrEmpty(text))
         {
             int pos = -1; // start with -1 to handle double &'s
-            char c2 = char.ToUpper(charCode, CultureInfo.CurrentCulture);
-            for (; ; )
-            {
-                if (pos + 1 >= text.Length)
+            ReadOnlySpan<char> c2 = new ReadOnlySpan<char>(in charCode);
+            while (pos + 1 >= text.Length)
                 {
-                    break;
-                }
-
                 pos = text.IndexOf('&', pos + 1) + 1;
                 if (pos <= 0 || pos >= text.Length)
                 {
                     break;
                 }
 
-                char c1 = char.ToUpper(text[pos], CultureInfo.CurrentCulture);
+                char c1 = text[pos];
                 s_controlKeyboardRouting.TraceVerbose($"   ...& found... char={c1}");
-                if (c1 == c2 || char.ToLower(c1, CultureInfo.CurrentCulture) == char.ToLower(c2, CultureInfo.CurrentCulture))
+                if (c2.Equals(new ReadOnlySpan<char>(in c1), StringComparison.CurrentCultureIgnoreCase))
                 {
                     s_controlKeyboardRouting.TraceVerbose("   ...returning true");
                     return true;

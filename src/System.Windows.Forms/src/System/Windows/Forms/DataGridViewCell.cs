@@ -1384,45 +1384,35 @@ public abstract partial class DataGridViewCell : DataGridViewElement, ICloneable
             return;
         }
 
-        int cb = s.Length;
-        char prevCh = '\0';
+            char prevCh = '\0';
 
-        for (int i = 0; i < cb; i++)
-        {
-            char ch = s[i];
-            switch (ch)
+        foreach (char ch in s)
             {
-                case '<':
-                    output.Write("&lt;");
-                    break;
-                case '>':
-                    output.Write("&gt;");
-                    break;
-                case '"':
-                    output.Write("&quot;");
-                    break;
-                case '&':
-                    output.Write("&amp;");
-                    break;
-                case ' ':
-                    if (prevCh == ' ')
-                    {
+                switch (ch)
+                {
+                    case '<':
+                        output.Write("&lt;");
+                        break;
+                    case '>':
+                        output.Write("&gt;");
+                        break;
+                    case '"':
+                        output.Write("&quot;");
+                        break;
+                    case '&':
+                        output.Write("&amp;");
+                        break;
+                    case ' ' when prevCh == ' ':
                         output.Write("&nbsp;");
-                    }
-                    else
-                    {
-                        output.Write(ch);
-                    }
-
-                    break;
-                case '\r':
-                    // Ignore \r, only handle \n
-                    break;
-                case '\n':
-                    output.Write("<br>");
-                    break;
-                //
-                case >= (char)160 and < (char)256:
+                        break;
+                    case '\r':
+                        // Ignore \r, only handle \n
+                        break;
+                    case '\n':
+                        output.Write("<br>");
+                        break;
+                    //
+                    case >= (char)160 and < (char)256:
                         // The seemingly arbitrary 160 comes from RFC
                         // Code taken from ASP.NET file xsp\System\Web\httpserverutility.cs
                         // Don't entity encode high chars (160 to 256)

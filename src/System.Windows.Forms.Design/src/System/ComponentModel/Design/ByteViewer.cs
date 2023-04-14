@@ -434,13 +434,7 @@ public class ByteViewer : TableLayoutPanel
 
         text[size] = '\0';
 
-        for (int i = 0; i < size; i++)
-        {
-            if (text[i] == '\0')
-            {
-                text[i] = (char)0x0B;
-            }
-        }
+        text.AsSpan(0, size).Replace('\0', (char)0x0B);
 
         _edit.Text = new string(text);
     }
@@ -452,9 +446,7 @@ public class ByteViewer : TableLayoutPanel
     {
         char[] text = new char[_dataBuf.Length / 2 + 1];
         Encoding.Unicode.GetChars(_dataBuf, 0, _dataBuf.Length, text, 0);
-        for (int i = 0; i < text.Length; i++)
-            if (text[i] == '\0')
-                text[i] = (char)0x0B;
+        text.AsSpan(0, text.Length - 1).Replace('\0', (char)0x0B);
 
         text[text.Length - 1] = '\0';
         _edit.Text = new string(text);

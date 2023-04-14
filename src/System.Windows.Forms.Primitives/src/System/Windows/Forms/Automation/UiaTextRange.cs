@@ -567,7 +567,7 @@ internal class UiaTextRange : ITextRangeProvider
             || (char.IsPunctuation(ch1) && char.IsWhiteSpace(ch2));
     }
 
-    private static bool IsApostrophe(char ch) => ch == '\'' || ch == (char)0x2019; // Unicode Right Single Quote Mark
+    private static bool IsApostrophe(char ch) => ch is '\'' or (char)0x2019; // Unicode Right Single Quote Mark
 
     private object? GetAttributeValue(TextAttributeIdentifier textAttributeIdentifier)
     {

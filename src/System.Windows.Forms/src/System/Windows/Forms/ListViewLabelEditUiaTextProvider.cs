@@ -113,7 +113,7 @@ internal class ListViewLabelEditUiaTextProvider : UiaTextProvider2
 
             pt = GetPositionFromCharIndex(startCharIndex);
 
-            if (ch == '\r' || ch == '\n')
+            if (ch is '\r' or '\n')
             {
                 pt.X += EndOfLineWidth; // add 2 px to show the end of line
             }
