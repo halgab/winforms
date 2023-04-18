@@ -52,44 +52,45 @@ public partial class ResXFileRef
     ///  path2 such that if path1 and the calculated difference are used
     ///  as arguments to Combine(), path2 is returned
     /// </summary>
-    private static string PathDifference(string path1, string path2, bool compareCase)
-    {
-        int i;
-        int si = -1;
-
-        for (i = 0; (i < path1.Length) && (i < path2.Length); ++i)
+    private static string PathDifference(ReadOnlySpan<char> path1, string path2, bool compareCase)
         {
-            if ((path1[i] != path2[i])
-                && (compareCase || (char.ToLower(path1[i], CultureInfo.InvariantCulture) != char.ToLower(path2[i], CultureInfo.InvariantCulture))))
-            {
-                break;
-            }
+            int i;
 
-            if (path1[i] == Path.DirectorySeparatorChar)
+        if (compareCase)
             {
-                si = i;
+                i = path1.CommonPrefixLength(path2);
             }
-        }
+            else
+            {
+                for (i = 0; (i < path1.Length) && (i < path2.Length); ++i)
+                {
+                    if (path1[i] != path2[i]
+                        && (char.ToLower(path1[i], CultureInfo.InvariantCulture) != char.ToLower(path2[i], CultureInfo.InvariantCulture)))
+                    {
+                        break;
+                    }
+                }
+            }
 
         if (i == 0)
         {
             return path2;
         }
 
-        if ((i == path1.Length) && (i == path2.Length))
-        {
-            return string.Empty;
-        }
+        int si = path1.Slice(0, i).LastIndexOf(Path.DirectorySeparatorChar);
+
+            if ((i == path1.Length) && (i == path2.Length))
+            {
+                return string.Empty;
+            }
 
         StringBuilder relPath = new StringBuilder();
+            int slashCount = path1.Slice(i).Count(Path.DirectorySeparatorChar);
 
-        for (; i < path1.Length; ++i)
-        {
-            if (path1[i] == Path.DirectorySeparatorChar)
+        for (int j = 0; j < slashCount; j++)
             {
                 relPath.Append($"..{Path.DirectorySeparatorChar}");
             }
-        }
 
         relPath.Append(path2.AsSpan(si + 1));
 

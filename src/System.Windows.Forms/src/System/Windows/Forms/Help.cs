@@ -338,8 +338,8 @@ public static class Help
         {
             s_windowsFormsHelpTrace.TraceVerbose("\tfile");
 
-            string ext = Path.GetExtension(file is null ? url : file.LocalPath + file.Fragment).ToLower(CultureInfo.InvariantCulture);
-            if (ext is ".chm" or ".col")
+            string ext = Path.GetExtension(file is null ? url : file.LocalPath + file.Fragment);
+            if (ext.Equals(".chm", StringComparison.InvariantCultureIgnoreCase) || ext.Equals(".col", StringComparison.InvariantCultureIgnoreCase))
             {
                 s_windowsFormsHelpTrace.TraceVerbose("\tchm or col, HtmlHelp 1.0 file");
                 return HTML10HELP;
