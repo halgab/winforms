@@ -225,15 +225,13 @@ public sealed partial class DockEditor
         private RadioButton ProcessLeftRight(RadioButton checkedControl, bool leftDirection)
         {
             int maxI = _leftRightOrder.Length - 1;
-            for (int i = 0; i <= maxI; i++)
-            {
-                if (_leftRightOrder[i] == checkedControl)
+            int i = Array.IndexOf(_leftRightOrder, checkedControl, 0, maxI);
+                if (i >= 0)
                 {
                     return leftDirection
                         ? _leftRightOrder[Math.Max(i - 1, 0)]
                         : _leftRightOrder[Math.Min(i + 1, maxI)];
                 }
-            }
 
             return checkedControl;
         }
@@ -242,15 +240,13 @@ public sealed partial class DockEditor
 
         protected override RadioButton ProcessTabKey(Keys keyData)
         {
-            for (int i = 0; i < _tabOrder.Length; i++)
-            {
-                if (_tabOrder[i] == CheckedControl)
+            int i = Array.IndexOf(_tabOrder, CheckedControl);
+                if (i >= 0)
                 {
                     i += (keyData & Keys.Shift) == 0 ? 1 : -1;
                     i = i < 0 ? i + _tabOrder.Length : i % _tabOrder.Length;
                     return _tabOrder[i];
                 }
-            }
 
             return CheckedControl;
         }
@@ -267,15 +263,13 @@ public sealed partial class DockEditor
             }
 
             int maxI = _upDownOrder.Length - 1;
-            for (int i = 0; i <= maxI; i++)
-            {
-                if (_upDownOrder[i] == checkedControl)
+            int i = Array.IndexOf(_upDownOrder, checkedControl, 0, maxI);
+                if (i >= 0)
                 {
                     return upDirection
                         ? _upDownOrder[Math.Max(i - 1, 0)]
                         : _upDownOrder[Math.Min(i + 1, maxI)];
                 }
-            }
 
             return checkedControl;
         }

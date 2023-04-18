@@ -93,13 +93,10 @@ public partial class CursorEditor
             // Select the current cursor
             if (value is not null)
             {
-                for (int i = 0; i < Items.Count; i++)
+                int index = Items.IndexOf(value);
+                if (index >= 0)
                 {
-                    if (Items[i] == value)
-                    {
-                        SelectedIndex = i;
-                        break;
-                    }
+                    SelectedIndex = index;
                 }
             }
         }

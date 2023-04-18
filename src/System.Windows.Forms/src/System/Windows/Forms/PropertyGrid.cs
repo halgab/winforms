@@ -939,26 +939,17 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
                 showEvents = false;
             }
 
-            // Make sure we actually changed something before we inspect tabs.
-            if (_selectedObjects is not null
-                && value is not null
-                && _selectedObjects.Length == value.Length)
-            {
-                isSame = true;
-                classesSame = true;
-
-                for (int i = 0; i < value.Length && (isSame || classesSame); i++)
+                // Make sure we actually changed something before we inspect tabs.
+                if (_selectedObjects is not null
+                    && value is not null
+                    && _selectedObjects.Length == value.Length)
                 {
-                    if (isSame && _selectedObjects[i] != value[i])
-                    {
-                        isSame = false;
-                    }
+                    classesSame = true;
+                    int commonCount = _selectedObjects.AsSpan().CommonPrefixLength(value);
+                isSame = commonCount == value.Length;
 
-                    if (!classesSame)
+                    for (int i = commonCount; i < value.Length; i++)
                     {
-                        continue;
-                    }
-
                     Type oldType = GetUnwrappedObject(i).GetType();
 
                     object newObject = value[i];
@@ -971,9 +962,10 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
                     Type newType = newObject.GetType();
 
                     // Check if the types are the same. If they are COM objects assume the classes are different.
-                    if (classesSame && (oldType != newType || (oldType.IsCOMObject && newType.IsCOMObject)))
+                    if (oldType != newType || (oldType.IsCOMObject && newType.IsCOMObject))
                     {
                         classesSame = false;
+                            break;
                     }
                 }
             }
@@ -2450,13 +2442,10 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
         }
 
         int objectCount = _selectedObjects.Length;
-        for (int i = 0; i < objectCount; i++)
-        {
-            if (_selectedObjects[i] == e.Component)
+        int i = Array.IndexOf(_selectedObjects, e.Component);
+            if (i >= 0)
             {
                 Refresh(clearCached: false);
-                break;
-            }
         }
     }
 
@@ -3616,14 +3605,11 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
     {
         Debug.Assert(oldObject is not null && newObject is not null && oldObject.GetType() == newObject.GetType());
 
-        for (int i = 0; i < _selectedObjects.Length; ++i)
-        {
-            if (_selectedObjects[i] == oldObject)
+        int i = Array.IndexOf(_selectedObjects, oldObject);
+            if (i >= 0)
             {
                 _selectedObjects[i] = newObject;
                 Refresh(clearCached: true);
-                break;
-            }
         }
     }
 

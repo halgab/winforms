@@ -296,13 +296,10 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 }
 
                 // Z-Order
-                for (int i = 0; i < parent.Controls.Count; i++)
-                {
-                    if (parent.Controls[i] == control)
+                int controlIndex = parent.Controls.IndexOf(control);
+                    if (controlIndex >= 0)
                     {
-                        SerializeResourceInvariant(manager, $">>{name}.ZOrder", i);
-                        break;
-                    }
+                        SerializeResourceInvariant(manager, $">>{name}.ZOrder", controlIndex);
                 }
             }
         }
