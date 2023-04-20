@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Drawing;
-using System.Globalization;
 using Windows.Win32.Data.HtmlHelp;
 
 namespace System.Windows.Forms;

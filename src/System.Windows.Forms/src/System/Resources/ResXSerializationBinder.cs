@@ -55,7 +55,7 @@ internal class ResXSerializationBinder : SerializationBinder
 
         if (typeParts.Length > 2)
         {
-            StringBuilder partialName = null;
+            StringBuilder? partialName = null;
 
             // Strip out the version.
             for (int i = 1; i < typeParts.Length; ++i)

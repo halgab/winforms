@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
-using System.Globalization;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms.Automation;

@@ -419,7 +419,7 @@ public sealed class ResXDataNode : ISerializable
             return null;
         }
 
-        byte[] serializedData = FromBase64WrappedString(dataNodeInfo.ValueData);
+        byte[] serializedData = WindowsFormsUtils.FromBase64WrappedString(dataNodeInfo.ValueData);
 
         if (serializedData.Length <= 0)
         {
