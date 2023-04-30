@@ -622,7 +622,7 @@ public abstract partial class TextBoxBase : Control
             }
 
             // Corner case -- last character in Text is a new line; need to add blank line to list
-            if (text.Length > 0 && (text[text.Length - 1] is '\r' or '\n'))
+            if (Text is [.., '\r'] or [.., '\n'])
             {
                 list.Add(string.Empty);
             }
