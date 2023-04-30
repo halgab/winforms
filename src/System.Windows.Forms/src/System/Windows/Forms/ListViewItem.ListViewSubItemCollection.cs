@@ -247,10 +247,7 @@ public partial class ListViewItem
         {
             for (int index = 0; index < Count; ++index)
             {
-                if (_owner._subItems[index] == subItem)
-                {
-                    return index;
-                }
+                return Count > 0 ? Array.IndexOf(_owner.subItems, subItem, 0, Count) : -1;
             }
 
             return -1;
