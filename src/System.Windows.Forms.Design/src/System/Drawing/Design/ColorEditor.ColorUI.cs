@@ -52,11 +52,8 @@ public partial class ColorEditor
                 if (customColors is null)
                 {
                     customColors = new Color[ColorPalette.CellsCustom];
-                    for (int i = 0; i < ColorPalette.CellsCustom; i++)
-                    {
-                        customColors[i] = Color.White;
+                    Array.Fill(customColors, Color.White);
                     }
-                }
 
                 return customColors;
             }

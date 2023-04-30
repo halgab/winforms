@@ -1000,17 +1000,15 @@ public abstract class Image : MarshalByRefObject, IDisposable, ICloneable, ISeri
         }
     }
 
-    internal static unsafe void EnsureSave(Image image, string? filename, Stream? dataStream)
-    {
-        if (image.RawFormat.Equals(ImageFormat.Gif))
+        internal static unsafe void EnsureSave(Image image, string? filename, Stream? dataStream)
         {
-            bool animatedGif = false;
-
-            Gdip.CheckStatus(Gdip.GdipImageGetFrameDimensionsCount(new HandleRef(image, image._nativeImage), out int dimensions));
-            if (dimensions <= 0)
+            if (image.RawFormat.Equals(ImageFormat.Gif))
             {
-                return;
-            }
+                Gdip.CheckStatus(Gdip.GdipImageGetFrameDimensionsCount(new HandleRef(image, image._nativeImage), out int dimensions));
+                if (dimensions <= 0)
+                {
+                    return;
+                }
 
             Span<Guid> guids = dimensions < 16 ?
                 stackalloc Guid[dimensions] :
@@ -1022,14 +1020,7 @@ public abstract class Image : MarshalByRefObject, IDisposable, ICloneable, ISeri
             }
 
             Guid timeGuid = FrameDimension.Time.Guid;
-            for (int i = 0; i < dimensions; i++)
-            {
-                if (timeGuid == guids[i])
-                {
-                    animatedGif = image.GetFrameCount(FrameDimension.Time) > 1;
-                    break;
-                }
-            }
+            bool animatedGif = guids.Contains(timeGuid) && image.GetFrameCount(FrameDimension.Time) > 1;
 
             if (animatedGif)
             {

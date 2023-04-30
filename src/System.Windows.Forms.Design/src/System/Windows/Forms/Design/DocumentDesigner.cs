@@ -302,20 +302,17 @@ public partial class DocumentDesigner : ScrollableControlDesigner, IRootDesigner
         if (dragComps is not null)
         {
             IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
-            for (int i = 0; i < dragComps.Length; i++)
-            {
-                IComponent comp = dragComps[i] as IComponent;
-                if (host is null || dragComps[i] is null || comp is null)
+            if (host is not null)
                 {
-                    continue;
-                }
-
-                if (componentTray.IsTrayComponent(comp))
-                {
-                    return false;
+                    for (int i = 0; i < dragComps.Length; i++)
+                    {
+                        if (dragComps[i] is IComponent comp && componentTray.IsTrayComponent(comp))
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
-        }
 
         //ToolStripItems cannot be dropped on any ParentControlDesigners since they have custom DataObject Format.
         if (de.Data is ToolStripItemDataObject)

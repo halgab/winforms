@@ -86,12 +86,9 @@ public class ColorDialog : CommonDialog
                 Array.Copy(value!, 0, _customColors, 0, length);
             }
 
-            for (int i = length; i < 16; i++)
-            {
-                _customColors[i] = 0x00FFFFFF;
+                _customColors.AsSpan(length).Fill(0x00FFFFFF);
             }
         }
-    }
 
     /// <summary>
     ///  Gets or sets a value indicating whether the controls used to create custom

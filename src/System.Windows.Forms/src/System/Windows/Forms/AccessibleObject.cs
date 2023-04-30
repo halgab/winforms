@@ -2262,10 +2262,7 @@ public unsafe partial class AccessibleObject :
                 if (getMethod is not null && getMethod.GetParameters().Length > 0)
                 {
                     args = new object[getMethod.GetParameters().Length];
-                    for (int i = 0; i < args.Length; i++)
-                    {
-                        args[i] = (int)PInvoke.CHILDID_SELF;
-                    }
+                    Array.Fill(args, (int)PInvoke.CHILDID_SELF);
                 }
             }
         }

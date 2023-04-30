@@ -639,19 +639,16 @@ public partial class CheckedListBox : ListBox
                 textBounds.Width - BORDER_SIZE,
                 textBounds.Height - 2 * BORDER_SIZE); // minus borders
 
-            if (UseCompatibleTextRendering)
-            {
-                using StringFormat format = new StringFormat();
-                if (UseTabStops)
+                if (UseCompatibleTextRendering)
                 {
-                    //  Set tab stops so it looks similar to a ListBox, at least with the default font size.
-                    float tabDistance = 3.6f * Font.Height; // about 7 characters
-                    float[] tabStops = new float[15];
-                    float tabOffset = -(_idealCheckSize + (scaledListItemStartPosition * 2));
-                    for (int i = 1; i < tabStops.Length; i++)
+                    using StringFormat format = new StringFormat();
+                    if (UseTabStops)
                     {
-                        tabStops[i] = tabDistance;
-                    }
+                        //  Set tab stops so it looks similar to a ListBox, at least with the default font size.
+                        float tabDistance = 3.6f * Font.Height; // about 7 characters
+                        float[] tabStops = new float[15];
+                        float tabOffset = -(_idealCheckSize + (scaledListItemStartPosition * 2));
+                        tabStops.AsSpan(1).Fill(tabDistance);
 
                     if (Math.Abs(tabOffset) < tabDistance)
                     {

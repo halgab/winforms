@@ -933,15 +933,12 @@ public partial class ComboBox : ListControl
         return cyCombo;
     }
 
-    private string[] GetStringsForAutoComplete(IList collection)
-    {
-        if (collection is AutoCompleteStringCollection)
+        private string[] GetStringsForAutoComplete(IList collection)
         {
-            string[] strings = new string[AutoCompleteCustomSource.Count];
-            for (int i = 0; i < AutoCompleteCustomSource.Count; i++)
+            if (collection is AutoCompleteStringCollection)
             {
-                strings[i] = AutoCompleteCustomSource[i];
-            }
+                string[] strings = new string[AutoCompleteCustomSource.Count];
+                AutoCompleteCustomSource.CopyTo(strings, 0);
 
             return strings;
         }

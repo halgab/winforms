@@ -352,10 +352,7 @@ internal sealed class SelectionManager : IDisposable
         // accounted for.  Any that don't intersect a rect in the larger
         // array need to be included in the region to repaint.
         bool[] intersected = new bool[smaller.Length];
-        for (int i = 0; i < smaller.Length; i++)
-        {
-            intersected[i] = false;
-        }
+        Array.Fill(intersected, false);
 
         // determine which rects in the larger array need to be
         // included in the region to invalidate by intersecting

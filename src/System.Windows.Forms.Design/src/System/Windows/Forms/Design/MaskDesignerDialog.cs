@@ -398,19 +398,10 @@ internal class MaskDesignerDialog : Form
     /// </summary>
     private int GetMaskDescriptorIndex(MaskDescriptor maskDescriptor)
     {
-        for (int index = 0; index < _maskDescriptors.Count; index++)
-        {
-            MaskDescriptor descriptor = _maskDescriptors[index];
-
-            if (descriptor == maskDescriptor)
-            {
-                return index;
-            }
+        int index = _maskDescriptors.IndexOf(maskDescriptor);
+            Debug.Assert(index >= 0, "Could not find mask descriptor.");
+            return -1;
         }
-
-        Debug.Fail("Could not find mask descriptor.");
-        return -1;
-    }
 
     /// <summary>
     /// Selects the mask descriptor corresponding to the current MaskedTextBox.Mask if any, otherwise the custom entry.
@@ -433,15 +424,10 @@ internal class MaskDesignerDialog : Form
             }
         }
 
-        if (selectedItemIdx == -1) // select custom mask.
-        {
-            selectedItemIdx = GetMaskDescriptorIndex(_customMaskDescriptor);
-
-            if (selectedItemIdx == -1)
+            if (selectedItemIdx == -1) // select custom mask.
             {
-                Debug.Fail("Could not find custom mask descriptor.");
+                selectedItemIdx = GetMaskDescriptorIndex(_customMaskDescriptor);
             }
-        }
 
         if (selectedItemIdx != -1)
         {

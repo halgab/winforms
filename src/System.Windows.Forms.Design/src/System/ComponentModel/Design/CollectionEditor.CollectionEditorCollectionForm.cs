@@ -270,18 +270,12 @@ public partial class CollectionEditor
 
                 _removedItems?.Clear();
 
-                // Restore the original contents. Because objects get parented during CreateAndAddInstance, the underlying collection
-                // gets changed during add, but not other operations. Not all consumers of this dialog can roll back every single change,
-                // but this will at least roll back the additions, removals and reordering. See ASURT #85470.
-                if (_originalItems is not null && (_originalItems.Count > 0))
-                {
-                    object[] items = new object[_originalItems.Count];
-                    for (int i = 0; i < _originalItems.Count; i++)
+                    // Restore the original contents. Because objects get parented during CreateAndAddInstance, the underlying collection
+                    // gets changed during add, but not other operations. Not all consumers of this dialog can roll back every single change,
+                    // but this will at least roll back the additions, removals and reordering. See ASURT #85470.
+                    if (_originalItems is not null && (_originalItems.Count > 0))
                     {
-                        items[i] = _originalItems[i];
-                    }
-
-                    Items = items;
+                        Items = _originalItems.ToArray();
                     _originalItems.Clear();
                 }
                 else
