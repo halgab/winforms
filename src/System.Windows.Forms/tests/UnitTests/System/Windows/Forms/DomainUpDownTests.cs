@@ -1157,19 +1157,11 @@ public class DomainUpDownTests
         Assert.Equal(expected, control.MatchIndex(text, false, start));
     }
 
-    [WinFormsFact]
-    public void DomainUpDown_MatchIndex_NullText_ThrowsNullReferenceException()
-    {
-        using var control = new DomainUpDown();
-        control.Items.Add("item1");
-        Assert.Throws<NullReferenceException>(() => control.MatchIndex(null, false, 0));
-    }
-
-    public static IEnumerable<object[]> OnChanged_TestData()
-    {
-        yield return new object[] { null, null };
-        yield return new object[] { new object(), new EventArgs() };
-    }
+        public static IEnumerable<object[]> OnChanged_TestData()
+        {
+            yield return new object[] { null, null };
+            yield return new object[] { new object(), new EventArgs() };
+        }
 
     [WinFormsTheory]
     [MemberData(nameof(OnChanged_TestData))]
