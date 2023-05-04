@@ -51,20 +51,22 @@ internal class ResXSerializationBinder : SerializationBinder
             return type;
         }
 
-        string[] typeParts = typeName.Split(',', StringSplitOptions.TrimEntries);
+        using BufferScope<Range> rangeBuffer = new(stackalloc Range[128]);
+                int typePartsCount = typeName.AsSpan().Split(rangeBuffer, ',', StringSplitOptions.TrimEntries);
 
-        if (typeParts.Length > 2)
+        if (typePartsCount > 2)
         {
+                    string firstTypePart = typeName[rangeBuffer[0]];
             StringBuilder? partialName = null;
 
             // Strip out the version.
-            for (int i = 1; i < typeParts.Length; ++i)
+            for (int i = 1; i < typePartsCount; ++i)
             {
-                string typePart = typeParts[i];
+                ReadOnlySpan<char> typePart = typeName.AsSpan(rangeBuffer[i]);
                 if (!typePart.StartsWith("Version=", StringComparison.Ordinal)
                     && !typePart.StartsWith("version=", StringComparison.Ordinal))
                 {
-                    (partialName ??= new StringBuilder(typeParts[0])).Append($", {typePart}");
+                    (partialName ??= new StringBuilder(firstTypePart)).Append($", {typePart}");
                 }
             }
 
@@ -73,7 +75,7 @@ internal class ResXSerializationBinder : SerializationBinder
                 type = _typeResolver.GetType(partialName.ToString());
             }
 
-            type ??= _typeResolver.GetType(typeParts[0]);
+            type ??= _typeResolver.GetType(firstTypePart);
         }
 
         // Hand back what we found or null to let the default loader take over.

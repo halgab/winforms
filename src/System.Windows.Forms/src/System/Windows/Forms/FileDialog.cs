@@ -197,10 +197,9 @@ namespace System.Windows.Forms;
                 return;
             }
 
-            if (!string.IsNullOrEmpty(value))
-            {
-                string[] formats = value.Split('|');
-                if (formats is null || formats.Length % 2 != 0)
+                if (!string.IsNullOrEmpty(value))
+                {
+                    if (value.AsSpan().Count('|') % 2 != 0)
                 {
                     throw new ArgumentException(SR.FileDialogInvalidFilter, nameof(value));
                 }

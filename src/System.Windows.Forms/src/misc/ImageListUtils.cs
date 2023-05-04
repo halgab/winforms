@@ -26,8 +26,9 @@ internal static class ImageListUtils
         PropertyDescriptor? imageListProperty = null;
         object? parentInstance = instance;
 
-        string[] pathInfo = relatedAttribute.RelatedImageList.Split('.');
-        for (int i = 0; i < pathInfo.Length; i++)
+        using BufferScope<Range> rangeBuffer = new(stackalloc Range[128]);
+            int pathInfoCount = relatedAttribute.RelatedImageList.AsSpan().Split(rangeBuffer, '.');
+            for (int i = 0; i < pathInfoCount; i++)
         {
             if (parentInstance is null)
             {
@@ -35,14 +36,14 @@ internal static class ImageListUtils
                 break;
             }
 
-            PropertyDescriptor? property = TypeDescriptor.GetProperties(parentInstance)[pathInfo[i]];
+            PropertyDescriptor? property = TypeDescriptor.GetProperties(parentInstance)[relatedAttribute.RelatedImageList[rangeBuffer[i]]];
             if (property is null)
             {
                 Debug.Fail("The path specified to the property is wrong");
                 break;
             }
 
-            if (i == pathInfo.Length - 1)
+            if (i == pathInfoCount - 1)
             {
                 // We're on the last one, look if that's our guy
                 if (typeof(ImageList).IsAssignableFrom(property.PropertyType))

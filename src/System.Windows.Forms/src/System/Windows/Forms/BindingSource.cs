@@ -979,43 +979,38 @@ public class BindingSource : Component,
         List<ListSortDescription> sorts = new();
         PropertyDescriptorCollection props = _currencyManager.GetItemProperties();
 
-        string[] split = sortString.Split(',', StringSplitOptions.TrimEntries);
-        for (int i = 0; i < split.Length; i++)
-        {
-            string current = split[i];
-                ReadOnlySpan<char> currentSpan = split[i];
+        using BufferScope<Range> rangeBuffer = new(stackalloc Range[128]);
+            int count = sortString.AsSpan().Split(rangeBuffer, ',', StringSplitOptions.TrimEntries);
+            for (int i = 0; i < count; i++)
+            {
+                ReadOnlySpan<char> current = sortString.AsSpan(rangeBuffer[i]);
 
                 // Handle ASC and DESC
                 bool ascending = true;
-                if (currentSpan.EndsWith(" ASC", StringComparison.InvariantCultureIgnoreCase))
+                if (current.EndsWith(" ASC", StringComparison.InvariantCultureIgnoreCase))
             {
-                currentSpan = currentSpan[..^4].Trim();
+                current = current[..^4].Trim();
             }
-            else if (currentSpan.EndsWith(" DESC", StringComparison.InvariantCultureIgnoreCase))
+            else if (current.EndsWith(" DESC", StringComparison.InvariantCultureIgnoreCase))
             {
                 ascending = false;
-                currentSpan = currentSpan[..^5].Trim();
+                current = current[..^5].Trim();
             }
 
             // Handle brackets
-            if (!currentSpan.IsEmpty && currentSpan[0] == '[')
+            if (!current.IsEmpty && current[0] == '[')
             {
-                currentSpan = currentSpan[^1] == ']'
-                    ? currentSpan[1..^1]
+                current = current[^1] == ']'
+                    ? current[1..^1]
                     : throw new ArgumentException(SR.BindingSourceBadSortString);
             }
 
-            if (currentSpan.Length < current.Length)
-                {
-                    current = currentSpan.ToString();
-                }
-
-                // Find the property
-                PropertyDescriptor prop = props.Find(current, true);
-                if (prop is null)
-                {
-                    throw new ArgumentException(SR.BindingSourceSortStringPropertyNotInIBindingList);
-                }
+            // Find the property
+            PropertyDescriptor prop = props.Find(current.ToString(), true);
+            if (prop is null)
+            {
+                throw new ArgumentException(SR.BindingSourceSortStringPropertyNotInIBindingList);
+            }
 
             // Add the sort description
             sorts.Add(new ListSortDescription(prop, ascending ? ListSortDirection.Ascending : ListSortDirection.Descending));
