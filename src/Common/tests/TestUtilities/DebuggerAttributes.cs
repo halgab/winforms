@@ -128,7 +128,7 @@ internal static class DebuggerAttributes
         // Get the text of the DebuggerDisplayAttribute
         string attrText = (string)cad.ConstructorArguments[0].Value;
 
-        string[] segments = attrText.Split(new[] { '{', '}' });
+        string[] segments = attrText.Split('{', '}');
 
         if (segments.Length % 2 == 0)
         {
@@ -140,34 +140,24 @@ internal static class DebuggerAttributes
             throw new InvalidOperationException($"The DebuggerDisplayAttribute for {objType} doesn't reference any expressions.");
         }
 
-        StringBuilder sb = new();
-
-        for (int i = 0; i < segments.Length; i += 2)
+        for (int i = 0; i < segments.Length - 1; i += 2)
         {
-            string literal = segments[i];
-            sb.Append(literal);
+            string reference = segments[i + 1];
+            bool noQuotes = reference.EndsWith(",nq");
 
-            if (i + 1 < segments.Length)
+            reference = reference.Replace(",nq", string.Empty);
+
+            // Evaluate the reference.
+            object member;
+            if (!TryEvaluateReference(obj, reference, out member))
             {
-                string reference = segments[i + 1];
-                bool noQuotes = reference.EndsWith(",nq");
-
-                reference = reference.Replace(",nq", string.Empty);
-
-                // Evaluate the reference.
-                object member;
-                if (!TryEvaluateReference(obj, reference, out member))
-                {
-                    throw new InvalidOperationException($"The DebuggerDisplayAttribute for {objType} contains the expression \"{reference}\".");
-                }
-
-                string memberString = GetDebuggerMemberString(member, noQuotes);
-
-                sb.Append(memberString);
+                throw new InvalidOperationException($"The DebuggerDisplayAttribute for {objType} contains the expression \"{reference}\".");
             }
+
+            segments[i + 1] = GetDebuggerMemberString(member, noQuotes);
         }
 
-        return sb.ToString();
+        return string.Concat(segments);
     }
 
     private static string GetDebuggerMemberString(object member, bool noQuotes)

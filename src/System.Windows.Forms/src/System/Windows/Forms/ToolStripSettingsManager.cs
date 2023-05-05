@@ -185,13 +185,21 @@ internal partial class ToolStripSettingsManager
         string? itemNames = settings.ItemOrder;
         if (!string.IsNullOrEmpty(itemNames))
         {
-            string[] keys = itemNames.Split(',');
             Regex r = ContiguousNonWhitespace();
 
+            int stringStart = 0;
+            int i = 0;
+
             // Shuffle items according to string.
-            for (int i = 0; ((i < toolStrip.Items.Count) && (i < keys.Length)); i++)
+            while (stringStart < itemNames.Length && i < toolStrip.Items.Count)
             {
-                Match match = r.Match(keys[i]);
+                int stringEnd = itemNames.IndexOf(',', stringStart);
+                if (stringEnd < 0)
+                {
+                    stringEnd = itemNames.Length;
+                }
+
+                Match match = r.Match(itemNames, stringStart, stringEnd - stringStart);
                 if (match.Success)
                 {
                     string key = match.Value;
@@ -200,6 +208,9 @@ internal partial class ToolStripSettingsManager
                         toolStrip.Items.Insert(i, value.Items[key]!);
                     }
                 }
+
+                i++;
+                stringStart = stringEnd + 1;
             }
         }
     }

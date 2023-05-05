@@ -1886,18 +1886,16 @@ public abstract partial class CodeDomSerializerBase
                 if (manager.GetService<IReferenceService>() is { } refSvc)
                 {
                     objectName = refSvc.GetName(value);
-                    if (objectName is not null && objectName.Contains('.'))
+                    // This object name is built from sub objects.  Assemble the graph of sub objects.
+                    using BufferScope<Range> rangeBuffer = new(stackalloc Range[128]);
+                    int partsCount = objectName.AsSpan().Split(rangeBuffer, '.');
+                    if (partsCount > 0)
                     {
                         Trace(TraceLevel.Verbose, $"Resolving through IReferenceService : {objectName}");
 
-                        // This object name is built from sub objects.  Assemble the graph of sub objects.
-                        string[] nameParts = objectName.Split('.');
+                        object? baseInstance = manager.GetInstance(objectName![rangeBuffer[0]]);
 
-                        Debug.Assert(nameParts.Length > 0, "How can we fail to split when IndexOf succeeded?");
-
-                        object? baseInstance = manager.GetInstance(nameParts[0]);
-
-                        TraceIf(TraceLevel.Warning, baseInstance is null, $"Manager can't return an instance for object {nameParts[0]}");
+                        TraceIf(TraceLevel.Warning, baseInstance is null, $"Manager can't return an instance for object {objectName[rangeBuffer[0]]}");
                         if (baseInstance is not null)
                         {
                             CodeExpression? baseExpression = SerializeToExpression(manager, baseInstance);
@@ -1905,9 +1903,9 @@ public abstract partial class CodeDomSerializerBase
                             TraceIf(TraceLevel.Warning, baseExpression is null, $"Unable to serialize object {baseInstance} to an expression.");
                             if (baseExpression is not null)
                             {
-                                for (int idx = 1; idx < nameParts.Length; idx++)
+                                for (int idx = 1; idx < partsCount; idx++)
                                 {
-                                    baseExpression = new CodePropertyReferenceExpression(baseExpression, nameParts[idx]);
+                                    baseExpression = new CodePropertyReferenceExpression(baseExpression, objectName[rangeBuffer[idx]]);
                                 }
 
                                 expression = baseExpression;
