@@ -998,7 +998,7 @@ public class BindingSource : Component,
             }
 
             // Handle brackets
-            if (!current.IsEmpty && current[0] == '[')
+            if (current is ['[', ..])
             {
                 current = current[^1] == ']'
                     ? current[1..^1]

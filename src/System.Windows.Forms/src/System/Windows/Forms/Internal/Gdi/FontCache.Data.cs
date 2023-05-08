@@ -68,7 +68,7 @@ internal sealed partial class FontCache
             ReadOnlySpan<char> familyName = font.FontFamily.Name;
 
             // Strip vertical-font mark from the name if needed.
-            if (!familyName.IsEmpty && familyName[0] == '@')
+            if (familyName is ['@', ..])
             {
                 familyName = familyName.Slice(1);
             }
