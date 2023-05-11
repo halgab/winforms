@@ -1,5 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.CodeDom;
 
@@ -13,10 +14,9 @@ namespace System.ComponentModel.Design.Serialization;
 public class CodeDomSerializer : CodeDomSerializerBase
 {
     private static CodeDomSerializer? s_default;
-    private static readonly Attribute[] s_runTimeFilter = { DesignOnlyAttribute.No };
-    private static readonly Attribute[] s_designTimeFilter = { DesignOnlyAttribute.Yes };
-    private static readonly Attribute[] s_deserializeFilter = { BrowsableAttribute.Yes };
-    private static readonly CodeThisReferenceExpression s_thisRef = new();
+    private static readonly Attribute[] _runTimeFilter = new Attribute[] { DesignOnlyAttribute.No };
+    private static readonly Attribute[] _designTimeFilter = new Attribute[] { DesignOnlyAttribute.Yes };
+    private static readonly CodeThisReferenceExpression _thisRef = new CodeThisReferenceExpression();
 
     internal static CodeDomSerializer Default => s_default ??= new CodeDomSerializer();
 
@@ -64,12 +64,12 @@ public class CodeDomSerializer : CodeDomSerializerBase
                         instance = DeserializeStatementToInstance(manager, element);
                         if (instance is not null)
                         {
-                            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(instance, s_deserializeFilter);
+                            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(instance, new Attribute[] { BrowsableAttribute.Yes });
                             foreach (PropertyDescriptor prop in props)
                             {
                                 if (!prop.Attributes.Contains(DesignerSerializationVisibilityAttribute.Hidden) &&
                                     prop.Attributes.Contains(DesignerSerializationVisibilityAttribute.Content) &&
-                                    manager.GetSerializer(prop.PropertyType, typeof(CodeDomSerializer)) is not CollectionCodeDomSerializer)
+                                    !(manager.GetSerializer(prop.PropertyType, typeof(CodeDomSerializer)) is CollectionCodeDomSerializer))
                                 {
                                     ResetBrowsableProperties(prop.GetValue(instance));
                                 }
@@ -82,7 +82,7 @@ public class CodeDomSerializer : CodeDomSerializerBase
                     }
                 }
             }
-            else if (codeObject is not CodeStatement)
+            else if (codeObject is not CodeStatement statement)
             {
                 Debug.Fail("CodeDomSerializer::Deserialize requires a CodeExpression, CodeStatement or CodeStatementCollection to parse");
                 string supportedTypes = $"{nameof(CodeExpression)}, {nameof(CodeStatement)}, {nameof(CodeStatementCollection)}";
@@ -119,7 +119,7 @@ public class CodeDomSerializer : CodeDomSerializerBase
                 DeserializeStatement(manager, assign);
             }
         }
-        else if (statement is CodeVariableDeclarationStatement { InitExpression: not null } varDecl)
+        else if (statement is CodeVariableDeclarationStatement varDecl && varDecl.InitExpression is not null)
         {
             Trace(TraceLevel.Verbose, $"Initializing variable declaration for variable {varDecl.Name}");
             instance = DeserializeExpression(manager, varDecl.Name, varDecl.InitExpression);
@@ -183,21 +183,22 @@ public class CodeDomSerializer : CodeDomSerializerBase
                         }
                         else
                         {
+                            CodeExpression variableReference;
                             string varName = GetUniqueName(manager, value);
-                            string? varTypeName = TypeDescriptor.GetClassName(value);
+                            string varTypeName = TypeDescriptor.GetClassName(value)!;
 
-                            CodeVariableDeclarationStatement varDecl = new CodeVariableDeclarationStatement(varTypeName!, varName);
+                            CodeVariableDeclarationStatement varDecl = new CodeVariableDeclarationStatement(varTypeName, varName);
                             Trace(TraceLevel.Verbose, $"Generating local : {varName}");
                             varDecl.InitExpression = expression;
                             statements.Add(varDecl);
-                            CodeExpression variableReference = new CodeVariableReferenceExpression(varName);
+                            variableReference = new CodeVariableReferenceExpression(varName);
                             SetExpression(manager, value, variableReference);
                         }
 
                         // Finally, we need to walk properties and events for this object
-                        SerializePropertiesToResources(manager, statements, value, s_designTimeFilter);
-                        SerializeProperties(manager, statements, value, s_runTimeFilter);
-                        SerializeEvents(manager, statements, value, s_runTimeFilter);
+                        SerializePropertiesToResources(manager, statements, value, _designTimeFilter);
+                        SerializeProperties(manager, statements, value, _runTimeFilter);
+                        SerializeEvents(manager, statements, value, _runTimeFilter);
                         result = statements;
                     }
                 }
@@ -333,11 +334,11 @@ public class CodeDomSerializer : CodeDomSerializerBase
                         if (referenceName && dotIndex != -1)
                         {
                             // if it's a reference name with a dot, we've actually got a property here...
-                            expression = new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(s_thisRef, name.Substring(0, dotIndex)), name.Substring(dotIndex + 1));
+                            expression = new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(_thisRef, name.Substring(0, dotIndex)), name.Substring(dotIndex + 1));
                         }
                         else
                         {
-                            expression = new CodeFieldReferenceExpression(s_thisRef, name);
+                            expression = new CodeFieldReferenceExpression(_thisRef, name);
                         }
                     }
                 }
