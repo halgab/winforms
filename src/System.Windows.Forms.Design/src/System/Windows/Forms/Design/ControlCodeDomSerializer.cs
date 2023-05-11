@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.CodeDom;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -22,14 +20,14 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
     ///  will use the serialization manager to create objects and resolve
     ///  data types.  The root of the object graph is returned.
     /// </summary>
-    public override object Deserialize(IDesignerSerializationManager manager, object codeObject)
+    public override object? Deserialize(IDesignerSerializationManager manager, object codeObject)
     {
         ArgumentNullException.ThrowIfNull(manager);
         ArgumentNullException.ThrowIfNull(codeObject);
 
         //Attempt to suspend all components within the icontainer
-        IContainer container = (IContainer)manager.GetService(typeof(IContainer));
-        List<Control> suspendedComponents = null;
+        IContainer? container = (IContainer?)manager.GetService(typeof(IContainer));
+        List<Control>? suspendedComponents = null;
 
         if (container is not null)
         {
@@ -37,7 +35,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
 
             foreach (IComponent comp in container.Components)
             {
-                Control control = comp as Control;
+                Control? control = comp as Control;
 
                 if (control is not null)
                 {
@@ -49,12 +47,12 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             }
         }
 
-        object objectGraphData = null;
+        object? objectGraphData = null;
 
         try
         {
             // Find our base class's serializer.
-            CodeDomSerializer serializer = (CodeDomSerializer)manager.GetSerializer(typeof(Component), typeof(CodeDomSerializer));
+            CodeDomSerializer? serializer = (CodeDomSerializer?)manager.GetSerializer(typeof(Component), typeof(CodeDomSerializer));
 
             if (serializer is null)
             {
@@ -104,7 +102,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
 
         foreach (Control c in parent.Controls)
         {
-            InheritanceAttribute ia = (InheritanceAttribute)TypeDescriptor.GetAttributes(c)[typeof(InheritanceAttribute)];
+            InheritanceAttribute? ia = (InheritanceAttribute?)TypeDescriptor.GetAttributes(c)[typeof(InheritanceAttribute)];
 
             if (ia is not null && ia.InheritanceLevel != InheritanceLevel.NotInherited)
             {
@@ -136,7 +134,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             if (c.Site is not null && c.Site.DesignMode)
             {
                 // We only emit Size/Location information for controls that are sited and not inherited readonly.
-                InheritanceAttribute ia = (InheritanceAttribute)TypeDescriptor.GetAttributes(c)[typeof(InheritanceAttribute)];
+                InheritanceAttribute? ia = (InheritanceAttribute?)TypeDescriptor.GetAttributes(c)[typeof(InheritanceAttribute)];
 
                 if (ia is not null && ia.InheritanceLevel != InheritanceLevel.InheritedReadOnly)
                 {
@@ -151,13 +149,13 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
     /// <summary>
     ///  Serializes the given object into a CodeDom object.
     /// </summary>
-    public override object Serialize(IDesignerSerializationManager manager, object value)
+    public override object? Serialize(IDesignerSerializationManager manager, object value)
     {
         ArgumentNullException.ThrowIfNull(manager);
         ArgumentNullException.ThrowIfNull(value);
 
         // Find our base class's serializer.
-        CodeDomSerializer serializer = (CodeDomSerializer)manager.GetSerializer(typeof(Component), typeof(CodeDomSerializer));
+        CodeDomSerializer? serializer = (CodeDomSerializer?)manager.GetSerializer(typeof(Component), typeof(CodeDomSerializer));
 
         if (serializer is null)
         {
@@ -167,8 +165,8 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
         }
 
         // Now ask it to serializer
-        object retVal = serializer.Serialize(manager, value);
-        InheritanceAttribute inheritanceAttribute = (InheritanceAttribute)TypeDescriptor.GetAttributes(value)[typeof(InheritanceAttribute)];
+        object? retVal = serializer.Serialize(manager, value);
+        InheritanceAttribute? inheritanceAttribute = (InheritanceAttribute?)TypeDescriptor.GetAttributes(value)[typeof(InheritanceAttribute)];
         InheritanceLevel inheritanceLevel = InheritanceLevel.NotInherited;
 
         if (inheritanceAttribute is not null)
@@ -185,19 +183,19 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             // there will be no resource manager for us.  I'm letting that slip a bit, however, because
             // for Control classes, we always emit at least the location / size information for the
             // control.
-            IDesignerHost host = (IDesignerHost)manager.GetService(typeof(IDesignerHost));
+            IDesignerHost? host = (IDesignerHost?)manager.GetService(typeof(IDesignerHost));
 
             if (host is not null)
             {
-                PropertyDescriptor prop = TypeDescriptor.GetProperties(host.RootComponent)["Localizable"];
+                PropertyDescriptor? prop = TypeDescriptor.GetProperties(host.RootComponent)["Localizable"];
 
-                if (prop is not null && prop.PropertyType == typeof(bool) && ((bool)prop.GetValue(host.RootComponent)))
+                if (prop is not null && prop.PropertyType == typeof(bool) && ((bool)prop.GetValue(host.RootComponent)!))
                 {
                     SerializeControlHierarchy(manager, host, value);
                 }
             }
 
-            CodeStatementCollection csCollection = retVal as CodeStatementCollection;
+            CodeStatementCollection? csCollection = retVal as CodeStatementCollection;
 
             if (csCollection is not null)
             {
@@ -209,7 +207,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 {
                     SerializeSuspendLayout(manager, csCollection, value);
                     SerializeResumeLayout(manager, csCollection, value);
-                    ControlDesigner controlDesigner = host.GetDesigner(control) as ControlDesigner;
+                    ControlDesigner? controlDesigner = host!.GetDesigner(control) as ControlDesigner;
 
                     if (HasAutoSizedChildren(control) || (controlDesigner is not null && controlDesigner.SerializePerformLayout))
                     {
@@ -234,13 +232,13 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
     /// </summary>
     private void SerializeControlHierarchy(IDesignerSerializationManager manager, IDesignerHost host, object value)
     {
-        Control control = value as Control;
+        Control? control = value as Control;
 
         if (control is not null)
         {
             // Object name
-            string name;
-            IMultitargetHelperService mthelperSvc = host.GetService(typeof(IMultitargetHelperService)) as IMultitargetHelperService;
+            string? name;
+            IMultitargetHelperService? mthelperSvc = host.GetService(typeof(IMultitargetHelperService)) as IMultitargetHelperService;
 
             if (control == host.RootComponent)
             {
@@ -263,8 +261,8 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                     }
 
                     // Now emit the data
-                    string componentName = manager.GetName(component);
-                    string componentTypeName = mthelperSvc is null ? component.GetType().AssemblyQualifiedName : mthelperSvc.GetAssemblyQualifiedName(component.GetType());
+                    string? componentName = manager.GetName(component);
+                    string? componentTypeName = mthelperSvc is null ? component.GetType().AssemblyQualifiedName : mthelperSvc.GetAssemblyQualifiedName(component.GetType());
 
                     if (componentName is not null)
                     {
@@ -291,11 +289,11 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             SerializeResourceInvariant(manager, $">>{name}.Type", mthelperSvc is null ? control.GetType().AssemblyQualifiedName : mthelperSvc.GetAssemblyQualifiedName(control.GetType()));
 
             // Parent
-            Control parent = control.Parent;
+            Control? parent = control.Parent;
 
             if (parent is not null && parent.Site is not null)
             {
-                string parentName;
+                string? parentName;
 
                 if (parent == host.RootComponent)
                 {
@@ -350,21 +348,22 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
     /// <summary>
     ///  Serializes a method invocation on the control being serialized.  Used to serialize Suspend/ResumeLayout pairs, etc.
     /// </summary>
-    private void SerializeMethodInvocation(IDesignerSerializationManager manager, CodeStatementCollection statements, object control, string methodName, CodeExpressionCollection parameters, Type[] paramTypes, StatementOrdering ordering)
+    private void SerializeMethodInvocation(IDesignerSerializationManager manager, CodeStatementCollection statements, object control, string methodName, CodeExpressionCollection? parameters, Type[] paramTypes, StatementOrdering ordering)
     {
         using (TraceScope($"ControlCodeDomSerializer::SerializeMethodInvocation({methodName})"))
         {
-            string name = manager.GetName(control);
+            string? name = manager.GetName(control);
             Trace(TraceLevel.Verbose, $"{name}.{methodName}");
 
             // Use IReflect to see if this method name exists on the control.
             paramTypes = ToTargetTypes(control, paramTypes);
-            MethodInfo mi = TypeDescriptor.GetReflectionType(control).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance, null, paramTypes, null);
+            MethodInfo? mi = TypeDescriptor.GetReflectionType(control).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance, null, paramTypes, null);
 
             if (mi is not null)
             {
-                CodeExpression field = SerializeToExpression(manager, control);
-                CodeMethodReferenceExpression method = new CodeMethodReferenceExpression(field, methodName);
+                CodeExpression? field = SerializeToExpression(manager, control);
+                // TODO: remove ! when CodeMethodReferenceExpression is null-annotated
+                CodeMethodReferenceExpression method = new CodeMethodReferenceExpression(field!, methodName);
                 CodeMethodInvokeExpression methodInvoke = new CodeMethodInvokeExpression();
                 methodInvoke.Method = method;
 
@@ -427,28 +426,28 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 // (b) not being privately inherited
                 Control child = control.Controls[i];
 
-                if (child.Site is null || child.Site.Container != control.Site.Container)
+                if (child.Site is null || child.Site.Container != control.Site!.Container)
                 {
                     continue;
                 }
 
-                InheritanceAttribute attr = (InheritanceAttribute)TypeDescriptor.GetAttributes(child)[typeof(InheritanceAttribute)];
+                InheritanceAttribute? attr = (InheritanceAttribute?)TypeDescriptor.GetAttributes(child)[typeof(InheritanceAttribute)];
 
-                if (attr.InheritanceLevel == InheritanceLevel.InheritedReadOnly)
+                if (attr!.InheritanceLevel == InheritanceLevel.InheritedReadOnly)
                 {
                     continue;
                 }
 
                 // Create the "control.Controls.SetChildIndex" call
-                CodeExpression controlsCollection = new CodePropertyReferenceExpression(SerializeToExpression(manager, control), "Controls");
+                CodeExpression controlsCollection = new CodePropertyReferenceExpression(SerializeToExpression(manager, control)!, "Controls");
                 CodeMethodReferenceExpression method = new CodeMethodReferenceExpression(controlsCollection, "SetChildIndex");
                 CodeMethodInvokeExpression methodInvoke = new CodeMethodInvokeExpression();
                 methodInvoke.Method = method;
 
                 // Fill in parameters
-                CodeExpression childControl = SerializeToExpression(manager, child);
+                CodeExpression childControl = SerializeToExpression(manager, child)!;
                 methodInvoke.Parameters.Add(childControl);
-                methodInvoke.Parameters.Add(SerializeToExpression(manager, 0));
+                methodInvoke.Parameters.Add(SerializeToExpression(manager, 0)!);
                 CodeExpressionStatement statement = new CodeExpressionStatement(methodInvoke);
                 statements.Add(statement);
             }
