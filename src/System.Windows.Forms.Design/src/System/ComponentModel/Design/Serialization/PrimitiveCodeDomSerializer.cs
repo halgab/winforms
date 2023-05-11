@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.CodeDom;
 
 namespace System.ComponentModel.Design.Serialization;
@@ -12,32 +10,24 @@ namespace System.ComponentModel.Design.Serialization;
 /// </summary>
 internal class PrimitiveCodeDomSerializer : CodeDomSerializer
 {
-    private static PrimitiveCodeDomSerializer s_defaultSerializer;
+    private static PrimitiveCodeDomSerializer? s_defaultSerializer;
 
     /// <summary>
     ///  Retrieves a default static instance of this serializer.
     /// </summary>
-    internal static new PrimitiveCodeDomSerializer Default
-    {
-        get
-        {
-            s_defaultSerializer ??= new PrimitiveCodeDomSerializer();
-
-            return s_defaultSerializer;
-        }
-    }
+    internal static new PrimitiveCodeDomSerializer Default => s_defaultSerializer ??= new PrimitiveCodeDomSerializer();
 
     /// <summary>
     ///  Serializes the given object into a CodeDom object.
     /// </summary>
-    public override object Serialize(IDesignerSerializationManager manager, object value)
+    public override object? Serialize(IDesignerSerializationManager manager, object value)
     {
         using (TraceScope($"PrimitiveCodeDomSerializer::{nameof(Serialize)}"))
         {
             Trace(TraceLevel.Verbose, $"Value: {(value is null ? "(null)" : value.ToString())}");
         }
 
-        CodeExpression expression = new CodePrimitiveExpression(value);
+        CodeExpression? expression = new CodePrimitiveExpression(value!);
 
         if (value is null)
         {
@@ -54,7 +44,7 @@ internal class PrimitiveCodeDomSerializer : CodeDomSerializer
             return expression;
         }
 
-        if (!(value is bool || value is char || value is int || value is float || value is double))
+        if (value is not (bool or char or int or float or double))
         {
             // Generate a cast for all other types because we won't parse them properly otherwise
             // because we won't know to convert them to the narrow form.
