@@ -26,18 +26,17 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
         ArgumentNullException.ThrowIfNull(codeObject);
 
         //Attempt to suspend all components within the icontainer
-        IContainer? container = (IContainer?)manager.GetService(typeof(IContainer));
+        IContainer? container = manager.GetService<IContainer>();
+        ComponentCollection? components = container?.Components;
         List<Control>? suspendedComponents = null;
 
-        if (container is not null)
+        if (components?.Count > 0)
         {
-            suspendedComponents = new(container.Components.Count);
+            suspendedComponents = new(components.Count);
 
-            foreach (IComponent comp in container.Components)
+            foreach (IComponent comp in components)
             {
-                Control? control = comp as Control;
-
-                if (control is not null)
+                if (comp is Control control)
                 {
                     control.SuspendLayout();
 
@@ -52,9 +51,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
         try
         {
             // Find our base class's serializer.
-            CodeDomSerializer? serializer = (CodeDomSerializer?)manager.GetSerializer(typeof(Component), typeof(CodeDomSerializer));
-
-            if (serializer is null)
+            if (!manager.TryGetSerializer(typeof(Component), out CodeDomSerializer? serializer))
             {
                 Debug.Fail("Unable to find a CodeDom serializer for 'Component'. Has someone tampered with the serialization providers?");
 
@@ -102,9 +99,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
 
         foreach (Control c in parent.Controls)
         {
-            InheritanceAttribute? ia = (InheritanceAttribute?)TypeDescriptor.GetAttributes(c)[typeof(InheritanceAttribute)];
-
-            if (ia is not null && ia.InheritanceLevel != InheritanceLevel.NotInherited)
+            if (TypeDescriptorHelper.TryGetAttribute(c, out InheritanceAttribute? ia) && ia.InheritanceLevel != InheritanceLevel.NotInherited)
             {
                 inheritedChildren = true;
             }
@@ -134,9 +129,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             if (c.Site is not null && c.Site.DesignMode)
             {
                 // We only emit Size/Location information for controls that are sited and not inherited readonly.
-                InheritanceAttribute? ia = (InheritanceAttribute?)TypeDescriptor.GetAttributes(c)[typeof(InheritanceAttribute)];
-
-                if (ia is not null && ia.InheritanceLevel != InheritanceLevel.InheritedReadOnly)
+                if (TypeDescriptorHelper.TryGetAttribute(c, out InheritanceAttribute? ia) && ia.InheritanceLevel != InheritanceLevel.InheritedReadOnly)
                 {
                     return true;
                 }
@@ -155,9 +148,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
         ArgumentNullException.ThrowIfNull(value);
 
         // Find our base class's serializer.
-        CodeDomSerializer? serializer = (CodeDomSerializer?)manager.GetSerializer(typeof(Component), typeof(CodeDomSerializer));
-
-        if (serializer is null)
+        if (!manager.TryGetSerializer(typeof(Component), out CodeDomSerializer? serializer))
         {
             Debug.Fail("Unable to find a CodeDom serializer for 'Component'.  Has someone tampered with the serialization providers?");
 
@@ -166,10 +157,9 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
 
         // Now ask it to serializer
         object? retVal = serializer.Serialize(manager, value);
-        InheritanceAttribute? inheritanceAttribute = (InheritanceAttribute?)TypeDescriptor.GetAttributes(value)[typeof(InheritanceAttribute)];
         InheritanceLevel inheritanceLevel = InheritanceLevel.NotInherited;
 
-        if (inheritanceAttribute is not null)
+        if (TypeDescriptorHelper.TryGetAttribute(value, out InheritanceAttribute? inheritanceAttribute))
         {
             inheritanceLevel = inheritanceAttribute.InheritanceLevel;
         }
@@ -183,7 +173,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             // there will be no resource manager for us.  I'm letting that slip a bit, however, because
             // for Control classes, we always emit at least the location / size information for the
             // control.
-            IDesignerHost? host = (IDesignerHost?)manager.GetService(typeof(IDesignerHost));
+            IDesignerHost? host = manager.GetService<IDesignerHost>();
 
             if (host is not null)
             {
@@ -195,9 +185,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 }
             }
 
-            CodeStatementCollection? csCollection = retVal as CodeStatementCollection;
-
-            if (csCollection is not null)
+            if (retVal is CodeStatementCollection csCollection)
             {
                 Control control = (Control)value;
 
@@ -207,9 +195,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 {
                     SerializeSuspendLayout(manager, csCollection, value);
                     SerializeResumeLayout(manager, csCollection, value);
-                    ControlDesigner? controlDesigner = host!.GetDesigner(control) as ControlDesigner;
-
-                    if (HasAutoSizedChildren(control) || (controlDesigner is not null && controlDesigner.SerializePerformLayout))
+                    if (HasAutoSizedChildren(control) || (host!.GetDesigner(control) is ControlDesigner controlDesigner && controlDesigner.SerializePerformLayout))
                     {
                         SerializePerformLayout(manager, csCollection, value);
                     }
@@ -232,13 +218,11 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
     /// </summary>
     private void SerializeControlHierarchy(IDesignerSerializationManager manager, IDesignerHost host, object value)
     {
-        Control? control = value as Control;
-
-        if (control is not null)
+        if (value is Control control)
         {
             // Object name
             string? name;
-            IMultitargetHelperService? mthelperSvc = host.GetService(typeof(IMultitargetHelperService)) as IMultitargetHelperService;
+            IMultitargetHelperService? mthelperSvc = host.GetService<IMultitargetHelperService>();
 
             if (control == host.RootComponent)
             {
@@ -262,10 +246,10 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
 
                     // Now emit the data
                     string? componentName = manager.GetName(component);
-                    string? componentTypeName = mthelperSvc is null ? component.GetType().AssemblyQualifiedName : mthelperSvc.GetAssemblyQualifiedName(component.GetType());
 
                     if (componentName is not null)
                     {
+                        string? componentTypeName = mthelperSvc is null ? component.GetType().AssemblyQualifiedName : mthelperSvc.GetAssemblyQualifiedName(component.GetType());
                         SerializeResourceInvariant(manager, $">>{componentName}.Name", componentName);
                         SerializeResourceInvariant(manager, $">>{componentName}.Type", componentTypeName);
                     }
@@ -278,7 +262,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 // if we get null back, this must be an unsited control
                 if (name is null)
                 {
-                    Debug.Assert(!(value is IComponent) || ((IComponent)value).Site is null, "Unnamed, sited control in hierarchy");
+                    Debug.Assert(value is not IComponent component || component.Site is null, "Unnamed, sited control in hierarchy");
                     return;
                 }
             }
@@ -291,7 +275,7 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
             // Parent
             Control? parent = control.Parent;
 
-            if (parent is not null && parent.Site is not null)
+            if (parent?.Site is not null)
             {
                 string? parentName;
 
@@ -310,13 +294,10 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
                 }
 
                 // Z-Order
-                for (int i = 0; i < parent.Controls.Count; i++)
+                int i = parent.Controls.IndexOf(control);
+                if (i >= 0)
                 {
-                    if (parent.Controls[i] == control)
-                    {
-                        SerializeResourceInvariant(manager, $">>{name}.ZOrder", i);
-                        break;
-                    }
+                    SerializeResourceInvariant(manager, $">>{name}.ZOrder", i);
                 }
             }
         }
