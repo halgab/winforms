@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.CodeDom;
 
 namespace System.ComponentModel.Design.Serialization;
@@ -12,44 +10,36 @@ namespace System.ComponentModel.Design.Serialization;
 /// </summary>
 internal class EnumCodeDomSerializer : CodeDomSerializer
 {
-    private static EnumCodeDomSerializer s_defaultSerializer;
+    private static EnumCodeDomSerializer? s_defaultSerializer;
 
     /// <summary>
     ///  Retrieves a default static instance of this serializer.
     /// </summary>
-    internal static new EnumCodeDomSerializer Default
-    {
-        get
-        {
-            s_defaultSerializer ??= new EnumCodeDomSerializer();
-
-            return s_defaultSerializer;
-        }
-    }
+    internal static new EnumCodeDomSerializer Default => s_defaultSerializer ??= new EnumCodeDomSerializer();
 
     /// <summary>
     ///  Serializes the given object into a CodeDom object.
     /// </summary>
-    public override object Serialize(IDesignerSerializationManager manager, object value)
+    public override object? Serialize(IDesignerSerializationManager manager, object value)
     {
-        CodeExpression expression = null;
+        CodeExpression? expression = null;
 
         using (TraceScope($"EnumCodeDomSerializer::{nameof(Serialize)}"))
         {
             Trace(TraceLevel.Verbose, $"Type: {(value is null ? "(null)" : value.GetType().Name)}");
-            if (value is Enum)
+            if (value is Enum enumValue)
             {
-                bool needCast = false;
+                bool needCast;
                 Enum[] values;
                 TypeConverter converter = TypeDescriptor.GetConverter(value);
                 if (converter is not null && converter.CanConvertTo(typeof(Enum[])))
                 {
-                    values = (Enum[])converter.ConvertTo(value, typeof(Enum[]));
+                    values = (Enum[])converter.ConvertTo(value, typeof(Enum[]))!;
                     needCast = (values.Length > 1);
                 }
                 else
                 {
-                    values = new Enum[] { (Enum)value };
+                    values = new Enum[] { enumValue };
                     needCast = true;
                 }
 
@@ -72,11 +62,11 @@ internal class EnumCodeDomSerializer : CodeDomSerializer
                 TypeConverter enumConverter = new EnumConverter(value.GetType());
                 foreach (Enum term in values)
                 {
-                    string termString = enumConverter?.ConvertToString(term);
-                    CodeExpression newExpression = !string.IsNullOrEmpty(termString) ? new CodeFieldReferenceExpression(enumType, termString) : null;
+                    string? termString = enumConverter.ConvertToString(term);
 
-                    if (newExpression is not null)
+                    if (!string.IsNullOrEmpty(termString))
                     {
+                        CodeExpression newExpression = new CodeFieldReferenceExpression(enumType, termString);
                         if (expression is null)
                         {
                             expression = newExpression;
