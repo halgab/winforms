@@ -64,7 +64,7 @@ public class CollectionCodeDomSerializer : CodeDomSerializer
         }
 
         // now walk through and delete existing values
-        ArrayList? result = null;
+        List<object>? result = null;
         // now compute the delta.
         for (int i = 0; i < modified.Count && modifiedEnum.MoveNext(); i++)
         {
@@ -75,7 +75,7 @@ public class CollectionCodeDomSerializer : CodeDomSerializer
                 // we've got one we need to remove, so  create our array list, and push all the values we've passed into it.
                 if (result is null)
                 {
-                    result = new ArrayList();
+                    result = new List<object>();
                     modifiedEnum.Reset();
                     for (int n = 0; n < i && modifiedEnum.MoveNext(); n++)
                     {
@@ -99,7 +99,9 @@ public class CollectionCodeDomSerializer : CodeDomSerializer
                 }
             }
             else                     // this one isn't in the old list, so add it to our  result list.
+            {
                 result?.Add(value);
+            }
 
             // this item isn't in the list and we haven't yet created our array list so just keep on going.
         }
@@ -589,7 +591,7 @@ public class CollectionCodeDomSerializer : CodeDomSerializer
 
             if (valuesToSerialize.Count > 0)
             {
-                ArrayList arrayList = new ArrayList(valuesToSerialize.Count);
+                List<CodeExpression> arrayList = new(valuesToSerialize.Count);
                 foreach (object o in valuesToSerialize)
                 {
                     // If this object is being privately inherited, it cannot be inside this collection.
