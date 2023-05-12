@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.CodeDom;
 using System.Globalization;
 
@@ -17,7 +15,7 @@ internal class ResourcePropertyMemberCodeDomSerializer : MemberCodeDomSerializer
     private readonly CodeDomLocalizationModel _model;
     private readonly MemberCodeDomSerializer _serializer;
     private readonly CodeDomLocalizationProvider.LanguageExtenders _extender;
-    private CultureInfo localizationLanguage;
+    private CultureInfo? localizationLanguage;
 
     internal ResourcePropertyMemberCodeDomSerializer(MemberCodeDomSerializer serializer, CodeDomLocalizationProvider.LanguageExtenders extender, CodeDomLocalizationModel model)
     {
@@ -49,35 +47,29 @@ internal class ResourcePropertyMemberCodeDomSerializer : MemberCodeDomSerializer
         }
     }
 
-    private CultureInfo GetLocalizationLanguage(IDesignerSerializationManager manager)
+    private CultureInfo? GetLocalizationLanguage(IDesignerSerializationManager manager)
     {
         if (localizationLanguage is null)
         {
             // Check to see if our base component's localizable prop is true
-            RootContext rootCtx = manager.Context[typeof(RootContext)] as RootContext;
-
-            if (rootCtx is not null)
+            if (manager.TryGetContext(out RootContext? rootCtx))
             {
                 object comp = rootCtx.Value;
-                PropertyDescriptor prop = TypeDescriptor.GetProperties(comp)["LoadLanguage"];
-
-                if (prop is not null && prop.PropertyType == typeof(CultureInfo))
-                {
-                    localizationLanguage = (CultureInfo)prop.GetValue(comp);
-                }
+                PropertyDescriptor? prop = TypeDescriptor.GetProperties(comp)["LoadLanguage"];
+                localizationLanguage = prop?.GetValue<CultureInfo>(comp);
             }
         }
 
         return localizationLanguage;
     }
 
-    private void OnSerializationComplete(object sender, EventArgs e)
+    private void OnSerializationComplete(object? sender, EventArgs e)
     {
         // we do the cleanup here and clear out the cache of the localizedlanguage
         localizationLanguage = null;
 
         //unhook the event
-        IDesignerSerializationManager manager = sender as IDesignerSerializationManager;
+        IDesignerSerializationManager? manager = sender as IDesignerSerializationManager;
         Debug.Assert(manager is not null, "manager should not be null!");
 
         if (manager is not null)
@@ -119,12 +111,9 @@ internal class ResourcePropertyMemberCodeDomSerializer : MemberCodeDomSerializer
                     // If this property contains its default value, we still want to serialize it if we are in
                     // localization mode if we are writing to the default culture, but only if the object
                     // is not inherited.
-                    InheritanceAttribute inheritance = (InheritanceAttribute)manager.Context[typeof(InheritanceAttribute)];
-
-                    if (inheritance is null)
+                    if (!manager.TryGetContext(out InheritanceAttribute? inheritance) && !TypeDescriptorHelper.TryGetAttribute(value, out inheritance))
                     {
-                        inheritance = (InheritanceAttribute)TypeDescriptor.GetAttributes(value)[typeof(InheritanceAttribute)];
-                        inheritance ??= InheritanceAttribute.NotInherited;
+                        inheritance = InheritanceAttribute.NotInherited;
                     }
 
                     if (inheritance.InheritanceLevel != InheritanceLevel.InheritedReadOnly)
