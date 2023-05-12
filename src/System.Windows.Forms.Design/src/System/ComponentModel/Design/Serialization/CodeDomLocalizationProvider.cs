@@ -1,9 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
-using System.Collections;
 using System.Globalization;
 using System.Resources;
 
@@ -20,10 +17,9 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
 {
     private IExtenderProviderService _providerService;
     private readonly CodeDomLocalizationModel _model;
-    private readonly CultureInfo[] _supportedCultures;
     private LanguageExtenders _extender;
-    private Hashtable _memberSerializers;
-    private Hashtable _nopMemberSerializers;
+    private Dictionary<object, ResourcePropertyMemberCodeDomSerializer>? _memberSerializers;
+    private Dictionary<object, ResourcePropertyMemberCodeDomSerializer>? _nopMemberSerializers;
 
     /// <summary>
     ///  Creates a new adapter and attaches it to the serialization manager.  This
@@ -32,12 +28,8 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
     ///  and provide the Language and Localizable properties.  The latter piece is only
     ///  supplied if CodeDomLocalizationModel is not �none�.
     /// </summary>
-    public CodeDomLocalizationProvider(IServiceProvider provider, CodeDomLocalizationModel model)
+    public CodeDomLocalizationProvider(IServiceProvider provider, CodeDomLocalizationModel model) : this(provider, model, null)
     {
-        ArgumentNullException.ThrowIfNull(provider);
-
-        _model = model;
-        Initialize(provider);
     }
 
     /// <summary>
@@ -47,14 +39,17 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
     ///  and provide the Language and Localizable properties.  The latter piece is only
     ///  supplied if CodeDomLocalizationModel is not �none�.
     /// </summary>
-    public CodeDomLocalizationProvider(IServiceProvider provider, CodeDomLocalizationModel model, CultureInfo[] supportedCultures)
+    public CodeDomLocalizationProvider(IServiceProvider provider, CodeDomLocalizationModel model, CultureInfo[]? supportedCultures)
     {
         ArgumentNullException.ThrowIfNull(provider);
-        ArgumentNullException.ThrowIfNull(supportedCultures);
 
         _model = model;
-        _supportedCultures = (CultureInfo[])supportedCultures.Clone();
-        Initialize(provider);
+        _providerService = provider.GetService<IExtenderProviderService>() ??
+            throw new NotSupportedException(string.Format(SR.LocalizationProviderMissingService,
+                nameof(IExtenderProviderService)));
+
+        _extender = new LanguageExtenders(provider, (CultureInfo[]?)supportedCultures?.Clone());
+        _providerService.AddExtenderProvider(_extender);
     }
 
     /// <summary>
@@ -65,32 +60,16 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
         if (_providerService is not null && _extender is not null)
         {
             _providerService.RemoveExtenderProvider(_extender);
-            _providerService = null;
-            _extender = null;
+            _providerService = null!;
+            _extender = null!;
         }
-    }
-
-    /// <summary>
-    ///  Adds our extended properties.
-    /// </summary>
-    private void Initialize(IServiceProvider provider)
-    {
-        _providerService = provider.GetService(typeof(IExtenderProviderService)) as IExtenderProviderService;
-
-        if (_providerService is null)
-        {
-            throw new NotSupportedException(string.Format(SR.LocalizationProviderMissingService, nameof(IExtenderProviderService)));
-        }
-
-        _extender = new LanguageExtenders(provider, _supportedCultures);
-        _providerService.AddExtenderProvider(_extender);
     }
 
     #region IDesignerSerializationProvider Members
     /// <summary>
     ///  Returns a code dom serializer
     /// </summary>
-    private static object GetCodeDomSerializer(IDesignerSerializationManager manager, object currentSerializer, Type objectType, Type serializerType)
+    private static LocalizationCodeDomSerializer? GetCodeDomSerializer(IDesignerSerializationManager manager, object? currentSerializer, Type? objectType)
     {
         if (currentSerializer is null)
         {
@@ -119,12 +98,9 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
 
         // Compute a localization model based on the property, localization mode,
         // and what (if any) serializer already exists
-        CodeDomLocalizationModel model = CodeDomLocalizationModel.None;
-        object modelObj = manager.Context[typeof(CodeDomLocalizationModel)];
-
-        if (modelObj is not null)
+        if (!manager.TryGetContext(out CodeDomLocalizationModel model))
         {
-            model = (CodeDomLocalizationModel)modelObj;
+            model = CodeDomLocalizationModel.None;
         }
 
         //Nifty, but this causes everything to be loc'd because our provider
@@ -144,7 +120,7 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
     /// <summary>
     ///  Returns a code dom serializer for members.
     /// </summary>
-    private object GetMemberCodeDomSerializer(IDesignerSerializationManager manager, object currentSerializer, Type objectType, Type serializerType)
+    private ResourcePropertyMemberCodeDomSerializer? GetMemberCodeDomSerializer(IDesignerSerializationManager manager, object? currentSerializer, Type? objectType)
     {
         CodeDomLocalizationModel model = _model;
 
@@ -177,39 +153,25 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
         }
 
         // Fish the property out of the context to see if the property is localizable.
-        PropertyDescriptor serializingProperty = manager.Context[typeof(PropertyDescriptor)] as PropertyDescriptor;
-
-        if (serializingProperty is null || !serializingProperty.IsLocalizable)
+        if (!manager.TryGetContext(out PropertyDescriptor? serializingProperty) || !serializingProperty.IsLocalizable)
         {
             model = CodeDomLocalizationModel.None;
         }
 
-        _memberSerializers ??= new Hashtable();
-
-        _nopMemberSerializers ??= new Hashtable();
-
-        object newSerializer;
+        Dictionary<object, ResourcePropertyMemberCodeDomSerializer> serializers;
         if (model == CodeDomLocalizationModel.None)
         {
-            newSerializer = _nopMemberSerializers[currentSerializer];
+            serializers = _nopMemberSerializers ??= new();
         }
         else
         {
-            newSerializer = _memberSerializers[currentSerializer];
+            serializers = _memberSerializers ??= new();
         }
 
-        if (newSerializer is null)
+        if (!serializers.TryGetValue(currentSerializer, out ResourcePropertyMemberCodeDomSerializer? newSerializer))
         {
             newSerializer = new ResourcePropertyMemberCodeDomSerializer((MemberCodeDomSerializer)currentSerializer, _extender, model);
-
-            if (model == CodeDomLocalizationModel.None)
-            {
-                _nopMemberSerializers[currentSerializer] = newSerializer;
-            }
-            else
-            {
-                _memberSerializers[currentSerializer] = newSerializer;
-            }
+            serializers[currentSerializer] = newSerializer;
         }
 
         return newSerializer;
@@ -218,15 +180,15 @@ public sealed partial class CodeDomLocalizationProvider : IDisposable, IDesigner
     /// <summary>
     ///  Returns an appropriate serializer for the object.
     /// </summary>
-    object IDesignerSerializationProvider.GetSerializer(IDesignerSerializationManager manager, object currentSerializer, Type objectType, Type serializerType)
+    object? IDesignerSerializationProvider.GetSerializer(IDesignerSerializationManager manager, object? currentSerializer, Type? objectType, Type serializerType)
     {
         if (serializerType == typeof(CodeDomSerializer))
         {
-            return GetCodeDomSerializer(manager, currentSerializer, objectType, serializerType);
+            return GetCodeDomSerializer(manager, currentSerializer, objectType);
         }
         else if (serializerType == typeof(MemberCodeDomSerializer))
         {
-            return GetMemberCodeDomSerializer(manager, currentSerializer, objectType, serializerType);
+            return GetMemberCodeDomSerializer(manager, currentSerializer, objectType);
         }
 
         return null; // don't understand this type of serializer.

@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.Globalization;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -20,23 +18,21 @@ public sealed partial class CodeDomLocalizationProvider
     internal class LanguageExtenders : IExtenderProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDesignerHost _host;
-        private IComponent _lastRoot;
-        private readonly TypeConverter.StandardValuesCollection _supportedCultures;
+        private readonly IDesignerHost? _host;
+        private IComponent? _lastRoot;
         private bool _localizable;
-        private CultureInfo _language;
-        private CultureInfo _loadLanguage;
-        private CultureInfo _defaultLanguage;
+        private CultureInfo? _language;
+        private CultureInfo? _loadLanguage;
 
-        public LanguageExtenders(IServiceProvider serviceProvider, CultureInfo[] supportedCultures)
+        public LanguageExtenders(IServiceProvider serviceProvider, CultureInfo[]? supportedCultures)
         {
             _serviceProvider = serviceProvider;
-            _host = serviceProvider.GetService(typeof(IDesignerHost)) as IDesignerHost;
+            _host = serviceProvider.GetService<IDesignerHost>();
             _language = CultureInfo.InvariantCulture;
 
             if (supportedCultures is not null)
             {
-                _supportedCultures = new TypeConverter.StandardValuesCollection(supportedCultures);
+                SupportedCultures = new TypeConverter.StandardValuesCollection(supportedCultures);
             }
         }
 
@@ -44,36 +40,17 @@ public sealed partial class CodeDomLocalizationProvider
         ///  A collection of custom supported cultures.  This can be null, indicating that the
         ///  type converter should use the default set of supported cultures.
         /// </summary>
-        internal TypeConverter.StandardValuesCollection SupportedCultures
-        {
-            get
-            {
-                return _supportedCultures;
-            }
-        }
-
-        /// <summary>
-        ///  Returns the current default language for the thread.
-        /// </summary>
-        private CultureInfo ThreadDefaultLanguage
-        {
-            get
-            {
-                _defaultLanguage ??= Application.CurrentCulture;
-
-                return _defaultLanguage;
-            }
-        }
+        internal TypeConverter.StandardValuesCollection? SupportedCultures { get; }
 
         /// <summary>
         ///  Broadcasts a global change, indicating that all objects on the designer have changed.
         /// </summary>
         private static void BroadcastGlobalChange(IComponent component)
         {
-            ISite site = component.Site;
+            ISite? site = component.Site;
 
-            if (site.TryGetService(out IComponentChangeService changeService)
-                && site.TryGetService(out IContainer container))
+            if (site.TryGetService(out IComponentChangeService? changeService)
+                && site.TryGetService(out IContainer? container))
             {
                 foreach (IComponent c in container.Components)
                 {
@@ -109,7 +86,7 @@ public sealed partial class CodeDomLocalizationProvider
         [TypeConverter(typeof(LanguageCultureInfoConverter))]
         [Category("Design")]
         [SRDescription("LocalizationProviderLanguageDescr")]
-        public CultureInfo GetLanguage(IComponent o)
+        public CultureInfo? GetLanguage(IComponent o)
         {
             CheckRoot();
 
@@ -150,7 +127,7 @@ public sealed partial class CodeDomLocalizationProvider
         ///  Sets the language to use.  When the language is set the designer will be
         ///  reloaded.
         /// </summary>
-        public void SetLanguage(IComponent o, CultureInfo language)
+        public void SetLanguage(IComponent o, CultureInfo? language)
         {
             CheckRoot();
 
@@ -158,7 +135,7 @@ public sealed partial class CodeDomLocalizationProvider
 
             bool isInvariantCulture = (language.Equals(CultureInfo.InvariantCulture));
 
-            if (_language.Equals(language))
+            if (language.Equals(_language))
             {
                 return;
             }
@@ -170,9 +147,9 @@ public sealed partial class CodeDomLocalizationProvider
                 SetLocalizable(o, true);
             }
 
-            if (_serviceProvider is not null && _host is not null)
+            if (_host is not null)
             {
-                IDesignerLoaderService ls = _serviceProvider.GetService(typeof(IDesignerLoaderService)) as IDesignerLoaderService;
+                IDesignerLoaderService? ls = _serviceProvider.GetService<IDesignerLoaderService>();
 
                 // Only reload if we're not in the process of loading!
                 if (_host.Loading)
@@ -181,16 +158,11 @@ public sealed partial class CodeDomLocalizationProvider
                 }
                 else
                 {
-                    bool reloadSuccessful = false;
-
-                    if (ls is not null)
-                    {
-                        reloadSuccessful = ls.Reload();
-                    }
+                    bool reloadSuccessful = ls?.Reload() ?? false;
 
                     if (!reloadSuccessful)
                     {
-                        IUIService uis = (IUIService)_serviceProvider.GetService(typeof(IUIService));
+                        IUIService? uis = _serviceProvider.GetService<IUIService>();
 
                         uis?.ShowMessage(SR.LocalizationProviderManualReload);
                     }
@@ -220,38 +192,6 @@ public sealed partial class CodeDomLocalizationProvider
                     BroadcastGlobalChange(o);
                 }
             }
-        }
-
-        /// <summary>
-        ///  Gets a value indicating whether the specified object should have its design-time localization support persisted.
-        /// </summary>
-        private bool ShouldSerializeLanguage(IComponent o)
-        {
-            return (_language is not null && _language != CultureInfo.InvariantCulture);
-        }
-
-        /// <summary>
-        ///  Gets a value indicating whether the specified object should have its design-time localization support persisted.
-        /// </summary>
-        private bool ShouldSerializeLocalizable(IComponent o)
-        {
-            return (_localizable);
-        }
-
-        /// <summary>
-        ///  Resets the localizable property to the 'defaultLocalizable' value.
-        /// </summary>
-        private void ResetLocalizable(IComponent o)
-        {
-            SetLocalizable(o, false);
-        }
-
-        /// <summary>
-        ///  Resets the language for the specified object.
-        /// </summary>
-        private void ResetLanguage(IComponent o)
-        {
-            SetLanguage(o, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
