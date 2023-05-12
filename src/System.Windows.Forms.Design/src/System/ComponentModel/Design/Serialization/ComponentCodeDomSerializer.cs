@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.CodeDom;
 using System.Configuration;
 using System.Reflection;
@@ -11,10 +9,10 @@ namespace System.ComponentModel.Design.Serialization;
 
 internal class ComponentCodeDomSerializer : CodeDomSerializer
 {
-    private Type[] _containerConstructor;
+    private Type[]? _containerConstructor;
     private static readonly Attribute[] _runTimeFilter = new Attribute[] { DesignOnlyAttribute.No };
     private static readonly Attribute[] _designTimeFilter = new Attribute[] { DesignOnlyAttribute.Yes };
-    private static WeakReference s_defaultSerializerRef;
+    private static WeakReference? s_defaultSerializerRef;
 
     private Type[] GetContainerConstructor(IDesignerSerializationManager manager)
     {
@@ -33,17 +31,12 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
     {
         get
         {
-            ComponentCodeDomSerializer defaultSerializer;
-            if (s_defaultSerializerRef is not null)
+            if (s_defaultSerializerRef?.Target is ComponentCodeDomSerializer serializer)
             {
-                defaultSerializer = s_defaultSerializerRef.Target as ComponentCodeDomSerializer;
-                if (defaultSerializer is not null)
-                {
-                    return defaultSerializer;
-                }
+                return serializer;
             }
 
-            defaultSerializer = new ComponentCodeDomSerializer();
+            ComponentCodeDomSerializer defaultSerializer = new ComponentCodeDomSerializer();
             s_defaultSerializerRef = new WeakReference(defaultSerializer);
             return defaultSerializer;
         }
@@ -56,12 +49,9 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
     {
         if (value is IComponent comp)
         {
-            if (comp.Site is not null)
+            if (comp.Site is INestedSite nestedSite && !string.IsNullOrEmpty(nestedSite.FullName))
             {
-                if (comp.Site is INestedSite nestedSite && !string.IsNullOrEmpty(nestedSite.FullName))
-                {
-                    return false;
-                }
+                return false;
             }
 
             props ??= TypeDescriptor.GetProperties(comp);
@@ -71,9 +61,8 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                 if (typeof(IComponent).IsAssignableFrom(property.PropertyType) &&
                     !property.Attributes.Contains(DesignerSerializationVisibilityAttribute.Hidden))
                 {
-                    MemberCodeDomSerializer memberSerializer = (MemberCodeDomSerializer)manager.GetSerializer(property.GetType(), typeof(MemberCodeDomSerializer));
-
-                    if (memberSerializer is not null && memberSerializer.ShouldSerialize(manager, value, property))
+                    if (manager.TryGetSerializer(property.GetType(), out MemberCodeDomSerializer? memberSerializer)
+                        && memberSerializer.ShouldSerialize(manager, value, property))
                     {
                         return false;
                     }
@@ -89,15 +78,12 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
     ///  of the requested type should be returned.  This implementation calls base and then tries to deserialize design
     ///  time properties for the component.
     /// </summary>
-    protected override object DeserializeInstance(IDesignerSerializationManager manager, Type type, object[] parameters, string name, bool addToContainer)
+    protected override object DeserializeInstance(IDesignerSerializationManager manager, Type type, object?[]? parameters, string? name, bool addToContainer)
     {
         object instance = base.DeserializeInstance(manager, type, parameters, name, addToContainer);
 
-        if (instance is not null)
-        {
-            Trace(TraceLevel.Verbose, $"Deserializing design time properties for {manager.GetName(instance)}");
-            DeserializePropertiesFromResources(manager, instance, _designTimeFilter);
-        }
+        Trace(TraceLevel.Verbose, $"Deserializing design time properties for {manager.GetName(instance)}");
+        DeserializePropertiesFromResources(manager, instance, _designTimeFilter);
 
         return instance;
     }
@@ -105,9 +91,9 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
     /// <summary>
     ///  Serializes the given object into a CodeDom object.
     /// </summary>
-    public override object Serialize(IDesignerSerializationManager manager, object value)
+    public override object? Serialize(IDesignerSerializationManager manager, object value)
     {
-        CodeStatementCollection statements = null;
+        CodeStatementCollection? statements = null;
         PropertyDescriptorCollection props = TypeDescriptor.GetProperties(value);
         using (TraceScope("ComponentCodeDomSerializer::Serialize"))
         {
@@ -123,9 +109,8 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
             // If the object is being inherited, we will will not emit a variable declaration.  Also, we won't
             // do any serialization at all if the object is privately inherited.
             InheritanceLevel inheritanceLevel = InheritanceLevel.NotInherited;
-            InheritanceAttribute inheritanceAttribute = (InheritanceAttribute)TypeDescriptor.GetAttributes(value)[typeof(InheritanceAttribute)];
 
-            if (inheritanceAttribute is not null)
+            if (TypeDescriptorHelper.TryGetAttribute(value, out InheritanceAttribute? inheritanceAttribute))
             {
                 inheritanceLevel = inheritanceAttribute.InheritanceLevel;
             }
@@ -148,18 +133,16 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                 //      b) otherwise, yes.
 
                 statements = new CodeStatementCollection();
-                CodeTypeDeclaration typeDecl = manager.Context[typeof(CodeTypeDeclaration)] as CodeTypeDeclaration;
-                RootContext rootCtx = manager.Context[typeof(RootContext)] as RootContext;
-                CodeExpression assignLhs = null;
-                CodeExpression assignRhs;
+                CodeTypeDeclaration typeDecl = manager.GetContext<CodeTypeDeclaration>()!;
+                RootContext? rootCtx = manager.GetContext<RootContext>();
+                CodeExpression? assignLhs = GetExpression(manager, value);
+                CodeExpression? assignRhs;
 
                 // Defaults for components
                 bool generateLocal = false;
                 bool generateField = true;
                 bool generateObject = true;
                 bool isComplete = false;
-
-                assignLhs = GetExpression(manager, value);
 
                 if (assignLhs is not null)
                 {
@@ -177,7 +160,7 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                         // property and would still serialize it.  This code reverses what the
                         // outer if block does for this specific case.  We also need this
                         // for Everett / 1.0 backwards compat.
-                        if (!(manager.Context[typeof(ExpressionContext)] is ExpressionContext expCtx) || expCtx.PresetValue != value)
+                        if (!manager.TryGetContext(out ExpressionContext? expCtx) || expCtx.PresetValue != value)
                         {
                             isComplete = true;
                         }
@@ -191,8 +174,8 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                         // See if there is a "GenerateMember" property.  If so,
                         // we might want to generate a local variable.  Otherwise,
                         // we want to generate a field.
-                        PropertyDescriptor generateProp = props["GenerateMember"];
-                        if (generateProp is not null && generateProp.PropertyType == typeof(bool) && !(bool)generateProp.GetValue(value))
+                        PropertyDescriptor? generateProp = props["GenerateMember"];
+                        if (generateProp is not null && generateProp.TryGetValue(value, out bool generateValue) && !generateValue)
                         {
                             Trace(TraceLevel.Verbose, "Object GenerateMember property wants a local variable");
                             generateLocal = true;
@@ -218,9 +201,9 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
 
                 try
                 {
-                    string name = manager.GetName(value);
+                    string? name = manager.GetName(value);
 
-                    string typeName = TypeDescriptor.GetClassName(value);
+                    string? typeName = TypeDescriptor.GetClassName(value);
 
                     // Output variable / field declarations if we need to
                     if ((generateField || generateLocal) && name is not null)
@@ -231,17 +214,13 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                             {
                                 // We need to generate the field declaration.  See if there is a modifiers property on
                                 // the object.  If not, look for a DefaultModifies, and finally assume it's private.
-                                CodeMemberField field = new CodeMemberField(typeName, name);
-                                PropertyDescriptor modifiersProp = props["Modifiers"];
+                                CodeMemberField field = new CodeMemberField(typeName!, name);
+                                PropertyDescriptor? modifiersProp = props["Modifiers"];
                                 MemberAttributes fieldAttrs;
 
                                 modifiersProp ??= props["DefaultModifiers"];
 
-                                if (modifiersProp is not null && modifiersProp.PropertyType == typeof(MemberAttributes))
-                                {
-                                    fieldAttrs = (MemberAttributes)modifiersProp.GetValue(value);
-                                }
-                                else
+                                if (modifiersProp is null || !modifiersProp.TryGetValue(value, out fieldAttrs))
                                 {
                                     Trace(TraceLevel.Warning, $"No Modifiers or DefaultModifiers property on component {name}. We must assume private.");
                                     fieldAttrs = MemberAttributes.Private;
@@ -253,13 +232,13 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                             }
 
                             // Next, create a nice LHS for our pending assign statement, when we hook up the variable.
-                            assignLhs = new CodeFieldReferenceExpression(rootCtx.Expression, name);
+                            assignLhs = new CodeFieldReferenceExpression(rootCtx!.Expression, name);
                         }
                         else
                         {
                             if (inheritanceLevel == InheritanceLevel.NotInherited)
                             {
-                                CodeVariableDeclarationStatement local = new CodeVariableDeclarationStatement(typeName, name);
+                                CodeVariableDeclarationStatement local = new CodeVariableDeclarationStatement(typeName!, name);
 
                                 statements.Add(local);
                                 Trace(TraceLevel.Verbose, $"Local {typeName} {name} created.");
@@ -278,8 +257,8 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                         // The first step is to create an assign statement to "new" the object.  For that, we need to know if
                         // the component wants a special IContainer constructor or not.  For that to be valid we must also know
                         // that we can get to an actual IContainer.
-                        IContainer container = manager.GetService(typeof(IContainer)) as IContainer;
-                        ConstructorInfo ctor = null;
+                        IContainer? container = manager.GetService<IContainer>();
+                        ConstructorInfo? ctor = null;
                         if (container is not null)
                         {
                             ctor = GetReflectionTypeHelper(manager, value).GetConstructor(BindingFlags.ExactBinding | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, GetContainerConstructor(manager), null);
@@ -288,9 +267,9 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                         if (ctor is not null)
                         {
                             Trace(TraceLevel.Verbose, "Component has IContainer constructor.");
-                            assignRhs = new CodeObjectCreateExpression(typeName, new CodeExpression[]
+                            assignRhs = new CodeObjectCreateExpression(typeName!, new CodeExpression[]
                             {
-                                SerializeToExpression(manager, container)
+                                SerializeToExpression(manager, container)!
                             });
                         }
                         else
@@ -340,11 +319,11 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                         bool supportInitialize = (value is ISupportInitialize);
                         if (supportInitialize)
                         {
-                            string fullName = typeof(ISupportInitialize).FullName;
+                            string fullName = typeof(ISupportInitialize).FullName!;
                             supportInitialize = manager.GetType(fullName) is not null;
                         }
 
-                        Type reflectionType = null;
+                        Type? reflectionType = null;
                         if (supportInitialize)
                         {
                             // Now verify that this control implements ISupportInitialize in the project target framework
@@ -357,10 +336,10 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                             supportInitialize = GetReflectionTypeFromTypeHelper(manager, typeof(ISupportInitialize)).IsAssignableFrom(reflectionType);
                         }
 
-                        bool persistSettings = (value is IPersistComponentSettings) && ((IPersistComponentSettings)value).SaveSettings;
+                        bool persistSettings = (value is IPersistComponentSettings settings) && settings.SaveSettings;
                         if (persistSettings)
                         {
-                            string fullName = typeof(IPersistComponentSettings).FullName;
+                            string fullName = typeof(IPersistComponentSettings).FullName!;
                             persistSettings = manager.GetType(fullName) is not null;
                         }
 
@@ -372,7 +351,7 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
 
                         // We implement statement caching only for the main code generation phase.  We don't implement it for other
                         // serialization managers.  How do we tell the difference?  The main serialization manager exists as a service.
-                        IDesignerSerializationManager mainManager = manager.GetService(typeof(IDesignerSerializationManager)) as IDesignerSerializationManager;
+                        IDesignerSerializationManager? mainManager = manager.GetService<IDesignerSerializationManager>();
 
                         if (supportInitialize)
                         {
@@ -385,8 +364,8 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                         // Writing out properties is expensive.  But, we're very smart and we cache the results
                         // in ComponentCache.  See if we have cached results.  If so, use 'em.  If not, generate
                         // code and then see if we can cache the results for later.
-                        ComponentCache cache = manager.GetService(typeof(ComponentCache)) as ComponentCache;
-                        ComponentCache.Entry entry = null;
+                        ComponentCache? cache = manager.GetService<ComponentCache>();
+                        ComponentCache.Entry? entry = null;
                         if (cache is null)
                         {
                             if (manager.GetService(typeof(IServiceContainer)) is ServiceContainer sc)
@@ -416,8 +395,8 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                                 // new entry object even if there is still an existing one that is just invalid, and it
                                 // might have dependencies that will be lost.
                                 // we need to make sure we copy over any dependencies that are also tracked.
-                                ComponentCache.Entry oldEntry = cache?.GetEntryAll(value);
-                                if (oldEntry is not null && oldEntry.Dependencies is not null && oldEntry.Dependencies.Count > 0)
+                                ComponentCache.Entry? oldEntry = cache?.GetEntryAll(value);
+                                if (oldEntry?.Dependencies?.Count > 0)
                                 {
                                     foreach (object dependency in oldEntry.Dependencies)
                                     {
@@ -462,7 +441,7 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
                                     // if we added some statements, insert the comments
                                     //
                                     entry.Statements.Insert(0, new CodeCommentStatement(string.Empty));
-                                    entry.Statements.Insert(0, new CodeCommentStatement(name));
+                                    entry.Statements.Insert(0, new CodeCommentStatement(name!));
                                     entry.Statements.Insert(0, new CodeCommentStatement(string.Empty));
 
                                     //
@@ -497,7 +476,7 @@ internal class ComponentCodeDomSerializer : CodeDomSerializer
 
                         // Regardless, apply statements.  Either we created them or we got them
                         // out of the cache.
-                        statements.AddRange(entry.Statements);
+                        statements.AddRange(entry.Statements!);
 
                         if (persistSettings)
                         {
