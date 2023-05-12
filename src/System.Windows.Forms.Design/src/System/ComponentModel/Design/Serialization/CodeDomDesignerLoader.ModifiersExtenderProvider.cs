@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.CodeDom;
 using System.Windows.Forms;
 
@@ -17,7 +15,7 @@ public abstract partial class CodeDomDesignerLoader
     [ProvideProperty("GenerateMember", typeof(IComponent))]
     private class ModifiersExtenderProvider : IExtenderProvider
     {
-        private IDesignerHost _host;
+        private IDesignerHost? _host;
 
         /// <summary>
         ///  Determines if ths extender provider can extend the given object.  We extend
@@ -25,13 +23,13 @@ public abstract partial class CodeDomDesignerLoader
         /// </summary>
         public bool CanExtend(object o)
         {
-            if (!(o is IComponent c))
+            if (o is not IComponent c)
             {
                 return false;
             }
 
             // We don't add modifiers to the base component.
-            IComponent baseComponent = GetBaseComponent(c);
+            IComponent? baseComponent = GetBaseComponent(c);
 
             if (o == baseComponent)
             {
@@ -40,7 +38,7 @@ public abstract partial class CodeDomDesignerLoader
 
             // Now see if this object is inherited.  If so, then we don't want to
             // extend.
-            if (!TypeDescriptor.GetAttributes(o)[typeof(InheritanceAttribute)].Equals(InheritanceAttribute.NotInherited))
+            if (TypeDescriptorHelper.TryGetAttribute(o, out InheritanceAttribute? attribute) && !attribute.Equals(InheritanceAttribute.NotInherited))
             {
                 return false;
             }
@@ -48,31 +46,16 @@ public abstract partial class CodeDomDesignerLoader
             return true;
         }
 
-        private IComponent GetBaseComponent(IComponent c)
+        private IComponent? GetBaseComponent(IComponent? c)
         {
-            IComponent baseComponent = null;
-
             if (c is null)
             {
                 return null;
             }
 
-            if (_host is null)
-            {
-                ISite site = c.Site;
+            _host ??= c.Site?.GetService<IDesignerHost>();
 
-                if (site is not null)
-                {
-                    _host = (IDesignerHost)site.GetService(typeof(IDesignerHost));
-                }
-            }
-
-            if (_host is not null)
-            {
-                baseComponent = _host.RootComponent;
-            }
-
-            return baseComponent;
+            return _host?.RootComponent;
         }
 
         /// <summary>
@@ -88,22 +71,15 @@ public abstract partial class CodeDomDesignerLoader
         [HelpKeyword("Designer_GenerateMember")]
         public static bool GetGenerateMember(IComponent comp)
         {
-            ISite site = comp.Site;
+            ISite? site = comp.Site;
 
-            if (site is null)
+            if (site.TryGetService(out IDictionaryService? dictionary))
             {
-                return true;
-            }
+                object? value = dictionary.GetValue("GenerateMember");
 
-            IDictionaryService dictionary = (IDictionaryService)site.GetService(typeof(IDictionaryService));
-
-            if (dictionary is not null)
-            {
-                object value = dictionary.GetValue("GenerateMember");
-
-                if (value is bool)
+                if (value is bool b)
                 {
-                    return (bool)value;
+                    return b;
                 }
             }
 
@@ -125,31 +101,29 @@ public abstract partial class CodeDomDesignerLoader
         [HelpKeyword("Designer_Modifiers")]
         public static MemberAttributes GetModifiers(IComponent comp)
         {
-            ISite site = comp.Site;
+            ISite? site = comp.Site;
 
-            if (site is not null)
+            if (site.TryGetService(out IDictionaryService? dictionary))
             {
-                IDictionaryService dictionary = (IDictionaryService)site.GetService(typeof(IDictionaryService));
+                object? value = dictionary.GetValue("Modifiers");
 
-                if (dictionary is not null)
+                if (value is MemberAttributes memberAttributes)
                 {
-                    object value = dictionary.GetValue("Modifiers");
-
-                    if (value is MemberAttributes)
-                    {
-                        return (MemberAttributes)value;
-                    }
+                    return memberAttributes;
                 }
             }
 
             // Check to see if someone offered up a "DefaultModifiers" property so we can
             // decide a default.
             PropertyDescriptorCollection props = TypeDescriptor.GetProperties(comp);
-            PropertyDescriptor prop = props["DefaultModifiers"];
+            PropertyDescriptor? prop = props["DefaultModifiers"];
 
-            if (prop is not null && prop.PropertyType == typeof(MemberAttributes))
+            if (prop is not null)
             {
-                return (MemberAttributes)prop.GetValue(comp);
+                if (prop.TryGetValue(comp, out MemberAttributes memberAttributes))
+                {
+                    return memberAttributes;
+                }
             }
 
             return MemberAttributes.Private;
@@ -163,14 +137,14 @@ public abstract partial class CodeDomDesignerLoader
         /// </summary>
         public static void SetGenerateMember(IComponent comp, bool generate)
         {
-            ISite site = comp.Site;
+            ISite? site = comp.Site;
 
             if (site is null)
             {
                 return;
             }
 
-            IDictionaryService dictionary = (IDictionaryService)site.GetService(typeof(IDictionaryService));
+            IDictionaryService? dictionary = site.GetService<IDictionaryService>();
             bool oldValue = GetGenerateMember(comp);
 
             dictionary?.SetValue("GenerateMember", generate);
@@ -183,9 +157,10 @@ public abstract partial class CodeDomDesignerLoader
                 return;
             }
 
-            string compName = site.Name;
+            string? compName = site.Name;
+            CodeTypeDeclaration? typeDecl = site.GetService<CodeTypeDeclaration>();
 
-            if (!(site.GetService(typeof(CodeTypeDeclaration)) is CodeTypeDeclaration typeDecl) || compName is null)
+            if (typeDecl is null || compName is null)
             {
                 return;
             }
@@ -208,16 +183,12 @@ public abstract partial class CodeDomDesignerLoader
         /// </summary>
         public static void SetModifiers(IComponent comp, MemberAttributes modifiers)
         {
-            ISite site = comp.Site;
+            ISite? site = comp.Site;
 
-            if (site is null)
+            if (site.TryGetService(out IDictionaryService? dictionary))
             {
-                return;
+                dictionary.SetValue("Modifiers", modifiers);
             }
-
-            IDictionaryService dictionary = (IDictionaryService)site.GetService(typeof(IDictionaryService));
-
-            dictionary?.SetValue("Modifiers", modifiers);
         }
     }
 }
