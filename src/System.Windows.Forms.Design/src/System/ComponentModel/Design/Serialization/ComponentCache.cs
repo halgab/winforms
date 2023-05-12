@@ -55,9 +55,9 @@ internal sealed class ComponentCache : IDisposable
         }
         set
         {
-            if (_cache is null && Enabled)
+            if (Enabled)
             {
-                _cache = new Dictionary<object, Entry>();
+                _cache ??= new Dictionary<object, Entry>();
             }
 
             // it's a 1:1 relationship so we can go back from entry to  component (if it's not setup yet.. which should not happen, see ComponentCodeDomSerializer.cs::Serialize for more info)
@@ -219,15 +219,26 @@ internal sealed class ComponentCache : IDisposable
         }
     }
 
-    internal struct ResourceEntry
+    internal readonly struct ResourceEntry
     {
-        public bool ForceInvariant;
-        public bool EnsureInvariant;
-        public bool ShouldSerializeValue;
-        public string Name;
-        public object Value;
-        public PropertyDescriptor PropertyDescriptor;
-        public ExpressionContext ExpressionContext;
+        public readonly bool ForceInvariant;
+        public readonly bool EnsureInvariant;
+        public readonly bool ShouldSerializeValue;
+        public readonly string Name;
+        public readonly object? Value;
+        public readonly PropertyDescriptor PropertyDescriptor;
+        public readonly ExpressionContext ExpressionContext;
+
+        public ResourceEntry(string name, object? value, bool forceInvariant, bool shouldSerializeValue, bool ensureInvariant, PropertyDescriptor propertyDescriptor, ExpressionContext expressionContext)
+        {
+            ForceInvariant = forceInvariant;
+            EnsureInvariant = ensureInvariant;
+            ShouldSerializeValue = shouldSerializeValue;
+            Name = name;
+            Value = value;
+            PropertyDescriptor = propertyDescriptor;
+            ExpressionContext = expressionContext;
+        }
     }
 
     // A single cache entry
