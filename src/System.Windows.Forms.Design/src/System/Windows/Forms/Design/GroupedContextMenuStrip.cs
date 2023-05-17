@@ -1,17 +1,14 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
-using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace System.Windows.Forms.Design;
 
 internal class GroupedContextMenuStrip : ContextMenuStrip
 {
-    private StringCollection _groupOrdering;
-    private ContextMenuStripGroupCollection _groups;
+    private List<string>? _groupOrdering;
+    private ContextMenuStripGroupCollection? _groups;
     private bool _populated;
 
     public bool Populated
@@ -23,25 +20,11 @@ internal class GroupedContextMenuStrip : ContextMenuStrip
     {
     }
 
-    public ContextMenuStripGroupCollection Groups
-    {
-        get
-        {
-            _groups ??= new ContextMenuStripGroupCollection();
+    [MemberNotNull(nameof(_groups))]
+    public ContextMenuStripGroupCollection Groups => _groups ??= new ContextMenuStripGroupCollection();
 
-            return _groups;
-        }
-    }
-
-    public StringCollection GroupOrdering
-    {
-        get
-        {
-            _groupOrdering ??= new StringCollection();
-
-            return _groupOrdering;
-        }
-    }
+    [MemberNotNull(nameof(_groupOrdering))]
+    public List<string> GroupOrdering => _groupOrdering ??= new();
 
     // merges all the items which are currently in the groups into the items collection.
     public void Populate()
@@ -49,7 +32,7 @@ internal class GroupedContextMenuStrip : ContextMenuStrip
         Items.Clear();
         foreach (string groupName in GroupOrdering)
         {
-            if (_groups.ContainsKey(groupName))
+            if (Groups.TryGetValue(groupName, out var group))
             {
                 List<ToolStripItem> items = _groups[groupName].Items;
 
