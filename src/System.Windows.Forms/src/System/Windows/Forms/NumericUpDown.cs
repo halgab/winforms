@@ -464,13 +464,13 @@ public partial class NumericUpDown : UpDownBase, ISupportInitialize
         string negativeSign = numberFormatInfo.NegativeSign;
 
         char keyInput = e.KeyChar;
-            ReadOnlySpan<char> keySpan = new ReadOnlySpan<char>(in keyInput);
+        ReadOnlySpan<char> keySpan = new ReadOnlySpan<char>(in keyInput);
 
         if (Hexadecimal && char.IsAsciiHexDigit(keyInput))
-            {
-                // Hexadecimal digits are OK
-            }
-            else if (char.IsDigit(keyInput))
+        {
+            // Hexadecimal digits are OK
+        }
+        else if (char.IsDigit(keyInput))
         {
             // Digits are OK
         }
@@ -483,18 +483,18 @@ public partial class NumericUpDown : UpDownBase, ISupportInitialize
         else if (keyInput == '\b')
         {
             // Backspace key is OK
-            }
-            else if ((ModifierKeys & (Keys.Control | Keys.Alt)) != 0)
-            {
-                // Let the edit control handle control and alt key combinations
-            }
-            else
-            {
-                // Eat this invalid key and beep
-                e.Handled = true;
-                PInvoke.MessageBeep(MESSAGEBOX_STYLE.MB_OK);
-            }
         }
+        else if ((ModifierKeys & (Keys.Control | Keys.Alt)) != 0)
+        {
+            // Let the edit control handle control and alt key combinations
+        }
+        else
+        {
+            // Eat this invalid key and beep
+            e.Handled = true;
+            PInvoke.MessageBeep(MESSAGEBOX_STYLE.MB_OK);
+        }
+    }
 
     /// <summary>
     ///  Raises the <see cref="OnValueChanged"/> event.

@@ -145,7 +145,7 @@ public partial class ToolStripMenuItem : ToolStripDropDownItem
         {
             // separate out the two fields.
             Span<Range> textFields = stackalloc Range[3];
-                int fieldCount = text.AsSpan().Split(textFields, '\t');
+            int fieldCount = text.AsSpan().Split(textFields, '\t');
 
             if (fieldCount >= 1)
             {

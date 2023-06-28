@@ -270,7 +270,7 @@ public static partial class ControlPaint
         }
 
         using BufferScope<byte> bits = new(monochromeStride * height);
-            bits.AsSpan().Clear();
+        bits.AsSpan().Clear();
         BitmapData data = bitmap.LockBits(
             new Rectangle(0, 0, width, height),
             ImageLockMode.ReadOnly,

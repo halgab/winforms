@@ -297,9 +297,9 @@ internal class ControlCodeDomSerializer : CodeDomSerializer
 
                 // Z-Order
                 int controlIndex = parent.Controls.IndexOf(control);
-                    if (controlIndex >= 0)
-                    {
-                        SerializeResourceInvariant(manager, $">>{name}.ZOrder", controlIndex);
+                if (controlIndex >= 0)
+                {
+                    SerializeResourceInvariant(manager, $">>{name}.ZOrder", controlIndex);
                 }
             }
         }

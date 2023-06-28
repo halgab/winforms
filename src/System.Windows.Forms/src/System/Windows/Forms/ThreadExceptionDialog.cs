@@ -393,13 +393,14 @@ public class ThreadExceptionDialog : Form
         _detailsButton.Image = _detailsVisible ? _collapseImage : _expandImage;
     }
 
-    private static string? Trim(string s)
+    [return: NotNullIfNotNull(nameof(s))]
+    private static string? Trim(string? s)
     {
         if (s is null)
         {
             return s;
         }
 
-            return s.TrimEnd('.');
+        return s.TrimEnd('.');
     }
 }

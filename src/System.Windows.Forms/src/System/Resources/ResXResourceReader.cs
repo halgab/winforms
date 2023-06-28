@@ -425,14 +425,14 @@ public partial class ResXResourceReader : IResourceReader
             ReadOnlySpan<char> readerTypeName = _resHeaderReaderType;
             ReadOnlySpan<char> writerTypeName = _resHeaderWriterType;
 
-                int commaIndex = readerTypeName.IndexOf(',');
-                if (commaIndex != -1)
+            int commaIndex = readerTypeName.IndexOf(',');
+            if (commaIndex != -1)
             {
                 readerTypeName = readerTypeName.Slice(0, commaIndex).Trim();
             }
 
             commaIndex = writerTypeName.IndexOf(',');
-                if (commaIndex != -1)
+            if (commaIndex != -1)
             {
                 writerTypeName = writerTypeName.Slice(0, commaIndex).Trim();
             }

@@ -232,10 +232,10 @@ namespace System.Windows.Forms;
                 extensions.Add(_defaultExtension);
             }
 
-                if (filter is not null && FilterIndex > 0)
+            if (filter is not null && FilterIndex > 0)
             {
                 Range[] tokens = new Range[FilterIndex * 2];
-                    int tokensCount = filter.AsSpan().Split(tokens, '|');
+                int tokensCount = filter.AsSpan().Split(tokens, '|');
 
                 if ((FilterIndex * 2) - 1 >= tokensCount)
                 {
@@ -243,26 +243,26 @@ namespace System.Windows.Forms;
                 }
 
                 ReadOnlySpan<char> extensionString = filter.AsSpan()[tokens[(FilterIndex * 2) - 1]];
-                    while (!extensionString.IsEmpty)
+                while (!extensionString.IsEmpty)
+                {
+                    int semiColumnIndex = extensionString.IndexOf(';');
+
+                    ReadOnlySpan<char> currentChunk = semiColumnIndex == -1
+                        ? extensionString
+                        : extensionString.Slice(0, semiColumnIndex);
+
+                    int dotIndex = SupportMultiDottedExtensions ? currentChunk.IndexOf('.') : currentChunk.LastIndexOf('.');
+                    if (dotIndex >= 0)
                     {
-                        int semiColumnIndex = extensionString.IndexOf(';');
+                        extensions.Add(currentChunk[(dotIndex + 1)..].ToString());
+                    }
 
-                        ReadOnlySpan<char> currentChunk = semiColumnIndex == -1
-                            ? extensionString
-                            : extensionString.Slice(0, semiColumnIndex);
+                    if (semiColumnIndex == -1)
+                    {
+                        break;
+                    }
 
-                        int dotIndex = SupportMultiDottedExtensions ? currentChunk.IndexOf('.') : currentChunk.LastIndexOf('.');
-                        if (dotIndex >= 0)
-                        {
-                            extensions.Add(currentChunk[(dotIndex + 1)..].ToString());
-                        }
-
-                        if (semiColumnIndex == -1)
-                        {
-                            break;
-                        }
-
-                        extensionString = extensionString.Slice(semiColumnIndex + 1);
+                    extensionString = extensionString.Slice(semiColumnIndex + 1);
                 }
             }
 

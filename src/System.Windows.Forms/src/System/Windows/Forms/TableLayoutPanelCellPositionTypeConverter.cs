@@ -55,8 +55,8 @@ internal class TableLayoutPanelCellPositionTypeConverter : TypeConverter
                     nameof(value));
             }
 
-                return new TableLayoutPanelCellPosition(values[0], values[1]);
-            }
+            return new TableLayoutPanelCellPosition(values[0], values[1]);
+        }
 
         return base.ConvertFrom(context, culture, value);
     }

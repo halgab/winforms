@@ -297,10 +297,10 @@ public partial class DomainUpDown : UpDownBase
         int matchIndex = -1;
         bool found = false;
 
-            // Attempt to match the string with Items[index]
-            do
-            {
-                ReadOnlySpan<char> itemAsString = Items[index]!.ToString();
+        // Attempt to match the string with Items[index]
+        do
+        {
+            ReadOnlySpan<char> itemAsString = Items[index]!.ToString();
             if (complete)
             {
                 found = itemAsString.Equals(text, StringComparison.Ordinal);

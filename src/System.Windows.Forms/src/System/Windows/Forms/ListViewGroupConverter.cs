@@ -48,25 +48,25 @@ internal class ListViewGroupConverter : TypeConverter
         return base.CanConvertTo(context, destinationType);
     }
 
-        /// <summary>
-        ///  Converts the given object to the converter's native type.
-        /// </summary>
-        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+    /// <summary>
+    ///  Converts the given object to the converter's native type.
+    /// </summary>
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+    {
+        if (value is string valueStr)
         {
-            if (value is string valueStr)
+            if (context?.Instance is ListViewItem item && item.ListView is not null)
             {
-                if (context?.Instance is ListViewItem item && item.ListView is not null)
+                ReadOnlySpan<char> text = valueStr.AsSpan().Trim();
+                foreach (ListViewGroup group in item.ListView.Groups)
                 {
-                    ReadOnlySpan<char> text = valueStr.AsSpan().Trim();
-                    foreach (ListViewGroup group in item.ListView.Groups)
+                    if (text.Equals(group.Header, StringComparison.Ordinal))
                     {
-                        if (text.Equals(group.Header, StringComparison.Ordinal))
-                        {
-                            return group;
-                        }
+                        return group;
                     }
                 }
             }
+        }
 
         if (value is null || value.Equals(SR.toStringNone))
         {

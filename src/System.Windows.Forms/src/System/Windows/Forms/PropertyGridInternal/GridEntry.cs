@@ -1807,9 +1807,9 @@ internal abstract partial class GridEntry : GridItem, ITypeDescriptorContext
             text = text.Substring(0, MaximumLengthOfPropertyString);
         }
 
-            int textWidth = GetValueTextWidth(text, g, GetFont(valueModified));
-            // Check if text contains multiple lines.
-            bool doToolTip = textWidth >= rect.Width || HasMultipleLines(text);
+        int textWidth = GetValueTextWidth(text, g, GetFont(valueModified));
+        // Check if text contains multiple lines.
+        bool doToolTip = textWidth >= rect.Width || HasMultipleLines(text);
 
         if (Rectangle.Intersect(rect, clipRect).IsEmpty)
         {

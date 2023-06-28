@@ -53,24 +53,24 @@ public partial class ResXFileRef
     ///  as arguments to Combine(), path2 is returned
     /// </summary>
     private static string PathDifference(ReadOnlySpan<char> path1, string path2, bool compareCase)
-        {
-            int i;
+    {
+        int i;
 
         if (compareCase)
+        {
+            i = path1.CommonPrefixLength(path2);
+        }
+        else
+        {
+            for (i = 0; (i < path1.Length) && (i < path2.Length); ++i)
             {
-                i = path1.CommonPrefixLength(path2);
-            }
-            else
-            {
-                for (i = 0; (i < path1.Length) && (i < path2.Length); ++i)
+                if (path1[i] != path2[i]
+                    && (char.ToLower(path1[i], CultureInfo.InvariantCulture) != char.ToLower(path2[i], CultureInfo.InvariantCulture)))
                 {
-                    if (path1[i] != path2[i]
-                        && (char.ToLower(path1[i], CultureInfo.InvariantCulture) != char.ToLower(path2[i], CultureInfo.InvariantCulture)))
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
+        }
 
         if (i == 0)
         {
@@ -79,18 +79,18 @@ public partial class ResXFileRef
 
         int si = path1.Slice(0, i).LastIndexOf(Path.DirectorySeparatorChar);
 
-            if ((i == path1.Length) && (i == path2.Length))
-            {
-                return string.Empty;
-            }
+        if ((i == path1.Length) && (i == path2.Length))
+        {
+            return string.Empty;
+        }
 
         StringBuilder relPath = new StringBuilder();
-            int slashCount = path1.Slice(i).Count(Path.DirectorySeparatorChar);
+        int slashCount = path1.Slice(i).Count(Path.DirectorySeparatorChar);
 
         for (int j = 0; j < slashCount; j++)
-            {
-                relPath.Append($"..{Path.DirectorySeparatorChar}");
-            }
+        {
+            relPath.Append($"..{Path.DirectorySeparatorChar}");
+        }
 
         relPath.Append(path2.AsSpan(si + 1));
 

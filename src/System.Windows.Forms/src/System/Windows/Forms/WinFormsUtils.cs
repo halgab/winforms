@@ -121,12 +121,12 @@ internal sealed partial class WindowsFormsUtils
     ///  Fish &amp; Chips --> Fish &amp;&amp; Chips
     /// </summary>
     [return: NotNullIfNotNull(nameof(text))]
-        internal static string? EscapeTextWithAmpersands(string? text)
+    internal static string? EscapeTextWithAmpersands(string? text)
+    {
+        if (text is null)
         {
-            if (text is null)
-            {
-                return null;
-            }
+            return null;
+        }
 
         int index = text.IndexOf('&') + 1;
         if (index == 0)
@@ -135,17 +135,17 @@ internal sealed partial class WindowsFormsUtils
         }
 
         ReadOnlySpan<char> current = text.AsSpan();
-            StringBuilder str = new StringBuilder(text.Length);
-            do
-            {
-                str.Append(current.Slice(0, index));
-                str.Append('&');
-            current = current.Slice(index);
-            index = current.IndexOf('&') + 1;
-            }
-            while (index > 0);
+        StringBuilder str = new StringBuilder(text.Length);
+        do
+        {
+            str.Append(current.Slice(0, index));
+            str.Append('&');
+        current = current.Slice(index);
+        index = current.IndexOf('&') + 1;
+        }
+        while (index > 0);
 
-            str.Append(current);
+        str.Append(current);
 
         return str.ToString();
     }
@@ -195,38 +195,38 @@ internal sealed partial class WindowsFormsUtils
 #endif
     }
 
-        /// <summary>
-        ///  Retrieves the mnemonic from a given string, or zero if no mnemonic.
-        ///  As used by the Control.Mnemonic to get mnemonic from Control.Text.
-        /// </summary>
-        public static char GetMnemonic(string? text, bool convertToUpperCase)
-        {
-            if (!string.IsNullOrEmpty(text))
+    /// <summary>
+    ///  Retrieves the mnemonic from a given string, or zero if no mnemonic.
+    ///  As used by the Control.Mnemonic to get mnemonic from Control.Text.
+    /// </summary>
+    public static char GetMnemonic(string? text, bool convertToUpperCase)
+    {
+        if (!string.IsNullOrEmpty(text))
         {
             int index = 0;
 
-                do
+            do
+            {
+                index = text.IndexOf('&', index) + 1;
+
+            if (index == 0 || index >= text.Length)
                 {
-                    index = text.IndexOf('&', index) + 1;
-
-                if (index == 0 || index >= text.Length)
-                    {
-                        break;
-                    }
-
-                    if (text[index] == '&')
-                    {
-                        // we have an escaped &, so we need to skip it.
-                        index += 1;
-                    }
-                    else
-                    {
-                    return convertToUpperCase
-                            ? char.ToUpper(text[index], CultureInfo.CurrentCulture)
-                            : char.ToLower(text[index], CultureInfo.CurrentCulture);
-                    }
+                    break;
                 }
-                while (index < text.Length);
+
+                if (text[index] == '&')
+                {
+                    // we have an escaped &, so we need to skip it.
+                    index += 1;
+                }
+                else
+                {
+                    return convertToUpperCase
+                        ? char.ToUpper(text[index], CultureInfo.CurrentCulture)
+                        : char.ToLower(text[index], CultureInfo.CurrentCulture);
+                }
+            }
+            while (index < text.Length);
         }
 
         return '\0';
@@ -326,32 +326,32 @@ internal sealed partial class WindowsFormsUtils
         {
             return defaultNameValue;
         }
+    }
 
-        /// <summary>
-        ///  Converts the given string to a byte array.
-        /// </summary>
-        public static byte[] FromBase64WrappedString(string text)
+    /// <summary>
+    ///  Converts the given string to a byte array.
+    /// </summary>
+    public static byte[] FromBase64WrappedString(string text)
+    {
+        ReadOnlySpan<char> toTrim = stackalloc char[] { ' ', '\r', '\n' };
+        ReadOnlySpan<char> current = text.AsSpan().Trim(toTrim);
+        int index = current.IndexOfAny(toTrim);
+        if (index != -1)
         {
-            ReadOnlySpan<char> toTrim = stackalloc char[] { ' ', '\r', '\n' };
-            ReadOnlySpan<char> current = text.AsSpan().Trim(toTrim);
-            int index = current.IndexOfAny(toTrim);
-            if (index != -1)
+            StringBuilder sb = new StringBuilder(text.Length);
+            do
             {
-                StringBuilder sb = new StringBuilder(text.Length);
-                do
-                {
-                    sb.Append(current.Slice(0, index));
-                    current = current.Slice(index + 1).TrimStart(toTrim);
-                    index = current.IndexOfAny(toTrim);
-                }
-                while (index < 0);
-
-                sb.Append(current);
-
-                text = sb.ToString();
+                sb.Append(current.Slice(0, index));
+                current = current.Slice(index + 1).TrimStart(toTrim);
+                index = current.IndexOfAny(toTrim);
             }
+            while (index < 0);
 
-            return Convert.FromBase64String(text);
+            sb.Append(current);
+
+            text = sb.ToString();
         }
+
+        return Convert.FromBase64String(text);
     }
 }

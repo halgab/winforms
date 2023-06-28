@@ -939,17 +939,17 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
                 showEvents = false;
             }
 
-                // Make sure we actually changed something before we inspect tabs.
-                if (_selectedObjects is not null
-                    && value is not null
-                    && _selectedObjects.Length == value.Length)
-                {
-                    classesSame = true;
-                    int commonCount = _selectedObjects.AsSpan().CommonPrefixLength(value);
+            // Make sure we actually changed something before we inspect tabs.
+            if (_selectedObjects is not null
+                && value is not null
+                && _selectedObjects.Length == value.Length)
+            {
+                classesSame = true;
+                int commonCount = _selectedObjects.AsSpan().CommonPrefixLength(value);
                 isSame = commonCount == value.Length;
 
-                    for (int i = commonCount; i < value.Length; i++)
-                    {
+                for (int i = commonCount; i < value.Length; i++)
+                {
                     Type oldType = GetUnwrappedObject(i).GetType();
 
                     object newObject = value[i];
@@ -965,7 +965,7 @@ public partial class PropertyGrid : ContainerControl, IComPropertyBrowser, IProp
                     if (oldType != newType || (oldType.IsCOMObject && newType.IsCOMObject))
                     {
                         classesSame = false;
-                            break;
+                        break;
                     }
                 }
             }

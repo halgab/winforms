@@ -59,12 +59,12 @@ public class SelectionRangeConverter : TypeConverter
 
             // Separate the string into the two dates, and parse each one
             culture ??= CultureInfo.CurrentCulture;
-                Span<DateTime> values = stackalloc DateTime[2];
+            Span<DateTime> values = stackalloc DateTime[2];
 
-                char separator = culture.TextInfo.ListSeparator[0];
+            char separator = culture.TextInfo.ListSeparator[0];
 
             if (TypeConverterHelper.TryParseAsSpan(context, culture, text, values))
-                {
+            {
                 return new SelectionRange(values[0], values[1]);
             }
             else

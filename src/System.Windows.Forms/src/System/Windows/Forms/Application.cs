@@ -175,7 +175,7 @@ public sealed partial class Application
                     if (string.IsNullOrEmpty(s_companyName))
                     {
                         s_companyName = GetAppFileVersionInfo().CompanyName?.Trim();
-                        }
+                    }
 
                     // fake it with a namespace
                     // won't work with MC++ see GetAppMainType.
@@ -297,7 +297,7 @@ public sealed partial class Application
                     if (string.IsNullOrEmpty(s_productName))
                     {
                         s_productName = GetAppFileVersionInfo().ProductName?.Trim();
-                        }
+                    }
 
                     // fake it with namespace
                     // won't work with MC++ see GetAppMainType.
@@ -361,7 +361,7 @@ public sealed partial class Application
                     if (string.IsNullOrEmpty(s_productVersion))
                     {
                         s_productVersion = GetAppFileVersionInfo().ProductVersion?.Trim();
-                        }
+                    }
 
                     // fake it
                     if (string.IsNullOrEmpty(s_productVersion))

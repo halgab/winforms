@@ -980,14 +980,14 @@ public class BindingSource : Component,
         PropertyDescriptorCollection props = _currencyManager.GetItemProperties();
 
         using BufferScope<Range> rangeBuffer = new(stackalloc Range[128]);
-            int count = sortString.AsSpan().Split(rangeBuffer, ',', StringSplitOptions.TrimEntries);
-            for (int i = 0; i < count; i++)
-            {
-                ReadOnlySpan<char> current = sortString.AsSpan(rangeBuffer[i]);
+        int count = sortString.AsSpan().Split(rangeBuffer, ',', StringSplitOptions.TrimEntries);
+        for (int i = 0; i < count; i++)
+        {
+            ReadOnlySpan<char> current = sortString.AsSpan(rangeBuffer[i]);
 
-                // Handle ASC and DESC
-                bool ascending = true;
-                if (current.EndsWith(" ASC", StringComparison.InvariantCultureIgnoreCase))
+            // Handle ASC and DESC
+            bool ascending = true;
+            if (current.EndsWith(" ASC", StringComparison.InvariantCultureIgnoreCase))
             {
                 current = current[..^4].Trim();
             }

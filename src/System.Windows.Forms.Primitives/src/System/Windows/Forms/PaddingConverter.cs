@@ -44,16 +44,16 @@ public class PaddingConverter : TypeConverter
         {
             ReadOnlySpan<char> text = stringValue.AsSpan().Trim();
 
-                if (text.IsEmpty)
+            if (text.IsEmpty)
             {
                 return null;
             }
 
             // Parse 4 integer values.
             culture ??= CultureInfo.CurrentCulture;
-                Span<int> values = stackalloc int[4];
+            Span<int> values = stackalloc int[4];
 
-                if (!TypeConverterHelper.TryParseAsSpan(context, culture, text, values))
+            if (!TypeConverterHelper.TryParseAsSpan(context, culture, text, values))
             {
                 throw new ArgumentException(string.Format(SR.TextParseFailedFormat, stringValue, "left, top, right, bottom"), nameof(value));
             }

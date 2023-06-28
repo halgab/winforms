@@ -43,16 +43,16 @@ public partial class ResXFileRef
                 return null;
             }
 
-                ReadOnlySpan<char> text = stringValue.AsSpan().Trim();
-                string fileName;
-                ReadOnlySpan<char> remainingString;
-                if (!text.IsEmpty && text[0] == '"')
+            ReadOnlySpan<char> text = stringValue.AsSpan().Trim();
+            string fileName;
+            ReadOnlySpan<char> remainingString;
+            if (!text.IsEmpty && text[0] == '"')
+            {
+                int lastIndexOfQuote = text.LastIndexOf('"');
+                if (lastIndexOfQuote <= 0)
                 {
-                    int lastIndexOfQuote = text.LastIndexOf('"');
-                    if (lastIndexOfQuote <= 0)
-                    {
-                        throw new ArgumentException(nameof(stringValue));
-                    }
+                    throw new ArgumentException(nameof(stringValue));
+                }
 
                 // Remove the quotes in " ..... "
                 fileName = text[1..lastIndexOfQuote].ToString();

@@ -66,8 +66,8 @@ public class LinkConverter : TypeConverter
                         "Start, Length"));
             }
 
-                return new LinkLabel.Link(values[0], values[1]);
-            }
+            return new LinkLabel.Link(values[0], values[1]);
+        }
 
         return base.ConvertFrom(context, culture, value);
     }

@@ -645,8 +645,8 @@ public sealed class ResXDataNode : ISerializable
             if (resolvedType is null)
             {
                 Span<Range> typeParts = stackalloc Range[3];
-                    ReadOnlySpan<char> typeNameAsSpan = typeName.AsSpan();
-                    int typePartsCount = typeNameAsSpan.Split(typeParts, ',', StringSplitOptions.TrimEntries);
+                ReadOnlySpan<char> typeNameAsSpan = typeName.AsSpan();
+                int typePartsCount = typeNameAsSpan.Split(typeParts, ',', StringSplitOptions.TrimEntries);
 
                 // Break up the type name from the rest of the assembly strong name.
                 if (typePartsCount >= 2)

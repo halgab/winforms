@@ -3104,22 +3104,22 @@ public partial class RichTextBox : TextBoxBase
         BufferScope<char> buffer = new(maxLength);
         GETTEXTEX* pGt = &gt;
         int actualLength;
-            fixed (char* b = buffer)
-            {
-                actualLength = (int)PInvoke.SendMessage(this, PInvoke.EM_GETTEXTEX, (WPARAM)pGt, (LPARAM)b);
-            }
-
-            // The default behaviour of EM_GETTEXTEX is to normalise line endings to '\r'
-            // (see: GT_DEFAULT, https://docs.microsoft.com/windows/win32/api/richedit/ns-richedit-gettextex#members),
-            // whereas previously we would normalise to '\n'. Unfortunately we can only ask for '\r\n' line endings via GT.USECRLF,
-            // but unable to ask for '\n'. Unless GT.USECRLF was set, convert '\r' with '\n' to retain the original behaviour.
-            if (!flags.HasFlag(GETTEXTEX_FLAGS.GT_USECRLF))
-            {
-                buffer[..actualLength].Replace('\r', '\n');
-            }
-
-            return buffer[..actualLength].ToString();
+        fixed (char* b = buffer)
+        {
+            actualLength = (int)PInvoke.SendMessage(this, PInvoke.EM_GETTEXTEX, (WPARAM)pGt, (LPARAM)b);
         }
+
+        // The default behaviour of EM_GETTEXTEX is to normalise line endings to '\r'
+        // (see: GT_DEFAULT, https://docs.microsoft.com/windows/win32/api/richedit/ns-richedit-gettextex#members),
+        // whereas previously we would normalise to '\n'. Unfortunately we can only ask for '\r\n' line endings via GT.USECRLF,
+        // but unable to ask for '\n'. Unless GT.USECRLF was set, convert '\r' with '\n' to retain the original behaviour.
+        if (!flags.HasFlag(GETTEXTEX_FLAGS.USECRLF))
+        {
+            buffer[..actualLength].Replace('\r', '\n');
+        }
+
+        return buffer[..actualLength].ToString();
+    }
 
     private void UpdateOleCallback()
     {

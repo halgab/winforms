@@ -2158,23 +2158,23 @@ public partial class TabControl : Control
         StringBuilder newString = new();
         ReadOnlySpan<char> current = value.AsSpan();
 
-            do
+        do
         {
             newString.Append(current.Slice(0, index));
-                newString.Append('&');
+            newString.Append('&');
 
-                if (index < current.Length && value[index] == '&')
-                {
-                    // Skip the second ampersand
-                    index++;
-                }
-
-                current = current.Slice(index);
-                index = current.IndexOf('&') + 1;
+            if (index < current.Length && value[index] == '&')
+            {
+                // Skip the second ampersand
+                index++;
             }
-            while (index > 0);
 
-            newString.Append(current);
+            current = current.Slice(index);
+            index = current.IndexOf('&') + 1;
+        }
+        while (index > 0);
+
+        newString.Append(current);
 
         return newString.ToString();
     }

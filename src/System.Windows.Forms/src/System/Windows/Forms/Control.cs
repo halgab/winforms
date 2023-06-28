@@ -6755,7 +6755,7 @@ public unsafe partial class Control :
             int pos = -1; // start with -1 to handle double &'s
             ReadOnlySpan<char> c2 = new ReadOnlySpan<char>(in charCode);
             while (true)
-                {
+            {
                 pos = text.IndexOf('&', pos + 1) + 1;
                 if (pos <= 0 || pos >= text.Length)
                 {

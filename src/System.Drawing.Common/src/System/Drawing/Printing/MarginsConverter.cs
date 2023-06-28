@@ -59,16 +59,16 @@ public class MarginsConverter : ExpandableObjectConverter
                 culture ??= CultureInfo.CurrentCulture;
                 char sep = culture.TextInfo.ListSeparator[0];
                 string[] tokens = text.Split(sep);
-                    int[] values = new int[tokens.Length];
-                    TypeConverter intConverter = GetIntConverter();
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        // Note: ConvertFromString will raise exception if value cannot be converted.
-                        values[i] = (int)intConverter.ConvertFromString(context, culture, tokens[i])!;
-                    }
-                    if (values.Length != 4)
-                    {
-                        throw new ArgumentException(SR.Format(SR.TextParseFailedFormat, text, "left, right, top, bottom"));
+                int[] values = new int[tokens.Length];
+                TypeConverter intConverter = GetIntConverter();
+                for (int i = 0; i < values.Length; i++)
+                {
+                    // Note: ConvertFromString will raise exception if value cannot be converted.
+                    values[i] = (int)intConverter.ConvertFromString(context, culture, tokens[i])!;
+                }
+                if (values.Length != 4)
+                {
+                    throw new ArgumentException(SR.Format(SR.TextParseFailedFormat, text, "left, right, top, bottom"));
                 }
                 return new Margins(values[0], values[1], values[2], values[3]);
             }

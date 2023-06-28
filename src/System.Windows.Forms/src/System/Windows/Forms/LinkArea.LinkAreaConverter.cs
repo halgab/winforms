@@ -59,7 +59,7 @@ public partial struct LinkArea
 
                 // Parse 2 integer values.
                 culture ??= CultureInfo.CurrentCulture;
-                    Span<int> values = stackalloc int[2];
+                Span<int> values = stackalloc int[2];
 
                 if (!TypeConverterHelper.TryParseAsSpan(context, culture, text, values))
                 {
@@ -70,8 +70,8 @@ public partial struct LinkArea
                             "start, length"));
                 }
 
-                    return new LinkArea(values[0], values[1]);
-                }
+                return new LinkArea(values[0], values[1]);
+            }
 
             return base.ConvertFrom(context, culture, value);
         }

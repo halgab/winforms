@@ -164,12 +164,12 @@ public class FontConverter : TypeConverter
 
         culture ??= CultureInfo.CurrentCulture;
 
-            char separator = culture.TextInfo.ListSeparator[0]; // For vi-VN: ','
-            string fontName = font; // start with the assumption that only the font name was provided.
-            string? style = null;
-            float fontSize = 8.25f;
-            FontStyle fontStyle = FontStyle.Regular;
-            GraphicsUnit units = GraphicsUnit.Point;
+        char separator = culture.TextInfo.ListSeparator[0]; // For vi-VN: ','
+        string fontName = font; // start with the assumption that only the font name was provided.
+        string? style = null;
+        float fontSize = 8.25f;
+        FontStyle fontStyle = FontStyle.Regular;
+        GraphicsUnit units = GraphicsUnit.Point;
 
         // Get the index of the first separator (would indicate the end of the name in the string).
         int nameIndex = font.IndexOf(separator);
@@ -189,10 +189,10 @@ public class FontConverter : TypeConverter
             int styleIndex = culture.CompareInfo.IndexOf(font, StylePrefix, CompareOptions.IgnoreCase);
 
             ReadOnlySpan<char> sizeStr;
-                if (styleIndex != -1)
-                {
-                    // style found.
-                    style = font.Substring(styleIndex);
+            if (styleIndex != -1)
+            {
+                // style found.
+                style = font.Substring(styleIndex);
 
                 // Get the mid-substring containing the size information.
                 sizeStr = font.AsSpan(nameIndex + 1, styleIndex - nameIndex - 1);
@@ -231,19 +231,19 @@ public class FontConverter : TypeConverter
                 style = style.Substring(6); // style string always starts with style=
                 string[] styleTokens = style.Split(separator, StringSplitOptions.TrimEntries);
 
-                    foreach (string styleText in styleTokens)
-                    {
-                        fontStyle |= Enum.Parse<FontStyle>(styleText, true);
+                foreach (string styleText in styleTokens)
+                {
+                    fontStyle |= Enum.Parse<FontStyle>(styleText, true);
 
                     // Enum.IsDefined doesn't do what we want on flags enums...
                     const FontStyle validBits = FontStyle.Regular | FontStyle.Bold | FontStyle.Italic | FontStyle.Underline | FontStyle.Strikeout;
-                        if ((fontStyle | validBits) != validBits)
-                        {
-                            throw new InvalidEnumArgumentException(nameof(style), (int)fontStyle, typeof(FontStyle));
-                        }
+                    if ((fontStyle | validBits) != validBits)
+                    {
+                        throw new InvalidEnumArgumentException(nameof(style), (int)fontStyle, typeof(FontStyle));
                     }
                 }
             }
+        }
 
         return new Font(fontName, fontSize, fontStyle, units);
 
@@ -257,7 +257,7 @@ public class FontConverter : TypeConverter
         string? size = null;
         string? units = null;
 
-            text = text.Trim();
+        text = text.Trim();
 
         int length = text.Length;
 
@@ -265,7 +265,7 @@ public class FontConverter : TypeConverter
         {
             // text is expected to have a format like " 8,25pt, ". Leading and trailing spaces (trimmed above),
             // last comma, unit and decimal value may not appear.  We need to make it ####.##CC
-                int splitPoint;
+            int splitPoint;
             for (splitPoint = 0; splitPoint < length; splitPoint++)
             {
                 if (char.IsLetter(text[splitPoint]))
@@ -276,10 +276,10 @@ public class FontConverter : TypeConverter
 
             ReadOnlySpan<char> trimChars = stackalloc char[] { separator, ' ' };
 
-                if (splitPoint > 0)
-                {
-                    // Trimming spaces between size and units.
-                    size = text.Slice(0, splitPoint).Trim(trimChars).ToString();
+            if (splitPoint > 0)
+            {
+                // Trimming spaces between size and units.
+                size = text.Slice(0, splitPoint).Trim(trimChars).ToString();
             }
 
             if (splitPoint < length)
