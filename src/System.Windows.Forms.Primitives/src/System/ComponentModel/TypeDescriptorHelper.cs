@@ -14,4 +14,10 @@ internal static class TypeDescriptorHelper
         attribute = TypeDescriptor.GetAttributes(component)[typeof(T)] as T;
         return attribute is not null;
     }
+
+    public static bool TryGetEditor<T>(object component, [NotNullWhen(true)] out T? editor)
+    {
+        editor = (T?)TypeDescriptor.GetEditor(component, typeof(T));
+        return editor is not null;
+    }
 }

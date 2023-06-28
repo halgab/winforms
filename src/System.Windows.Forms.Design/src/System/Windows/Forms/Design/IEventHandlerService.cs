@@ -35,7 +35,7 @@ internal interface IEventHandlerService
     /// <summary>
     ///  Gets the currently active event handler of the specified type.
     /// </summary>
-    object GetHandler(Type handlerType);
+    object? GetHandler(Type handlerType);
 
     /// <summary>
     ///  Pops

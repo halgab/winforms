@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#nullable disable
-
 using System.ComponentModel;
 using System.Collections;
 using System.ComponentModel.Design;
@@ -20,8 +18,8 @@ namespace System.Windows.Forms.Design;
 internal class ControlCommandSet : CommandSet
 {
     private readonly CommandSetItem[] commandSet;
-    private TabOrder tabOrder;
-    private readonly Control baseControl;
+    private TabOrder? tabOrder;
+    private readonly Control? baseControl;
     private StatusCommandUI statusCommandUI; //used to update the StatusBarInfo.
 
     /// <summary>
@@ -278,11 +276,10 @@ internal class ControlCommandSet : CommandSet
 
         // Get the base control object.
         //
-        IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
+        IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
         if (host is not null)
         {
-            Control comp = host.RootComponent as Control;
-            if (comp is not null)
+            if (host.RootComponent is Control comp)
             {
                 baseControl = comp;
             }
@@ -308,7 +305,7 @@ internal class ControlCommandSet : CommandSet
             itemHash.Add(control);
         }
 
-        Control okParent = null;
+        Control? okParent = null;
 
         // just walk up the chain for each selected item...if any other items
         // are in that chain, fail.
@@ -316,7 +313,7 @@ internal class ControlCommandSet : CommandSet
         {
             // walk up the parent chain, checking each component to see if it's
             // in the selection list.  If it is, we've got a bad selection.
-            for (Control parent = component.Parent; parent is not null; parent = parent.Parent)
+            for (Control? parent = component.Parent; parent is not null; parent = parent.Parent)
             {
                 // if this parent has already been okayed, skip it.
                 if (parent == okParent)
@@ -357,31 +354,30 @@ internal class ControlCommandSet : CommandSet
         if (tabOrder is not null)
         {
             tabOrder.Dispose();
-            tabOrder = null;
+            tabOrder = null!;
         }
 
-        statusCommandUI = null;
+        statusCommandUI = null!;
         base.Dispose();
     }
 
     /// <summary>
     ///  Retrieves the snap information for the given component.
     /// </summary>
-    protected override void GetSnapInformation(IDesignerHost host, IComponent component, out Size snapSize, out IComponent snapComponent, out PropertyDescriptor snapProperty)
+    protected override void GetSnapInformation(IDesignerHost host, IComponent component, out Size snapSize, out IComponent snapComponent, out PropertyDescriptor? snapProperty)
     {
-        IComponent currentSnapComponent = null;
-        IContainer container = component.Site.Container;
-        PropertyDescriptor gridSizeProp = null;
-        PropertyDescriptor currentSnapProp = null;
+        IComponent? currentSnapComponent = null;
+        IContainer? container = component.Site!.Container;
+        PropertyDescriptor? gridSizeProp = null;
+        PropertyDescriptor? currentSnapProp = null;
         PropertyDescriptorCollection props;
 
         // This implementation is specific to controls.  It looks in the parent hierarchy for an object with a
         // snap property.  If it fails to find one, it just gets the base component.
         //
-        Control ctrl = component as Control;
-        if (ctrl is not null)
+        if (component is Control ctrl)
         {
-            Control c = ctrl.Parent;
+            Control? c = ctrl.Parent;
             while (c is not null && currentSnapComponent is null)
             {
                 props = TypeDescriptor.GetProperties(c);
@@ -431,7 +427,7 @@ internal class ControlCommandSet : CommandSet
         snapProperty = currentSnapProp;
         if (gridSizeProp is not null)
         {
-            snapSize = (Size)gridSizeProp.GetValue(snapComponent);
+            snapSize = (Size)gridSizeProp.GetValue(snapComponent)!;
         }
         else
         {
@@ -442,15 +438,15 @@ internal class ControlCommandSet : CommandSet
     /// <summary>
     ///  Called for the two cancel commands we support.
     /// </summary>
-    protected override bool OnKeyCancel(object sender)
+    protected override bool OnKeyCancel(object? sender)
     {
         // The base implementation here just checks to see if we are dragging.
         // If we are, then we abort the drag.
         //
         if (!base.OnKeyCancel(sender))
         {
-            MenuCommand cmd = (MenuCommand)sender;
-            bool reverse = (cmd.CommandID.Equals(MenuCommands.KeyReverseCancel));
+            MenuCommand cmd = (MenuCommand)sender!;
+            bool reverse = (cmd.CommandID!.Equals(MenuCommands.KeyReverseCancel));
             RotateParentSelection(reverse);
             return true;
         }
@@ -466,7 +462,7 @@ internal class ControlCommandSet : CommandSet
     {
         List<SnapLine> lines = new(2);
 
-        Point pt = BehaviorService.ControlToAdornerWindow(primaryControl);
+        Point pt = BehaviorService!.ControlToAdornerWindow(primaryControl);
         bool fRTL = (primaryControl.Parent is not null && primaryControl.Parent.IsMirrored);
 
         //remember that snaplines must be in adornerwindow coordinates
@@ -512,36 +508,34 @@ internal class ControlCommandSet : CommandSet
     /// <summary>
     ///  Called for the various sizing commands we support.
     /// </summary>
-    protected void OnKeySize(object sender, EventArgs e)
+    protected void OnKeySize(object? sender, EventArgs e)
     {
         // Arrow keys.  Begin a drag if the selection isn't locked.
         //
         ISelectionService selSvc = SelectionService;
         if (selSvc is not null)
         {
-            IComponent comp = selSvc.PrimarySelection as IComponent;
-            if (comp is not null)
+            if (selSvc.PrimarySelection is IComponent comp)
             {
-                IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
+                IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
                 if (host is not null)
                 {
                     //This will excluded components in the ComponentTray, but that's okay, they are not resizable to begin with.
-                    ControlDesigner des = host.GetDesigner(comp) as ControlDesigner;
-                    if (des is not null && ((des.SelectionRules & SelectionRules.Locked) == 0))
+                    if (host.GetDesigner(comp) is ControlDesigner des && ((des.SelectionRules & SelectionRules.Locked) == 0))
                     {
                         //Possibly flip our size adjustments depending on the dock prop of the control.
                         //EX: If the control is docked right, then shift+left arrow will cause
                         //the control's width to decrease when it should increase
                         bool flipOffset = false;
-                        PropertyDescriptor dockProp = TypeDescriptor.GetProperties(comp)["Dock"];
+                        PropertyDescriptor? dockProp = TypeDescriptor.GetProperties(comp)["Dock"];
                         if (dockProp is not null)
                         {
-                            DockStyle docked = (DockStyle)dockProp.GetValue(comp);
-                            flipOffset = (docked == DockStyle.Bottom) || (docked == DockStyle.Right);
+                            DockStyle docked = (DockStyle)dockProp.GetValue(comp)!;
+                            flipOffset = docked is DockStyle.Bottom or DockStyle.Right;
                         }
 
                         SelectionRules rules = SelectionRules.Visible;
-                        CommandID cmd = ((MenuCommand)sender).CommandID;
+                        CommandID cmd = ((MenuCommand)sender!).CommandID!;
                         bool invertSnap = false;
                         int moveOffsetX = 0;
                         int moveOffsetY = 0;
@@ -604,7 +598,7 @@ internal class ControlCommandSet : CommandSet
                         }
                         else
                         {
-                            trans = host.CreateTransaction(string.Format(SR.DragDropSizeComponent, comp.Site.Name));
+                            trans = host.CreateTransaction(string.Format(SR.DragDropSizeComponent, comp.Site!.Name));
                         }
 
                         try
@@ -613,7 +607,7 @@ internal class ControlCommandSet : CommandSet
                             //move these controls...
                             if (BehaviorService is not null)
                             {
-                                Control primaryControl = comp as Control;
+                                Control primaryControl = (Control)comp;
 
                                 bool useSnapLines = BehaviorService.UseSnapLines;
 
@@ -670,7 +664,7 @@ internal class ControlCommandSet : CommandSet
                                     // We need to do this AFTER we calculate the snappedOffset.
                                     // This is because the dragManager calculations are all based
                                     // on an origin in the upper-left.
-                                    if (primaryControl.Parent.IsMirrored)
+                                    if (primaryControl.Parent!.IsMirrored)
                                     {
                                         moveOffsetX *= -1;
                                     }
@@ -681,21 +675,17 @@ internal class ControlCommandSet : CommandSet
                                 else if (!invertSnap && !useSnapLines)
                                 {
                                     bool snapOn = false;
-                                    Size snapSize = Size.Empty;
-                                    IComponent snapComponent = null;
-                                    PropertyDescriptor snapProperty = null;
 
-                                    GetSnapInformation(host, comp, out snapSize, out snapComponent, out snapProperty);
+                                    GetSnapInformation(host, comp, out Size snapSize, out IComponent? snapComponent, out PropertyDescriptor? snapProperty);
 
                                     if (snapProperty is not null)
                                     {
-                                        snapOn = (bool)snapProperty.GetValue(snapComponent);
+                                        snapOn = (bool)snapProperty.GetValue(snapComponent)!;
                                     }
 
                                     if (snapOn && !snapSize.IsEmpty)
                                     {
-                                        ParentControlDesigner parentDesigner = host.GetDesigner(primaryControl.Parent) as ParentControlDesigner;
-                                        if (parentDesigner is not null)
+                                        if (host.GetDesigner(primaryControl.Parent!) is ParentControlDesigner parentDesigner)
                                         {
                                             //ask the parent to adjust our wanna-be snapped position
                                             moveOffsetX *= snapSize.Width;
@@ -712,7 +702,7 @@ internal class ControlCommandSet : CommandSet
                                             // parent container's origin.
 
                                             // Should do this BEFORE we get the snapped point.
-                                            if (primaryControl.Parent.IsMirrored)
+                                            if (primaryControl.Parent!.IsMirrored)
                                             {
                                                 moveOffsetX *= -1;
                                             }
@@ -738,7 +728,7 @@ internal class ControlCommandSet : CommandSet
                                     {
                                         //In this case we are just moving 1 pixel
                                         checkForIntegralHeight = true;
-                                        if (primaryControl.Parent.IsMirrored)
+                                        if (primaryControl.Parent!.IsMirrored)
                                         {
                                             moveOffsetX *= -1;
                                         }
@@ -747,7 +737,7 @@ internal class ControlCommandSet : CommandSet
                                 else
                                 {
                                     checkForIntegralHeight = true;
-                                    if (primaryControl.Parent.IsMirrored)
+                                    if (primaryControl.Parent!.IsMirrored)
                                     {
                                         moveOffsetX *= -1;
                                     }
@@ -755,14 +745,13 @@ internal class ControlCommandSet : CommandSet
 
                                 foreach (IComponent component in selSvc.GetSelectedComponents())
                                 {
-                                    des = host.GetDesigner(component) as ControlDesigner;
-                                    if (des is not null && ((des.SelectionRules & rules) != rules))
+                                    if (host.GetDesigner(component) is ControlDesigner designer && (designer.SelectionRules & rules) != rules)
                                     {
                                         //the control must match the rules, if not, then we don't resize it
                                         continue;
                                     }
 
-                                    Control control = component as Control;
+                                    Control? control = component as Control;
 
                                     if (control is not null)
                                     {
@@ -770,25 +759,25 @@ internal class ControlCommandSet : CommandSet
 
                                         if (checkForIntegralHeight)
                                         {
-                                            PropertyDescriptor propIntegralHeight = TypeDescriptor.GetProperties(component)["IntegralHeight"];
+                                            PropertyDescriptor? propIntegralHeight = TypeDescriptor.GetProperties(component)["IntegralHeight"];
                                             if (propIntegralHeight is not null)
                                             {
-                                                object value = propIntegralHeight.GetValue(component);
-                                                if (value is bool && (bool)value)
+                                                object? value = propIntegralHeight.GetValue(component);
+                                                if (value is true)
                                                 {
-                                                    PropertyDescriptor propItemHeight = TypeDescriptor.GetProperties(component)["ItemHeight"];
+                                                    PropertyDescriptor? propItemHeight = TypeDescriptor.GetProperties(component)["ItemHeight"];
                                                     if (propItemHeight is not null)
                                                     {
-                                                        offsetY *= (int)propItemHeight.GetValue(component); //adjust for integralheight
+                                                        offsetY *= (int)propItemHeight.GetValue(component)!; //adjust for integralheight
                                                     }
                                                 }
                                             }
                                         }
 
-                                        PropertyDescriptor propSize = TypeDescriptor.GetProperties(component)["Size"];
+                                        PropertyDescriptor? propSize = TypeDescriptor.GetProperties(component)["Size"];
                                         if (propSize is not null)
                                         {
-                                            Size size = (Size)propSize.GetValue(component);
+                                            Size size = (Size)propSize.GetValue(component)!;
                                             size += new Size(moveOffsetX, offsetY);
                                             propSize.SetValue(component, size);
                                         }
@@ -825,32 +814,24 @@ internal class ControlCommandSet : CommandSet
     /// <summary>
     ///  Called for selection via the tab key.
     /// </summary>
-    protected void OnKeySelect(object sender, EventArgs e)
+    protected void OnKeySelect(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
-        bool reverse = (cmd.CommandID.Equals(MenuCommands.KeySelectPrevious));
+        MenuCommand cmd = (MenuCommand)sender!;
+        bool reverse = (cmd.CommandID!.Equals(MenuCommands.KeySelectPrevious));
         RotateTabSelection(reverse);
-    }
-
-    /// <summary>
-    ///  Called for selection via the tab key.
-    /// </summary>
-    protected override void OnKeyMove(object sender, EventArgs e)
-    {
-        base.OnKeyMove(sender, e);
     }
 
     /// <summary>
     ///  Called when the lock controls menu item is selected.
     /// </summary>
-    protected void OnMenuLockControls(object sender, EventArgs e)
+    protected void OnMenuLockControls(object? sender, EventArgs e)
     {
-        Cursor oldCursor = Cursor.Current;
+        Cursor? oldCursor = Cursor.Current;
         try
         {
             Cursor.Current = Cursors.WaitCursor;
 
-            IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
+            IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
 
             if (host is not null)
             {
@@ -858,19 +839,19 @@ internal class ControlCommandSet : CommandSet
 
                 if (components is not null && components.Count > 0)
                 {
-                    DesignerTransaction trans = null;
+                    DesignerTransaction? trans = null;
 
                     try
                     {
                         trans = host.CreateTransaction(string.Format(SR.CommandSetLockControls, components.Count));
-                        MenuCommand cmd = (MenuCommand)sender;
+                        MenuCommand cmd = (MenuCommand)sender!;
                         bool targetValue = !cmd.Checked;
 
                         // do the change
                         bool firstTry = true;
                         foreach (IComponent comp in components)
                         {
-                            PropertyDescriptor prop = GetProperty(comp, "Locked");
+                            PropertyDescriptor? prop = GetProperty(comp, "Locked");
                             //check to see the prop is not null & not readonly
                             if (prop is null)
                             {
@@ -922,9 +903,9 @@ internal class ControlCommandSet : CommandSet
     /// <summary>
     ///  Called to display or destroy the tab order UI.
     /// </summary>
-    private void OnMenuTabOrder(object sender, EventArgs e)
+    private void OnMenuTabOrder(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
         if (cmd.Checked)
         {
             Debug.Assert(tabOrder is not null, "Tab order and menu enabling are out of sync");
@@ -942,7 +923,7 @@ internal class ControlCommandSet : CommandSet
             //this prevents things such as the menu editor service getting broken.
             //
             ISelectionService selSvc = SelectionService;
-            IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
+            IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
             if (host is not null && selSvc is not null)
             {
                 object baseComp = host.RootComponent;
@@ -954,7 +935,7 @@ internal class ControlCommandSet : CommandSet
 
             using (DpiHelper.EnterDpiAwarenessScope(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE))
             {
-                tabOrder = new TabOrder((IDesignerHost)GetService(typeof(IDesignerHost)));
+                tabOrder = new TabOrder((IDesignerHost)GetService(typeof(IDesignerHost))!);
             }
 
             cmd.Checked = true;
@@ -964,10 +945,10 @@ internal class ControlCommandSet : CommandSet
     /// <summary>
     ///  Called when the zorder->send to back menu item is selected.
     /// </summary>
-    private void OnMenuZOrderSelection(object sender, EventArgs e)
+    private void OnMenuZOrderSelection(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
-        CommandID cmdID = cmd.CommandID;
+        MenuCommand cmd = (MenuCommand)sender!;
+        CommandID? cmdID = cmd.CommandID;
 
         Debug.Assert(SelectionService is not null, "Need SelectionService for sizing command");
 
@@ -978,14 +959,14 @@ internal class ControlCommandSet : CommandSet
 
         List<Control> layoutParentList = new();
         List<Control> parentList = new();
-        Cursor oldCursor = Cursor.Current;
+        Cursor? oldCursor = Cursor.Current;
         try
         {
             Cursor.Current = Cursors.WaitCursor;
 
-            IComponentChangeService ccs = (IComponentChangeService)GetService(typeof(IComponentChangeService));
-            IDesignerHost designerHost = (IDesignerHost)GetService(typeof(IDesignerHost));
-            DesignerTransaction trans = null;
+            IComponentChangeService? ccs = (IComponentChangeService?)GetService(typeof(IComponentChangeService));
+            IDesignerHost? designerHost = (IDesignerHost?)GetService(typeof(IDesignerHost));
+            DesignerTransaction? trans = null;
 
             try
             {
@@ -993,7 +974,7 @@ internal class ControlCommandSet : CommandSet
 
                 // NOTE: this only works on Control types
                 ICollection sel = SelectionService.GetSelectedComponents();
-                object[] selectedComponents = new object[sel.Count];
+                object?[] selectedComponents = new object[sel.Count];
                 sel.CopyTo(selectedComponents, 0);
 
                 if (cmdID == StandardCommands.BringToFront)
@@ -1008,36 +989,26 @@ internal class ControlCommandSet : CommandSet
                 // sort the components by their current zOrder
                 Array.Sort(selectedComponents, new ControlComparer());
 
-                trans = designerHost.CreateTransaction(batchString);
+                trans = designerHost!.CreateTransaction(batchString);
 
                 if (selectedComponents.Length > 0)
                 {
                     int len = selectedComponents.Length;
                     for (int i = len - 1; i >= 0; i--)
                     {
-                        Control control = selectedComponents[i] as Control;
+                        Control? control = selectedComponents[i] as Control;
                         // Check for NestedComponents like SplitterPanels.
                         // If SplitterPanel is selected and you choose the SendToBack (or BringToFront) option then it should
                         // perform the operation on the Owner (namely SplitContainer)
-                        IComponent selComp = selectedComponents[i] as IComponent;
-                        if (selComp is not null)
+                        if (selectedComponents[i] is IComponent { Site: INestedSite { Container: INestedContainer nestedContainer } })
                         {
-                            INestedSite nestedSite = selComp.Site as INestedSite;
-                            if (nestedSite is not null)
-                            {
-                                INestedContainer nestedContainer = nestedSite.Container as INestedContainer;
-                                if (nestedContainer is not null)
-                                {
-                                    control = nestedContainer.Owner as Control;
-                                    selectedComponents[i] = control; // set this so that we don't have to re-do this logic in the BringToFront case down.
-                                }
-                            }
+                            control = nestedContainer.Owner as Control;
+                            selectedComponents[i] = control; // set this so that we don't have to re-do this logic in the BringToFront case down.
                         }
 
                         if (control is not null)
                         {
-                            Control parent = control.Parent;
-                            PropertyDescriptor controlsProp = null;
+                            Control? parent = control.Parent;
                             if (parent is not null)
                             {
                                 if (ccs is not null)
@@ -1046,7 +1017,7 @@ internal class ControlCommandSet : CommandSet
                                     {
                                         if (!parentList.Contains(parent))
                                         {
-                                            controlsProp = TypeDescriptor.GetProperties(parent)["Controls"];
+                                            PropertyDescriptor? controlsProp = TypeDescriptor.GetProperties(parent)["Controls"];
                                             if (controlsProp is not null)
                                             {
                                                 // For a perf improvement, we will
@@ -1090,13 +1061,13 @@ internal class ControlCommandSet : CommandSet
                         if (cmdID == StandardCommands.BringToFront)
                         {
                             // we do this backwards to maintain zorder
-                            Control otherControl = selectedComponents[len - i - 1] as Control;
+                            Control? otherControl = selectedComponents[len - i - 1] as Control;
 
                             otherControl?.BringToFront();
                         }
                         else if (cmdID == StandardCommands.SendToBack)
                         {
-                            Control control = selectedComponents[i] as Control;
+                            Control? control = selectedComponents[i] as Control;
                             control?.SendToBack();
                         }
                     }
@@ -1109,7 +1080,7 @@ internal class ControlCommandSet : CommandSet
                 {
                     foreach (Control parent in parentList)
                     {
-                        PropertyDescriptor controlsProp = TypeDescriptor.GetProperties(parent)["Controls"];
+                        PropertyDescriptor? controlsProp = TypeDescriptor.GetProperties(parent)["Controls"];
                         Debug.Assert(ccs is not null && controlsProp is not null, "Wrong parent in parent list");
                         if (ccs is not null && controlsProp is not null)
                         {
@@ -1138,14 +1109,10 @@ internal class ControlCommandSet : CommandSet
     ///  handler are enabled when there is one or more controls on the design
     ///  surface.
     /// </summary>
-    protected void OnStatusAnyControls(object sender, EventArgs e)
+    protected void OnStatusAnyControls(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
-        bool enabled = false;
-        if (baseControl is not null && baseControl.Controls.Count > 0)
-        {
-            enabled = true;
-        }
+        MenuCommand cmd = (MenuCommand)sender!;
+        bool enabled = baseControl is not null && baseControl.Controls.Count > 0;
 
         cmd.Enabled = enabled;
     }
@@ -1154,9 +1121,9 @@ internal class ControlCommandSet : CommandSet
     ///  Determines the status of a menu command.  Commands with this event
     ///  handler are enabled when one or more objects are selected.
     /// </summary>
-    protected void OnStatusControlsOnlySelection(object sender, EventArgs e)
+    protected void OnStatusControlsOnlySelection(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
         cmd.Enabled = (selCount > 0) && controlsOnlySelection;
     }
 
@@ -1165,16 +1132,16 @@ internal class ControlCommandSet : CommandSet
     ///  handler are enabled when one or more objects are selected and
     ///  SnapToGrid is selected.
     /// </summary>
-    protected void OnStatusControlsOnlySelectionAndGrid(object sender, EventArgs e)
+    protected void OnStatusControlsOnlySelectionAndGrid(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
 
-        cmd.Enabled = (selCount > 0) && controlsOnlySelection && (!BehaviorService.UseSnapLines);
+        cmd.Enabled = (selCount > 0) && controlsOnlySelection && (!BehaviorService!.UseSnapLines);
     }
 
-    protected void OnStatusLockControls(object sender, EventArgs e)
+    protected void OnStatusLockControls(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
 
         if (baseControl is null)
         {
@@ -1187,26 +1154,26 @@ internal class ControlCommandSet : CommandSet
 
         //Get the locked property of the base control first...
         //
-        PropertyDescriptor lockedProp = TypeDescriptor.GetProperties(baseControl)["Locked"];
-        if (lockedProp is not null && ((bool)lockedProp.GetValue(baseControl)))
+        PropertyDescriptor? lockedProp = TypeDescriptor.GetProperties(baseControl)["Locked"];
+        if (lockedProp is not null && (bool)lockedProp.GetValue(baseControl)!)
         {
             cmd.Checked = true;
             return;
         }
 
-        IDesignerHost host = (IDesignerHost)site.GetService(typeof(IDesignerHost));
+        IDesignerHost? host = (IDesignerHost?)site.GetService(typeof(IDesignerHost));
 
         if (host is null)
         {
             return;
         }
 
-        ComponentDesigner baseDesigner = host.GetDesigner(baseControl) as ComponentDesigner;
+        ComponentDesigner baseDesigner = (ComponentDesigner)host.GetDesigner(baseControl)!;
 
         foreach (object component in baseDesigner.AssociatedComponents)
         {
             lockedProp = TypeDescriptor.GetProperties(component)["Locked"];
-            if (lockedProp is not null && ((bool)lockedProp.GetValue(component)))
+            if (lockedProp is not null && (bool)lockedProp.GetValue(component)!)
             {
                 cmd.Checked = true;
                 return;
@@ -1218,9 +1185,9 @@ internal class ControlCommandSet : CommandSet
     ///  Determines the status of a menu command.  Commands with this event
     ///  handler are enabled when more than one object is selected.
     /// </summary>
-    protected void OnStatusMultiSelect(object sender, EventArgs e)
+    protected void OnStatusMultiSelect(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
         cmd.Enabled = controlsOnlySelection && selCount > 1;
     }
 
@@ -1229,19 +1196,19 @@ internal class ControlCommandSet : CommandSet
     ///  handler are enabled when more than one object is selected and one
     ///  of them is marked as the primary selection.
     /// </summary>
-    protected void OnStatusMultiSelectPrimary(object sender, EventArgs e)
+    protected void OnStatusMultiSelectPrimary(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
         cmd.Enabled = controlsOnlySelection && selCount > 1 && primarySelection is not null;
     }
 
     /// <summary>
     ///  Determines the status of a menu command.  Ensures that all the selected controls have the same parent.
     /// </summary>
-    private void OnStatusMultiSelectNonContained(object sender, EventArgs e)
+    private void OnStatusMultiSelectNonContained(object? sender, EventArgs e)
     {
         OnStatusMultiSelect(sender, e);
-        MenuCommand cmd = (MenuCommand)sender;
+        MenuCommand cmd = (MenuCommand)sender!;
         if (cmd.Enabled)
         {
             cmd.Enabled = CheckSelectionParenting();
@@ -1252,23 +1219,23 @@ internal class ControlCommandSet : CommandSet
     ///  Determines the status of a menu command.  This event handler is
     ///  dedicated to the ShowGrid item.
     /// </summary>
-    protected void OnStatusShowGrid(object sender, EventArgs e)
+    protected void OnStatusShowGrid(object? sender, EventArgs e)
     {
         if (site is not null)
         {
-            IDesignerHost host = (IDesignerHost)site.GetService(typeof(IDesignerHost));
+            IDesignerHost? host = (IDesignerHost?)site.GetService(typeof(IDesignerHost));
             Debug.Assert(!CompModSwitches.CommonDesignerServices.Enabled || host is not null, "IDesignerHost not found");
 
             if (host is not null)
             {
                 IComponent baseComponent = host.RootComponent;
-                if (baseComponent is not null && baseComponent is Control)
+                if (baseComponent is Control)
                 {
-                    PropertyDescriptor prop = GetProperty(baseComponent, "DrawGrid");
+                    PropertyDescriptor? prop = GetProperty(baseComponent, "DrawGrid");
                     if (prop is not null)
                     {
-                        bool drawGrid = (bool)prop.GetValue(baseComponent);
-                        MenuCommand cmd = (MenuCommand)sender;
+                        bool drawGrid = (bool)prop.GetValue(baseComponent)!;
+                        MenuCommand cmd = (MenuCommand)sender!;
                         cmd.Enabled = true;
                         cmd.Checked = drawGrid;
                     }
@@ -1281,23 +1248,23 @@ internal class ControlCommandSet : CommandSet
     ///  Determines the status of a menu command.  This event handler is
     ///  dedicated to the SnapToGrid item.
     /// </summary>
-    protected void OnStatusSnapToGrid(object sender, EventArgs e)
+    protected void OnStatusSnapToGrid(object? sender, EventArgs e)
     {
         if (site is not null)
         {
-            IDesignerHost host = (IDesignerHost)site.GetService(typeof(IDesignerHost));
+            IDesignerHost? host = (IDesignerHost?)site.GetService(typeof(IDesignerHost));
             Debug.Assert(!CompModSwitches.CommonDesignerServices.Enabled || host is not null, "IDesignerHost not found");
 
             if (host is not null)
             {
                 IComponent baseComponent = host.RootComponent;
-                if (baseComponent is not null && baseComponent is Control)
+                if (baseComponent is Control)
                 {
-                    PropertyDescriptor prop = GetProperty(baseComponent, "SnapToGrid");
+                    PropertyDescriptor? prop = GetProperty(baseComponent, "SnapToGrid");
                     if (prop is not null)
                     {
-                        bool snapToGrid = (bool)prop.GetValue(baseComponent);
-                        MenuCommand cmd = (MenuCommand)sender;
+                        bool snapToGrid = (bool)prop.GetValue(baseComponent)!;
+                        MenuCommand cmd = (MenuCommand)sender!;
                         cmd.Enabled = controlsOnlySelection;
                         cmd.Checked = snapToGrid;
                     }
@@ -1314,10 +1281,10 @@ internal class ControlCommandSet : CommandSet
     ///  2) At least one Control-derived component must be selected
     ///  3) The form must not be selected
     /// </summary>
-    private void OnStatusZOrder(object sender, EventArgs e)
+    private void OnStatusZOrder(object? sender, EventArgs e)
     {
-        MenuCommand cmd = (MenuCommand)sender;
-        IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
+        MenuCommand cmd = (MenuCommand)sender!;
+        IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
         if (host is not null)
         {
             ComponentCollection comps = host.Container.Components;
@@ -1345,7 +1312,7 @@ internal class ControlCommandSet : CommandSet
                 foreach (object obj in selectedComponents)
                 {
                     if (obj is Control &&
-                        !TypeDescriptor.GetAttributes(obj)[typeof(InheritanceAttribute)].Equals(InheritanceAttribute.InheritedReadOnly))
+                        !TypeDescriptor.GetAttributes(obj)[typeof(InheritanceAttribute)]!.Equals(InheritanceAttribute.InheritedReadOnly))
                     {
                         enable = true;
                     }
@@ -1390,63 +1357,46 @@ internal class ControlCommandSet : CommandSet
     /// </summary>
     private void RotateParentSelection(bool backwards)
     {
-        object next = null;
+        object? next = null;
 
         ISelectionService selSvc = SelectionService;
-        IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
+        IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
 
-        if (selSvc is null || host is null || !(host.RootComponent is Control))
+        if (selSvc is null || host?.RootComponent is not Control current)
         {
             return;
         }
 
         IContainer container = host.Container;
 
-        Control component = selSvc.PrimarySelection as Control;
-        Control current;
-        if (component is not null)
+        if (selSvc.PrimarySelection is Control component)
         {
             current = component;
-        }
-        else
-        {
-            current = (Control)host.RootComponent;
         }
 
         if (backwards)
         {
-            if (current is not null)
-            {
-                if (current.Controls.Count > 0)
-                {
-                    next = current.Controls[0];
-                }
-                else
-                {
-                    next = current;
-                }
-            }
+            next = current.Controls.Count > 0 ? current.Controls[0] : current;
         }
         else
         {
-            if (current is not null)
+            next = current.Parent;
+            Control? nextControl = next as Control;
+            IContainer? controlSiteContainer = null;
+            if (nextControl?.Site is not null)
             {
-                next = current.Parent;
-                Control nextControl = next as Control;
-                IContainer controlSiteContainer = null;
-                if (nextControl is not null && nextControl.Site is not null)
-                {
-                    controlSiteContainer = DesignerUtils.CheckForNestedContainer(nextControl.Site.Container); // ...necessary to support SplitterPanel components
-                }
+                controlSiteContainer =
+                    DesignerUtils.CheckForNestedContainer(nextControl.Site
+                        .Container); // ...necessary to support SplitterPanel components
+            }
 
-                if (nextControl is null || nextControl.Site is null || controlSiteContainer != container)
-                {
-                    next = current;
-                }
+            if (nextControl?.Site is null || controlSiteContainer != container)
+            {
+                next = current;
             }
         }
 
-        selSvc.SetSelectedComponents(new object[] { next }, SelectionTypes.Replace);
+        selSvc.SetSelectedComponents(new object?[] { next }, SelectionTypes.Replace);
     }
 
     /// <summary>
@@ -1455,19 +1405,14 @@ internal class ControlCommandSet : CommandSet
     /// </summary>
     private void RotateTabSelection(bool backwards)
     {
-        Control ctl;
-        Control baseCtl;
-        object targetSelection = null;
-        object currentSelection;
+        object? targetSelection = null;
 
         ISelectionService selSvc = SelectionService;
-        IDesignerHost host = (IDesignerHost)GetService(typeof(IDesignerHost));
-        if (selSvc is null || host is null || !(host.RootComponent is Control))
+        IDesignerHost? host = (IDesignerHost?)GetService(typeof(IDesignerHost));
+        if (selSvc is null || host?.RootComponent is not Control baseCtl)
         {
             return;
         }
-
-        baseCtl = (Control)host.RootComponent;
 
         // We must handle two cases of logic here.  We are responsible for handling
         // selection within ourself, and also for components on the tray.  For our
@@ -1475,36 +1420,34 @@ internal class ControlCommandSet : CommandSet
         // of the form, however, we go by selection order into the tray.  And,
         // when we're at the end of the tray we start back at the form.  We must
         // reverse this logic to go backwards.
+        object? currentSelection = selSvc.PrimarySelection;
 
-        currentSelection = selSvc.PrimarySelection;
-        ctl = currentSelection as Control;
-
-        if (targetSelection is null && ctl is not null && (baseCtl.Contains(ctl) || baseCtl == currentSelection))
+        if (targetSelection is null && currentSelection is Control ctl && (baseCtl.Contains(ctl) || baseCtl == currentSelection))
         {
             // Our current selection is a control.  Select the next control in
             // the z-order.
             //
-            while ((ctl = GetNextControlInTab(baseCtl, ctl, !backwards)) is not null)
+            Control? control = ctl;
+
+            do
             {
-                if (ctl.Site is not null && ctl.Site.Container == ctl.Container)
-                {
-                    break;
-                }
+                control = GetNextControlInTab(baseCtl, control, !backwards);
             }
+            while (control?.Site is not null && control.Site.Container == control.Container);
 
             targetSelection = ctl;
         }
 
         if (targetSelection is null)
         {
-            ComponentTray tray = (ComponentTray)GetService(typeof(ComponentTray));
+            ComponentTray? tray = (ComponentTray?)GetService(typeof(ComponentTray));
             if (tray is not null)
             {
-                targetSelection = tray.GetNextComponent((IComponent)currentSelection, !backwards);
+                targetSelection = tray.GetNextComponent((IComponent?)currentSelection, !backwards);
                 if (targetSelection is not null)
                 {
-                    IComponent selection = targetSelection as IComponent;
-                    ControlDesigner controlDesigner = host.GetDesigner(selection) as ControlDesigner;
+                    IComponent? selection = targetSelection as IComponent;
+                    ControlDesigner? controlDesigner = host.GetDesigner(selection!) as ControlDesigner;
                     // In Whidbey controls like ToolStrips have componentTray presence, So don't select them again
                     // through component tray since here we select only Components. Hence only
                     // components that have ComponentDesigners should be selected via the ComponentTray.
@@ -1530,7 +1473,7 @@ internal class ControlCommandSet : CommandSet
         selSvc.SetSelectedComponents(new object[] { targetSelection }, SelectionTypes.Replace);
     }
 
-    private static Control GetNextControlInTab(Control basectl, Control ctl, bool forward)
+    private static Control? GetNextControlInTab(Control basectl, Control ctl, bool forward)
     {
         if (forward)
         {
@@ -1538,7 +1481,7 @@ internal class ControlCommandSet : CommandSet
 
             if (ctlControls is not null && ctlControls.Count > 0)
             {
-                Control found = null;
+                Control? found = null;
 
                 // Cycle through the controls in z-order looking for the lowest tab index.
                 //
@@ -1557,58 +1500,54 @@ internal class ControlCommandSet : CommandSet
             {
                 int targetIndex = ctl.TabIndex;
                 bool hitCtl = false;
-                Control found = null;
-                Control p = ctl.Parent;
+                Control? found = null;
+                Control p = ctl.Parent!;
 
                 // Cycle through the controls in z-order looking for the one with the next highest
                 // tab index.  Because there can be dups, we have to start with the existing tab index and
                 // remember to exclude the current control.
                 //
-                int parentControlCount = 0;
-
                 Control.ControlCollection parentControls = p.Controls;
 
                 if (parentControls is not null)
                 {
-                    parentControlCount = parentControls.Count;
-                }
-
-                for (int c = 0; c < parentControlCount; c++)
-                {
-                    // The logic for this is a bit lengthy, so I have broken it into separate
-                    // clauses:
-
-                    // We are not interested in ourself.
-                    //
-                    if (parentControls[c] != ctl)
+                    for (int c = 0; c < parentControls.Count; c++)
                     {
-                        // We are interested in controls with >= tab indexes to ctl.  We must include those
-                        // controls with equal indexes to account for duplicate indexes.
+                        // The logic for this is a bit lengthy, so I have broken it into separate
+                        // clauses:
+
+                        // We are not interested in ourself.
                         //
-                        if (parentControls[c].TabIndex >= targetIndex)
+                        if (parentControls[c] != ctl)
                         {
-                            // Check to see if this control replaces the "best match" we've already
-                            // found.
+                            // We are interested in controls with >= tab indexes to ctl.  We must include those
+                            // controls with equal indexes to account for duplicate indexes.
                             //
-                            if (found is null || found.TabIndex > parentControls[c].TabIndex)
+                            if (parentControls[c].TabIndex >= targetIndex)
                             {
-                                // Finally, check to make sure that if this tab index is the same as ctl,
-                                // that we've already encountered ctl in the z-order.  If it isn't the same,
-                                // than we're more than happy with it.
+                                // Check to see if this control replaces the "best match" we've already
+                                // found.
                                 //
-                                if (parentControls[c].TabIndex != targetIndex || hitCtl)
+                                if (found is null || found.TabIndex > parentControls[c].TabIndex)
                                 {
-                                    found = parentControls[c];
+                                    // Finally, check to make sure that if this tab index is the same as ctl,
+                                    // that we've already encountered ctl in the z-order.  If it isn't the same,
+                                    // than we're more than happy with it.
+                                    //
+                                    if (parentControls[c].TabIndex != targetIndex || hitCtl)
+                                    {
+                                        found = parentControls[c];
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        // We track when we have encountered "ctl".  We never want to select ctl again, but
-                        // we want to know when we've seen it in case we find another control with the same tab index.
-                        //
-                        hitCtl = true;
+                        else
+                        {
+                            // We track when we have encountered "ctl".  We never want to select ctl again, but
+                            // we want to know when we've seen it in case we find another control with the same tab index.
+                            //
+                            hitCtl = true;
+                        }
                     }
                 }
 
@@ -1617,7 +1556,7 @@ internal class ControlCommandSet : CommandSet
                     return found;
                 }
 
-                ctl = ctl.Parent;
+                ctl = ctl.Parent!;
             }
         }
         else
@@ -1626,57 +1565,53 @@ internal class ControlCommandSet : CommandSet
             {
                 int targetIndex = ctl.TabIndex;
                 bool hitCtl = false;
-                Control found = null;
-                Control p = ctl.Parent;
+                Control? found = null;
+                Control p = ctl.Parent!;
 
                 // Cycle through the controls in reverse z-order looking for the next lowest tab index.  We must
                 // start with the same tab index as ctl, because there can be dups.
                 //
-                int parentControlCount = 0;
-
                 Control.ControlCollection parentControls = p.Controls;
 
                 if (parentControls is not null)
                 {
-                    parentControlCount = parentControls.Count;
-                }
-
-                for (int c = parentControlCount - 1; c >= 0; c--)
-                {
-                    // The logic for this is a bit lengthy, so I have broken it into separate
-                    // clauses:
-
-                    // We are not interested in ourself.
-                    //
-                    if (parentControls[c] != ctl)
+                    for (int c = parentControls.Count - 1; c >= 0; c--)
                     {
-                        // We are interested in controls with <= tab indexes to ctl.  We must include those
-                        // controls with equal indexes to account for duplicate indexes.
+                        // The logic for this is a bit lengthy, so I have broken it into separate
+                        // clauses:
+
+                        // We are not interested in ourself.
                         //
-                        if (parentControls[c].TabIndex <= targetIndex)
+                        if (parentControls[c] != ctl)
                         {
-                            // Check to see if this control replaces the "best match" we've already
-                            // found.
+                            // We are interested in controls with <= tab indexes to ctl.  We must include those
+                            // controls with equal indexes to account for duplicate indexes.
                             //
-                            if (found is null || found.TabIndex < parentControls[c].TabIndex)
+                            if (parentControls[c].TabIndex <= targetIndex)
                             {
-                                // Finally, check to make sure that if this tab index is the same as ctl,
-                                // that we've already encountered ctl in the z-order.  If it isn't the same,
-                                // than we're more than happy with it.
+                                // Check to see if this control replaces the "best match" we've already
+                                // found.
                                 //
-                                if (parentControls[c].TabIndex != targetIndex || hitCtl)
+                                if (found is null || found.TabIndex < parentControls[c].TabIndex)
                                 {
-                                    found = parentControls[c];
+                                    // Finally, check to make sure that if this tab index is the same as ctl,
+                                    // that we've already encountered ctl in the z-order.  If it isn't the same,
+                                    // than we're more than happy with it.
+                                    //
+                                    if (parentControls[c].TabIndex != targetIndex || hitCtl)
+                                    {
+                                        found = parentControls[c];
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
-                        // We track when we have encountered "ctl".  We never want to select ctl again, but
-                        // we want to know when we've seen it in case we find another control with the same tab index.
-                        //
-                        hitCtl = true;
+                        else
+                        {
+                            // We track when we have encountered "ctl".  We never want to select ctl again, but
+                            // we want to know when we've seen it in case we find another control with the same tab index.
+                            //
+                            hitCtl = true;
+                        }
                     }
                 }
 
@@ -1706,7 +1641,7 @@ internal class ControlCommandSet : CommandSet
 
             while (ctlControls is not null && ctlControls.Count > 0)
             {
-                Control found = null;
+                Control? found = null;
 
                 // Cycle through the controls in reverse z-order looking for the one with the highest
                 // tab index.
@@ -1719,7 +1654,7 @@ internal class ControlCommandSet : CommandSet
                     }
                 }
 
-                ctl = found;
+                ctl = found!;
 
                 ctlControls = ctl.Controls;
             }
@@ -1736,7 +1671,7 @@ internal class ControlCommandSet : CommandSet
         /// <summary>
         ///  <para>Compares two controls for equality.</para>
         /// </summary>
-        public int Compare(object x, object y)
+        public int Compare(object? x, object? y)
         {
             // we want to sort items here based on their z-order
             //
@@ -1753,13 +1688,13 @@ internal class ControlCommandSet : CommandSet
                 return 0;
             }
 
-            Control cX = x as Control;
-            Control cY = y as Control;
+            Control? cX = x as Control;
+            Control? cY = y as Control;
             if (cX is not null && cY is not null)
             {
                 if (cX.Parent == cY.Parent)
                 {
-                    Control parent = cX.Parent;
+                    Control? parent = cX.Parent;
                     if (parent is null)
                     {
                         return 0;
