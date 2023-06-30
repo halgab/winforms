@@ -31,7 +31,7 @@ internal static class Formatter
         Type targetType,
         TypeConverter? sourceConverter,
         TypeConverter? targetConverter,
-        string formatString,
+        string? formatString,
         IFormatProvider? formatInfo,
         object? formattedNullValue,
         object? dataSourceNullValue)
@@ -88,7 +88,7 @@ internal static class Formatter
         Type targetType,
         TypeConverter? sourceConverter,
         TypeConverter? targetConverter,
-        string formatString,
+        string? formatString,
         IFormatProvider? formatInfo,
         object? formattedNullValue)
     {
@@ -540,7 +540,7 @@ internal static class Formatter
             : typeConverter;
     }
 
-    public static object? GetDefaultDataSourceNullValue(Type type)
+    public static object? GetDefaultDataSourceNullValue(Type? type)
     {
         return (type is not null && !type.IsValueType)
             ? null

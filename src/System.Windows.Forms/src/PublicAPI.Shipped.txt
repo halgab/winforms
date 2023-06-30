@@ -415,25 +415,25 @@ override System.Windows.Forms.CurrencyManager.GetItemProperties() -> System.Comp
 ~System.Windows.Forms.AxHost.RaiseOnMouseUp(object o1, object o2, object o3, object o4) -> void
 ~System.Windows.Forms.AxHost.SetAboutBoxDelegate(System.Windows.Forms.AxHost.AboutBoxDelegate d) -> void
 ~System.Windows.Forms.AxHost.ShowPropertyPages(System.Windows.Forms.Control control) -> void
-~System.Windows.Forms.Binding.BindableComponent.get -> System.Windows.Forms.IBindableComponent
-~System.Windows.Forms.Binding.Binding(string propertyName, object dataSource, string dataMember) -> void
-~System.Windows.Forms.Binding.Binding(string propertyName, object dataSource, string dataMember, bool formattingEnabled) -> void
-~System.Windows.Forms.Binding.Binding(string propertyName, object dataSource, string dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode) -> void
-~System.Windows.Forms.Binding.Binding(string propertyName, object dataSource, string dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode, object nullValue) -> void
-~System.Windows.Forms.Binding.Binding(string propertyName, object dataSource, string dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode, object nullValue, string formatString) -> void
-~System.Windows.Forms.Binding.Binding(string propertyName, object dataSource, string dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode, object nullValue, string formatString, System.IFormatProvider formatInfo) -> void
-~System.Windows.Forms.Binding.BindingManagerBase.get -> System.Windows.Forms.BindingManagerBase
-~System.Windows.Forms.Binding.Control.get -> System.Windows.Forms.Control
-~System.Windows.Forms.Binding.DataSource.get -> object
-~System.Windows.Forms.Binding.DataSourceNullValue.get -> object
-~System.Windows.Forms.Binding.DataSourceNullValue.set -> void
-~System.Windows.Forms.Binding.FormatInfo.get -> System.IFormatProvider
-~System.Windows.Forms.Binding.FormatInfo.set -> void
-~System.Windows.Forms.Binding.FormatString.get -> string
-~System.Windows.Forms.Binding.FormatString.set -> void
-~System.Windows.Forms.Binding.NullValue.get -> object
-~System.Windows.Forms.Binding.NullValue.set -> void
-~System.Windows.Forms.Binding.PropertyName.get -> string
+System.Windows.Forms.Binding.BindableComponent.get -> System.Windows.Forms.IBindableComponent?
+System.Windows.Forms.Binding.Binding(string? propertyName, object? dataSource, string? dataMember) -> void
+System.Windows.Forms.Binding.Binding(string? propertyName, object? dataSource, string? dataMember, bool formattingEnabled) -> void
+System.Windows.Forms.Binding.Binding(string? propertyName, object? dataSource, string? dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode) -> void
+System.Windows.Forms.Binding.Binding(string? propertyName, object? dataSource, string? dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode, object? nullValue) -> void
+System.Windows.Forms.Binding.Binding(string? propertyName, object? dataSource, string? dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode, object? nullValue, string? formatString) -> void
+System.Windows.Forms.Binding.Binding(string? propertyName, object? dataSource, string? dataMember, bool formattingEnabled, System.Windows.Forms.DataSourceUpdateMode dataSourceUpdateMode, object? nullValue, string? formatString, System.IFormatProvider? formatInfo) -> void
+System.Windows.Forms.Binding.BindingManagerBase.get -> System.Windows.Forms.BindingManagerBase?
+System.Windows.Forms.Binding.Control.get -> System.Windows.Forms.Control?
+System.Windows.Forms.Binding.DataSource.get -> object?
+System.Windows.Forms.Binding.DataSourceNullValue.get -> object?
+System.Windows.Forms.Binding.DataSourceNullValue.set -> void
+System.Windows.Forms.Binding.FormatInfo.get -> System.IFormatProvider?
+System.Windows.Forms.Binding.FormatInfo.set -> void
+System.Windows.Forms.Binding.FormatString.get -> string?
+System.Windows.Forms.Binding.FormatString.set -> void
+System.Windows.Forms.Binding.NullValue.get -> object?
+System.Windows.Forms.Binding.NullValue.set -> void
+System.Windows.Forms.Binding.PropertyName.get -> string?
 ~System.Windows.Forms.BindingSource.BindingSource(object dataSource, string dataMember) -> void
 ~System.Windows.Forms.BindingSource.BindingSource(System.ComponentModel.IContainer container) -> void
 ~System.Windows.Forms.BindingSource.Current.get -> object
@@ -878,9 +878,9 @@ System.Windows.Forms.WebBrowser.WebBrowserSite.WebBrowserSite(System.Windows.For
 ~System.Windows.Forms.WebBrowserBase.ActiveXInstance.get -> object
 ~System.Windows.Forms.WebBrowserBase.DrawToBitmap(System.Drawing.Bitmap bitmap, System.Drawing.Rectangle targetBounds) -> void
 ~virtual System.Windows.Forms.AxHost.CreateInstanceCore(System.Guid clsid) -> object
-~virtual System.Windows.Forms.Binding.OnBindingComplete(System.Windows.Forms.BindingCompleteEventArgs e) -> void
-~virtual System.Windows.Forms.Binding.OnFormat(System.Windows.Forms.ConvertEventArgs cevent) -> void
-~virtual System.Windows.Forms.Binding.OnParse(System.Windows.Forms.ConvertEventArgs cevent) -> void
+virtual System.Windows.Forms.Binding.OnBindingComplete(System.Windows.Forms.BindingCompleteEventArgs! e) -> void
+virtual System.Windows.Forms.Binding.OnFormat(System.Windows.Forms.ConvertEventArgs! cevent) -> void
+virtual System.Windows.Forms.Binding.OnParse(System.Windows.Forms.ConvertEventArgs! cevent) -> void
 ~virtual System.Windows.Forms.BindingSource.Add(object value) -> int
 ~virtual System.Windows.Forms.BindingSource.AddNew() -> object
 ~virtual System.Windows.Forms.BindingSource.ApplySort(System.ComponentModel.ListSortDescriptionCollection sorts) -> void
@@ -4590,17 +4590,17 @@ System.Windows.Forms.BindableComponent.BindingContext.set -> void
 System.Windows.Forms.BindableComponent.BindingContextChanged -> System.EventHandler!
 System.Windows.Forms.BindableComponent.DataBindings.get -> System.Windows.Forms.ControlBindingsCollection!
 System.Windows.Forms.Binding
-System.Windows.Forms.Binding.BindingComplete -> System.Windows.Forms.BindingCompleteEventHandler
+System.Windows.Forms.Binding.BindingComplete -> System.Windows.Forms.BindingCompleteEventHandler?
 System.Windows.Forms.Binding.BindingMemberInfo.get -> System.Windows.Forms.BindingMemberInfo
 System.Windows.Forms.Binding.ControlUpdateMode.get -> System.Windows.Forms.ControlUpdateMode
 System.Windows.Forms.Binding.ControlUpdateMode.set -> void
 System.Windows.Forms.Binding.DataSourceUpdateMode.get -> System.Windows.Forms.DataSourceUpdateMode
 System.Windows.Forms.Binding.DataSourceUpdateMode.set -> void
-System.Windows.Forms.Binding.Format -> System.Windows.Forms.ConvertEventHandler
+System.Windows.Forms.Binding.Format -> System.Windows.Forms.ConvertEventHandler?
 System.Windows.Forms.Binding.FormattingEnabled.get -> bool
 System.Windows.Forms.Binding.FormattingEnabled.set -> void
 System.Windows.Forms.Binding.IsBinding.get -> bool
-System.Windows.Forms.Binding.Parse -> System.Windows.Forms.ConvertEventHandler
+System.Windows.Forms.Binding.Parse -> System.Windows.Forms.ConvertEventHandler?
 System.Windows.Forms.Binding.ReadValue() -> void
 System.Windows.Forms.Binding.WriteValue() -> void
 System.Windows.Forms.BindingCompleteContext

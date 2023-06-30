@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#nullable disable
-
 using System.ComponentModel;
 using System.Drawing.Design;
 
@@ -17,18 +15,16 @@ namespace System.Windows.Forms;
 [TypeConverter($"System.Windows.Forms.Design.ControlBindingsConverter, {AssemblyRef.SystemDesign}")]
 public class ControlBindingsCollection : BindingsCollection
 {
-    private readonly IBindableComponent _control;
-
-    public ControlBindingsCollection(IBindableComponent control)
+    public ControlBindingsCollection(IBindableComponent? control)
     {
-        _control = control;
+        BindableComponent = control;
     }
 
-    public IBindableComponent BindableComponent => _control;
+    public IBindableComponent? BindableComponent { get; }
 
-    public Control Control => _control as Control;
+    public Control? Control => BindableComponent as Control;
 
-    public Binding this[string propertyName]
+    public Binding? this[string propertyName]
     {
         get
         {
@@ -75,17 +71,17 @@ public class ControlBindingsCollection : BindingsCollection
         return Add(propertyName, dataSource, dataMember, formattingEnabled, updateMode, null, string.Empty, null);
     }
 
-    public Binding Add(string propertyName, object dataSource, string dataMember, bool formattingEnabled, DataSourceUpdateMode updateMode, object nullValue)
+    public Binding Add(string propertyName, object dataSource, string dataMember, bool formattingEnabled, DataSourceUpdateMode updateMode, object? nullValue)
     {
         return Add(propertyName, dataSource, dataMember, formattingEnabled, updateMode, nullValue, string.Empty, null);
     }
 
-    public Binding Add(string propertyName, object dataSource, string dataMember, bool formattingEnabled, DataSourceUpdateMode updateMode, object nullValue, string formatString)
+    public Binding Add(string propertyName, object dataSource, string dataMember, bool formattingEnabled, DataSourceUpdateMode updateMode, object? nullValue, string? formatString)
     {
         return Add(propertyName, dataSource, dataMember, formattingEnabled, updateMode, nullValue, formatString, null);
     }
 
-    public Binding Add(string propertyName, object dataSource, string dataMember, bool formattingEnabled, DataSourceUpdateMode updateMode, object nullValue, string formatString, IFormatProvider formatInfo)
+    public Binding Add(string propertyName, object dataSource, string? dataMember, bool formattingEnabled, DataSourceUpdateMode updateMode, object? nullValue, string? formatString, IFormatProvider? formatInfo)
     {
         ArgumentNullException.ThrowIfNull(dataSource);
 
@@ -105,7 +101,7 @@ public class ControlBindingsCollection : BindingsCollection
     {
         ArgumentNullException.ThrowIfNull(dataBinding);
 
-        if (dataBinding.BindableComponent == _control)
+        if (dataBinding.BindableComponent == BindableComponent)
         {
             throw new ArgumentException(SR.BindingsCollectionAdd1, nameof(dataBinding));
         }
@@ -116,7 +112,7 @@ public class ControlBindingsCollection : BindingsCollection
         }
 
         // important to set prop first for error checking.
-        dataBinding.SetBindableComponent(_control);
+        dataBinding.SetBindableComponent(BindableComponent);
 
         base.AddCore(dataBinding);
     }
@@ -175,7 +171,7 @@ public class ControlBindingsCollection : BindingsCollection
     {
         ArgumentNullException.ThrowIfNull(dataBinding);
 
-        if (dataBinding.BindableComponent != _control)
+        if (dataBinding.BindableComponent != BindableComponent)
         {
             throw new ArgumentException(SR.BindingsCollectionForeign, nameof(dataBinding));
         }

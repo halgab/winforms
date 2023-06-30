@@ -66,10 +66,9 @@ public class ListBindingConverter : TypeConverter
     {
         ArgumentNullException.ThrowIfNull(destinationType);
 
-        if (destinationType == typeof(InstanceDescriptor) && value is Binding)
+        if (destinationType == typeof(InstanceDescriptor) && value is Binding binding)
         {
-            Binding b = (Binding)value;
-            return GetInstanceDescriptorFromValues(b);
+            return GetInstanceDescriptorFromValues(binding);
         }
 
         return base.ConvertTo(context, culture, value, destinationType);
@@ -85,9 +84,9 @@ public class ListBindingConverter : TypeConverter
         try
         {
             return new Binding(
-                (string)propertyValues["PropertyName"]!,
+                (string?)propertyValues["PropertyName"],
                 propertyValues["DataSource"],
-                (string)propertyValues["DataMember"]!);
+                (string?)propertyValues["DataMember"]);
         }
         catch (InvalidCastException invalidCast)
         {
