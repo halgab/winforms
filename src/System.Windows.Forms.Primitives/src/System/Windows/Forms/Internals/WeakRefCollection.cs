@@ -45,9 +45,9 @@ internal class WeakRefCollection<T> : IList<T?> where T : class
     {
         get
         {
-            if ((InnerList[index] is { IsAlive: true } weakRef))
+            if (InnerList[index]?.TryGetTarget(out T? target) is true)
             {
-                return weakRef.Target;
+                return target;
             }
 
             return null;
@@ -132,8 +132,6 @@ internal class WeakRefCollection<T> : IList<T?> where T : class
 
     public void Clear() => InnerList.Clear();
 
-    public bool IsFixedSize => false;
-
     public bool Contains(T? value) => InnerList.Contains(CreateWeakRefObject(value));
     public void RemoveAt(int index) => InnerList.RemoveAt(index);
 
@@ -166,11 +164,16 @@ internal class WeakRefCollection<T> : IList<T?> where T : class
         }
     }
 
-    public IEnumerator<T> GetEnumerator()
+    public IEnumerator<T?> GetEnumerator()
     {
         foreach (WeakRefObject? refObject in InnerList)
         {
-            yield return refObject?.Target;
+            if (refObject is not null && refObject.TryGetTarget(out T? target))
+            {
+                yield return target;
+            }
+
+            yield return null;
         }
     }
 
@@ -183,18 +186,16 @@ internal class WeakRefCollection<T> : IList<T?> where T : class
     internal class WeakRefObject
     {
         private readonly int _hash;
-        private readonly WeakReference weakHolder;
+        private readonly WeakReference<T> weakHolder;
 
         internal WeakRefObject(T obj)
         {
             Debug.Assert(obj is not null, "Unexpected null object!");
-            weakHolder = new WeakReference(obj);
+            weakHolder = new WeakReference<T>(obj);
             _hash = obj.GetHashCode();
         }
 
-        internal bool IsAlive => weakHolder.IsAlive;
-
-        internal T? Target => (T?)weakHolder.Target;
+        internal bool TryGetTarget([NotNullWhen(true)] out T? target) => weakHolder.TryGetTarget(out target);
 
         public override int GetHashCode() => _hash;
 
@@ -212,15 +213,17 @@ internal class WeakRefCollection<T> : IList<T?> where T : class
                 return false;
             }
 
-            if (other.Target != Target)
+            if (!TryGetTarget(out T? target))
             {
-                if (Target is null || !Target.Equals(other.Target))
-                {
-                    return false;
-                }
+                return !other.TryGetTarget(out _);
             }
 
-            return true;
+            if (!other.TryGetTarget(out T? otherTarget))
+            {
+                return false;
+            }
+
+            return target.Equals(otherTarget);
         }
     }
 }
