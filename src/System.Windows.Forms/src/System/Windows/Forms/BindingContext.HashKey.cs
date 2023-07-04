@@ -7,7 +7,7 @@ namespace System.Windows.Forms;
 
 public partial class BindingContext
 {
-    private class HashKey
+    private class HashKey : IEquatable<HashKey>
     {
         private readonly WeakReference _wRef;
         private readonly int _dataSourceHashCode;
@@ -27,6 +27,16 @@ public partial class BindingContext
 
         public override int GetHashCode() => HashCode.Combine(_dataSourceHashCode, _dataMember);
 
+        public bool Equals(HashKey? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return EqualsInternal(other);
+        }
+
         public override bool Equals(object? target)
         {
             if (target is not HashKey keyTarget)
@@ -34,6 +44,11 @@ public partial class BindingContext
                 return false;
             }
 
+            return EqualsInternal(keyTarget);
+        }
+
+        private bool EqualsInternal(HashKey keyTarget)
+        {
             return _wRef.Target == keyTarget._wRef.Target && _dataMember == keyTarget._dataMember;
         }
     }

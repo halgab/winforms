@@ -13,7 +13,7 @@ namespace System.Windows.Forms;
 [DefaultEvent(nameof(CollectionChanged))]
 public partial class BindingContext : ICollection
 {
-    private readonly Dictionary<HashKey, WeakReference> _listManagers;
+    private readonly Dictionary<HashKey, WeakReference<BindingManagerBase>> _listManagers;
 
     /// <summary>
     ///  Initializes a new instance of the System.Windows.Forms.BindingContext class.
@@ -108,7 +108,7 @@ public partial class BindingContext : ICollection
         ArgumentNullException.ThrowIfNull(dataSource);
         ArgumentNullException.ThrowIfNull(listManager);
 
-        _listManagers[GetKey(dataSource, string.Empty)] = new WeakReference(listManager, false);
+        _listManagers[GetKey(dataSource, string.Empty)] = new WeakReference<BindingManagerBase>(listManager, false);
     }
 
     /// <summary>
@@ -212,29 +212,23 @@ public partial class BindingContext : ICollection
     /// </summary>
     private BindingManagerBase EnsureListManager(object dataSource, string? dataMember)
     {
-        BindingManagerBase? bindingManagerBase = null;
-
         dataMember ??= string.Empty;
 
         // Check whether data source wants to provide its own binding managers
         // (but fall through to old logic if it fails to provide us with one)
         if (dataSource is ICurrencyManagerProvider currencyManagerProvider)
         {
-            bindingManagerBase = currencyManagerProvider.GetRelatedCurrencyManager(dataMember);
-            if (bindingManagerBase is not null)
+            CurrencyManager? currencyManager = currencyManagerProvider.GetRelatedCurrencyManager(dataMember);
+            if (currencyManager is not null)
             {
-                return bindingManagerBase;
+                return currencyManager;
             }
         }
 
         // Check for previously created binding manager
         HashKey key = GetKey(dataSource, dataMember);
-        if (_listManagers.TryGetValue(key, out WeakReference? wRef) && wRef is not null)
-        {
-            bindingManagerBase = (BindingManagerBase?)wRef.Target;
-        }
-
-        if (bindingManagerBase is not null)
+        if (_listManagers.TryGetValue(key, out WeakReference<BindingManagerBase>? wRef)
+            && wRef.TryGetTarget(out BindingManagerBase? bindingManagerBase))
         {
             return bindingManagerBase;
         }
@@ -277,11 +271,11 @@ public partial class BindingContext : ICollection
         // if wRef is not null, then the bindingManagerBase was GC'd at some point: keep the old wRef and change its target
         if (wRef is null)
         {
-            _listManagers.Add(key, new WeakReference(bindingManagerBase, false));
+            _listManagers.Add(key, new WeakReference<BindingManagerBase>(bindingManagerBase, false));
         }
         else
         {
-            wRef.Target = bindingManagerBase;
+            wRef.SetTarget(bindingManagerBase);
         }
 
         ScrubWeakRefs();
@@ -320,9 +314,9 @@ public partial class BindingContext : ICollection
     private void ScrubWeakRefs()
     {
         List<HashKey>? cleanupList = null;
-        foreach (KeyValuePair<HashKey, WeakReference> de in _listManagers)
+        foreach (KeyValuePair<HashKey, WeakReference<BindingManagerBase>> de in _listManagers)
         {
-            if (de.Value.Target is null)
+            if (!de.Value.TryGetTarget(out _))
             {
                 cleanupList ??= new();
 

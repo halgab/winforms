@@ -16,7 +16,7 @@ internal static class SystemColorTracker
     private const float EXPAND_THRESHOLD = 0.75f;
     private const int EXPAND_FACTOR = 2;
 
-    private static WeakReference[] list = new WeakReference[INITIAL_SIZE];
+    private static WeakReference<ISystemColorTracker>[] list = new WeakReference<ISystemColorTracker>[INITIAL_SIZE];
     private static int count;
     private static bool addedTracker;
     private static readonly object lockObject = new();
@@ -48,12 +48,12 @@ internal static class SystemColorTracker
             // COM+ takes forever to Finalize() weak references, so it pays to reuse them.
             if (list[index] == null)
             {
-                list[index] = new WeakReference(obj);
+                list[index] = new WeakReference<ISystemColorTracker>(obj);
             }
             else
             {
-                Debug.Assert(list[index].Target == null, $"Trying to reuse a weak reference that isn't broken yet: list[{index}], length = {list.Length}");
-                list[index].Target = obj;
+                Debug.Assert(!list[index].TryGetTarget(out _), $"Trying to reuse a weak reference that isn't broken yet: list[{index}], length = {list.Length}");
+                list[index].SetTarget(obj);
             }
         }
     }
@@ -74,9 +74,9 @@ internal static class SystemColorTracker
         // and anything to the right of "right" is broken.
         while (true)
         {
-            while (left < length && list[left].Target != null)
+            while (left < length && list[left].TryGetTarget(out ISystemColorTracker? _))
                 left++;
-            while (right >= 0 && list[right].Target == null)
+            while (right >= 0 && !list[right].TryGetTarget(out _))
                 right--;
 
             if (left >= right)
@@ -85,9 +85,7 @@ internal static class SystemColorTracker
                 break;
             }
 
-            WeakReference temp = list[left];
-            list[left] = list[right];
-            list[right] = temp;
+            (list[left], list[right]) = (list[right], list[left]);
 
             left++;
             right--;
@@ -108,7 +106,7 @@ internal static class SystemColorTracker
 
         for (int i = count; i < list.Length; i++)
         {
-            Debug.Assert(list[i].Target == null, "Partitioning didn't work");
+            Debug.Assert(!list[i].TryGetTarget(out _), "Partitioning didn't work");
         }
 #endif
     }
@@ -119,10 +117,7 @@ internal static class SystemColorTracker
 
         if (count / (float)list.Length > EXPAND_THRESHOLD)
         {
-            WeakReference[] newList = new WeakReference[list.Length * EXPAND_FACTOR];
-            list.CopyTo(newList, 0);
-            list = newList;
-
+            Array.Resize(ref list, list.Length * EXPAND_FACTOR);
             Debug.Assert(list.Length < WARNING_SIZE, "SystemColorTracker is using way more memory than expected.");
         }
     }
@@ -135,7 +130,10 @@ internal static class SystemColorTracker
             for (int i = 0; i < count; i++)
             {
                 Debug.Assert(list[i] != null, "null value in active part of list");
-                ((ISystemColorTracker?)list[i].Target)?.OnSystemColorChanged();
+                if (list[i].TryGetTarget(out ISystemColorTracker? target))
+                {
+                    target.OnSystemColorChanged();
+                }
             }
         }
     }
