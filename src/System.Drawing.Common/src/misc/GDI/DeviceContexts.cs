@@ -10,7 +10,7 @@ namespace System.Drawing.Internal;
 internal static class DeviceContexts
 {
     [ThreadStatic]
-    private static ClientUtils.WeakRefCollection? t_activeDeviceContexts;
+    private static ClientUtils.WeakRefCollection<DeviceContext>? t_activeDeviceContexts;
 
     /// <summary>
     /// WindowsGraphicsCacheManager needs to track DeviceContext objects so it can ask them if a font is in use
@@ -18,7 +18,7 @@ internal static class DeviceContexts
     /// </summary>
     internal static void AddDeviceContext(DeviceContext dc)
     {
-        ClientUtils.WeakRefCollection wrc = t_activeDeviceContexts ??= new ClientUtils.WeakRefCollection()
+        ClientUtils.WeakRefCollection<DeviceContext> wrc = t_activeDeviceContexts ??= new()
         {
             RefCheckThreshold = 20
         };
