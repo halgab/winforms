@@ -25,7 +25,7 @@ public class PropertyManager : BindingManagerBase
         OnCurrentChanged(EventArgs.Empty);
     }
 
-    private protected override void SetDataSource(object dataSource)
+    private protected override void SetDataSource(object? dataSource)
     {
         if (_dataSource is not null && !string.IsNullOrEmpty(_propName))
         {
@@ -35,7 +35,7 @@ public class PropertyManager : BindingManagerBase
 
         _dataSource = dataSource;
 
-        if (_dataSource is not null && !string.IsNullOrEmpty(_propName))
+        if (dataSource is not null && !string.IsNullOrEmpty(_propName))
         {
             _propInfo = TypeDescriptor.GetProperties(dataSource).Find(_propName, true);
             if (_propInfo is null)
@@ -55,7 +55,7 @@ public class PropertyManager : BindingManagerBase
     {
     }
 
-    internal PropertyManager(object dataSource, string propName) : base()
+    internal PropertyManager(object? dataSource, string propName) : base()
     {
         _propName = propName;
         SetDataSource(dataSource);
@@ -118,7 +118,7 @@ public class PropertyManager : BindingManagerBase
     ///  Gets the name of the list supplying the data for the binding.
     /// </summary>
     /// <returns>Always returns an empty string.</returns>
-    protected internal override string GetListName(ArrayList? listAccessors) => string.Empty;
+    protected internal override string GetListName(ArrayList listAccessors) => string.Empty;
 
     /// <summary>
     ///  Cancels the current edit.

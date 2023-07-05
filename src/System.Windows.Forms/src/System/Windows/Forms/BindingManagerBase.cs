@@ -223,7 +223,7 @@ public abstract class BindingManagerBase
 
     protected abstract void UpdateIsBinding();
 
-    protected internal abstract string GetListName(ArrayList? listAccessors);
+    protected internal abstract string GetListName(ArrayList listAccessors);
 
     public abstract void SuspendBinding();
 

@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-#nullable disable
-
 using System.Collections;
 using System.ComponentModel;
 
@@ -15,17 +13,11 @@ namespace System.Windows.Forms;
 /// </summary>
 internal class RelatedCurrencyManager : CurrencyManager
 {
-    private BindingManagerBase parentManager;
-    private string dataField;
-    private PropertyDescriptor fieldInfo;
+    private readonly BindingManagerBase parentManager;
+    private readonly PropertyDescriptor fieldInfo;
     private static readonly List<BindingManagerBase> IgnoreItemChangedTable = new List<BindingManagerBase>();
 
     internal RelatedCurrencyManager(BindingManagerBase parentManager, string dataField) : base(null)
-    {
-        Bind(parentManager, dataField);
-    }
-
-    internal void Bind(BindingManagerBase parentManager, string dataField)
     {
         Debug.Assert(parentManager is not null, "How could this be a null parentManager.");
 
@@ -33,8 +25,7 @@ internal class RelatedCurrencyManager : CurrencyManager
         UnwireParentManager(this.parentManager);
 
         this.parentManager = parentManager;
-        this.dataField = dataField;
-        fieldInfo = parentManager.GetItemProperties().Find(dataField, true);
+        fieldInfo = parentManager.GetItemProperties().Find(dataField, true)!;
         if (fieldInfo is null || !typeof(IList).IsAssignableFrom(fieldInfo.PropertyType))
         {
             throw new ArgumentException(string.Format(SR.RelatedListManagerChild, dataField));
@@ -48,33 +39,33 @@ internal class RelatedCurrencyManager : CurrencyManager
         ParentManager_CurrentItemChanged(parentManager, EventArgs.Empty);
     }
 
-    private void UnwireParentManager(BindingManagerBase bmb)
+    private void UnwireParentManager(BindingManagerBase? bmb)
     {
         if (bmb is not null)
         {
             bmb.CurrentItemChanged -= new EventHandler(ParentManager_CurrentItemChanged);
 
-            if (bmb is CurrencyManager)
+            if (bmb is CurrencyManager currencyManager)
             {
-                (bmb as CurrencyManager).MetaDataChanged -= new EventHandler(ParentManager_MetaDataChanged);
+                currencyManager.MetaDataChanged -= new EventHandler(ParentManager_MetaDataChanged);
             }
         }
     }
 
-    private void WireParentManager(BindingManagerBase bmb)
+    private void WireParentManager(BindingManagerBase? bmb)
     {
         if (bmb is not null)
         {
             bmb.CurrentItemChanged += new EventHandler(ParentManager_CurrentItemChanged);
 
-            if (bmb is CurrencyManager)
+            if (bmb is CurrencyManager currencyManager)
             {
-                (bmb as CurrencyManager).MetaDataChanged += new EventHandler(ParentManager_MetaDataChanged);
+                currencyManager.MetaDataChanged += new EventHandler(ParentManager_MetaDataChanged);
             }
         }
     }
 
-    internal override PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[] listAccessors)
+    internal override PropertyDescriptorCollection GetItemProperties(PropertyDescriptor[]? listAccessors)
     {
         PropertyDescriptor[] accessors;
 
@@ -126,13 +117,13 @@ internal class RelatedCurrencyManager : CurrencyManager
         return parentManager.GetListName(listAccessors);
     }
 
-    private void ParentManager_MetaDataChanged(object sender, EventArgs e)
+    private void ParentManager_MetaDataChanged(object? sender, EventArgs e)
     {
         // Propagate MetaDataChanged events from the parent manager
         base.OnMetaDataChanged(e);
     }
 
-    private void ParentManager_CurrentItemChanged(object sender, EventArgs e)
+    private void ParentManager_CurrentItemChanged(object? sender, EventArgs e)
     {
         if (IgnoreItemChangedTable.Contains(parentManager))
         {
