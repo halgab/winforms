@@ -11,11 +11,16 @@ namespace System.Windows.Forms;
 /// <summary>
 ///  Represents a linked list of integers
 /// </summary>
-internal class DataGridViewIntLinkedList : IEnumerable
+internal class DataGridViewIntLinkedList : IReadOnlyCollection<int>
 {
     private DataGridViewIntLinkedListElement _lastAccessedElement;
     private DataGridViewIntLinkedListElement _headElement;
     private int _lastAccessedIndex;
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        return new DataGridViewIntLinkedListEnumerator(_headElement);
+    }
 
     IEnumerator IEnumerable.GetEnumerator()
     {

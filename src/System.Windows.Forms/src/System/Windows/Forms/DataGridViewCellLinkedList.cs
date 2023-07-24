@@ -9,12 +9,17 @@ namespace System.Windows.Forms;
 /// <summary>
 ///  Represents a linked list of <see cref="DataGridViewCell"/> objects
 /// </summary>
-internal class DataGridViewCellLinkedList : IEnumerable
+internal class DataGridViewCellLinkedList : IReadOnlyCollection<DataGridViewCell>
 {
     private DataGridViewCellLinkedListElement? _lastAccessedElement;
     private DataGridViewCellLinkedListElement? _headElement;
     private int _count;
     private int _lastAccessedIndex;
+
+    public IEnumerator<DataGridViewCell> GetEnumerator()
+    {
+        return new DataGridViewCellLinkedListEnumerator(headElement);
+    }
 
     IEnumerator IEnumerable.GetEnumerator() => new DataGridViewCellLinkedListEnumerator(_headElement);
 

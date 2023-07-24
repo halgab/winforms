@@ -9,7 +9,7 @@ namespace System.Windows.Forms;
 /// <summary>
 ///  Represents an enumerator of elements in a <see cref="DataGridViewCellLinkedList"/>  linked list.
 /// </summary>
-internal class DataGridViewCellLinkedListEnumerator : IEnumerator
+internal class DataGridViewCellLinkedListEnumerator : IEnumerator<DataGridViewCell>
 {
     private readonly DataGridViewCellLinkedListElement? _headElement;
     private DataGridViewCellLinkedListElement? _current;
@@ -21,14 +21,7 @@ internal class DataGridViewCellLinkedListEnumerator : IEnumerator
         _reset = true;
     }
 
-    object IEnumerator.Current
-    {
-        get
-        {
-            Debug.Assert(_current is not null); // Since this is for internal use only.
-            return _current.DataGridViewCell;
-        }
-    }
+    object IEnumerator.Current => Current;
 
     bool IEnumerator.MoveNext()
     {
@@ -51,5 +44,19 @@ internal class DataGridViewCellLinkedListEnumerator : IEnumerator
     {
         _reset = true;
         _current = null;
+    }
+
+    public DataGridViewCell Current
+    {
+        get
+        {
+            Debug.Assert(_current is not null); // Since this is for internal use only.
+            return _current.DataGridViewCell;
+        }
+    }
+
+    public void Dispose()
+    {
+        ((IEnumerator)this).Reset();
     }
 }
