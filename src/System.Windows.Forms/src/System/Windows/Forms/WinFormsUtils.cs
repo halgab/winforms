@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Buffers;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
@@ -17,6 +18,8 @@ internal sealed partial class WindowsFormsUtils
     public const ContentAlignment AnyBottomAlign = ContentAlignment.BottomLeft | ContentAlignment.BottomCenter | ContentAlignment.BottomRight;
     public const ContentAlignment AnyMiddleAlign = ContentAlignment.MiddleLeft | ContentAlignment.MiddleCenter | ContentAlignment.MiddleRight;
     public const ContentAlignment AnyCenterAlign = ContentAlignment.TopCenter | ContentAlignment.MiddleCenter | ContentAlignment.BottomCenter;
+
+    private static readonly SearchValues<char> s_specialChars = SearchValues.Create(stackalloc char[] { ' ', '\r', '\n' });
 
     /// <summary>
     ///  The GetMessagePos function retrieves the cursor position for the last message
@@ -324,6 +327,34 @@ internal sealed partial class WindowsFormsUtils
         else
         {
             return defaultNameValue;
+        }
+    }
+
+    /// <summary>
+    ///  Converts the given string to a byte array.
+    /// </summary>
+    public static byte[] FromBase64WrappedString(string text)
+    {
+        ReadOnlySpan<char> textAsSpan = text.AsSpan();
+        int index = textAsSpan.IndexOfAny(s_specialChars);
+        if (index >= 0)
+        {
+            StringBuilder sb = new StringBuilder(textAsSpan.Length);
+            do
+            {
+                sb.Append(textAsSpan[..index]);
+                textAsSpan = textAsSpan[(index + 1)..];
+                index = textAsSpan.IndexOfAny(s_specialChars);
+            }
+            while (index >= 0);
+
+            sb.Append(textAsSpan);
+
+            return Convert.FromBase64String(sb.ToString());
+        }
+        else
+        {
+            return Convert.FromBase64String(text);
         }
     }
 }
