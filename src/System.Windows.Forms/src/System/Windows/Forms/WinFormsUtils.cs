@@ -357,4 +357,32 @@ internal sealed partial class WindowsFormsUtils
             return Convert.FromBase64String(text);
         }
     }
+
+    public static string ToBase64WrappedString(byte[] data)
+    {
+        const int lineWrap = 80;
+        const string prefix = "        ";
+        string raw = Convert.ToBase64String(data);
+        if (raw.Length > lineWrap)
+        {
+            // Word wrap on lineWrap chars, \r\n.
+            StringBuilder output = new(raw.Length + (raw.Length / lineWrap) * 3);
+            int current = 0;
+
+            for (; current < raw.Length - lineWrap; current += lineWrap)
+            {
+                output.AppendLine();
+                output.Append(prefix);
+                output.Append(raw, current, lineWrap);
+            }
+
+            output.AppendLine();
+            output.Append(prefix);
+            output.Append(raw, current, raw.Length - current);
+            output.AppendLine();
+            return output.ToString();
+        }
+
+        return raw;
+    }
 }

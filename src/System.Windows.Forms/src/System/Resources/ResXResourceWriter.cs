@@ -331,7 +331,7 @@ public class ResXResourceWriter : IResourceWriter
         => AddDataRow(
             elementName,
             name,
-            value is null ? null : ToBase64WrappedString(value),
+            value is null ? null : WindowsFormsUtils.ToBase64WrappedString(value),
             MultitargetUtil.GetAssemblyQualifiedName(typeof(byte[]), _typeNameConverter),
             mimeType: null,
             comment: null);
@@ -550,34 +550,6 @@ public class ResXResourceWriter : IResourceWriter
     {
         int indexStart = typeName.IndexOf(',');
         return indexStart == -1 ? null : typeName[(indexStart + 2)..];
-    }
-
-    private static string ToBase64WrappedString(byte[] data)
-    {
-        const int lineWrap = 80;
-        const string prefix = "        ";
-        string raw = Convert.ToBase64String(data);
-        if (raw.Length > lineWrap)
-        {
-            // Word wrap on lineWrap chars, \r\n.
-            StringBuilder output = new(raw.Length + (raw.Length / lineWrap) * 3);
-            int current = 0;
-
-            for (; current < raw.Length - lineWrap; current += lineWrap)
-            {
-                output.AppendLine();
-                output.Append(prefix);
-                output.Append(raw, current, lineWrap);
-            }
-
-            output.AppendLine();
-            output.Append(prefix);
-            output.Append(raw, current, raw.Length - current);
-            output.AppendLine();
-            return output.ToString();
-        }
-
-        return raw;
     }
 
     /// <summary>

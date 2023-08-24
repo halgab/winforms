@@ -188,33 +188,6 @@ public sealed class ResXDataNode : ISerializable
 
     private string? FileRefTextEncoding => _fileRef?.TextFileEncoding?.BodyName ?? _fileRefTextEncoding;
 
-    private static string ToBase64WrappedString(byte[] data)
-    {
-        const int lineWrap = 80;
-        const string prefix = "        ";
-        string raw = Convert.ToBase64String(data);
-        if (raw.Length > lineWrap)
-        {
-            // Word wrap on lineWrap chars, \r\n
-            StringBuilder output = new StringBuilder(raw.Length + (raw.Length / lineWrap) * 3);
-            int current = 0;
-            for (; current < raw.Length - lineWrap; current += lineWrap)
-            {
-                output.AppendLine();
-                output.Append(prefix);
-                output.Append(raw, current, lineWrap);
-            }
-
-            output.AppendLine();
-            output.Append(prefix);
-            output.Append(raw, current, raw.Length - current);
-            output.AppendLine();
-            return output.ToString();
-        }
-
-        return raw;
-    }
-
     private void FillDataNodeInfoFromObject(DataNodeInfo nodeInfo, object? value)
     {
         if (value is CultureInfo cultureInfo)
@@ -231,7 +204,7 @@ public sealed class ResXDataNode : ISerializable
         }
         else if (value is byte[] bytes)
         {
-            nodeInfo.ValueData = ToBase64WrappedString(bytes);
+            nodeInfo.ValueData = WindowsFormsUtils.ToBase64WrappedString(bytes);
             nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(byte[]), _typeNameConverter);
             return;
         }
@@ -267,7 +240,7 @@ public sealed class ResXDataNode : ISerializable
         {
             // Can round trip through byte[]
             byte[]? data = (byte[]?)converter.ConvertTo(value, typeof(byte[]));
-            nodeInfo.ValueData = data is null ? string.Empty : ToBase64WrappedString(data);
+            nodeInfo.ValueData = data is null ? string.Empty : WindowsFormsUtils.ToBase64WrappedString(data);
             nodeInfo.MimeType = ResXResourceWriter.ByteArraySerializedObjectMimeType;
             nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(valueType, _typeNameConverter);
             return;
@@ -315,7 +288,7 @@ public sealed class ResXDataNode : ISerializable
                     binaryFormatter.Serialize(stream, value);
                 }
 
-                nodeInfo.ValueData = ToBase64WrappedString(stream.ToArray());
+                nodeInfo.ValueData = WindowsFormsUtils.ToBase64WrappedString(stream.ToArray());
             }
 
             nodeInfo.MimeType = ResXResourceWriter.DefaultSerializedObjectMimeType;
