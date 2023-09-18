@@ -84,7 +84,7 @@ override System.Windows.Forms.Design.MaskDescriptor.ToString() -> string!
 ~override System.Windows.Forms.Design.ParentControlDesigner.SnapLines.get -> System.Collections.IList
 ~override System.Windows.Forms.Design.ShortcutKeysEditor.EditValue(System.ComponentModel.ITypeDescriptorContext context, System.IServiceProvider provider, object value) -> object
 ~override System.Windows.Forms.Design.ShortcutKeysEditor.GetEditStyle(System.ComponentModel.ITypeDescriptorContext context) -> System.Drawing.Design.UITypeEditorEditStyle
-~override System.Windows.Forms.Design.WindowsFormsDesignerOptionService.PopulateOptionCollection(System.ComponentModel.Design.DesignerOptionService.DesignerOptionCollection options) -> void
+override System.Windows.Forms.Design.WindowsFormsDesignerOptionService.PopulateOptionCollection(System.ComponentModel.Design.DesignerOptionService.DesignerOptionCollection! options) -> void
 ~static readonly System.Windows.Forms.Design.MenuCommands.ComponentTrayMenu -> System.ComponentModel.Design.CommandID
 ~static readonly System.Windows.Forms.Design.MenuCommands.ContainerMenu -> System.ComponentModel.Design.CommandID
 ~static readonly System.Windows.Forms.Design.MenuCommands.DesignerProperties -> System.ComponentModel.Design.CommandID
@@ -386,7 +386,7 @@ virtual System.Windows.Forms.Design.MaskDescriptor.Culture.get -> System.Globali
 ~virtual System.Windows.Forms.Design.ParentControlDesigner.CanParent(System.Windows.Forms.Design.ControlDesigner controlDesigner) -> bool
 ~virtual System.Windows.Forms.Design.ParentControlDesigner.CreateToolCore(System.Drawing.Design.ToolboxItem tool, int x, int y, int width, int height, bool hasLocation, bool hasSize) -> System.ComponentModel.IComponent[]
 ~virtual System.Windows.Forms.Design.ParentControlDesigner.GetParentForComponent(System.ComponentModel.IComponent component) -> System.Windows.Forms.Control
-~virtual System.Windows.Forms.Design.WindowsFormsDesignerOptionService.CompatibilityOptions.get -> System.Windows.Forms.Design.DesignerOptions
+virtual System.Windows.Forms.Design.WindowsFormsDesignerOptionService.CompatibilityOptions.get -> System.Windows.Forms.Design.DesignerOptions!
 abstract System.ComponentModel.Design.CollectionEditor.CollectionForm.OnEditValueChanged() -> void
 abstract System.ComponentModel.Design.EventBindingService.ShowCode() -> bool
 abstract System.ComponentModel.Design.EventBindingService.ShowCode(int lineNumber) -> bool
