@@ -143,14 +143,14 @@ static System.Windows.Forms.Design.MaskDescriptor.IsValidMaskDescriptor(System.W
 ~System.ComponentModel.Design.ComponentDesigner.ShadowPropertyCollection.Contains(string propertyName) -> bool
 ~System.ComponentModel.Design.ComponentDesigner.ShadowPropertyCollection.this[string propertyName].get -> object
 ~System.ComponentModel.Design.ComponentDesigner.ShadowPropertyCollection.this[string propertyName].set -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList actionList, string memberName, string displayName) -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList actionList, string memberName, string displayName, bool includeAsDesignerVerb) -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList actionList, string memberName, string displayName, string category) -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList actionList, string memberName, string displayName, string category, bool includeAsDesignerVerb) -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList actionList, string memberName, string displayName, string category, string description) -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList actionList, string memberName, string displayName, string category, string description, bool includeAsDesignerVerb) -> void
-~System.ComponentModel.Design.DesignerActionMethodItem.RelatedComponent.get -> System.ComponentModel.IComponent
-~System.ComponentModel.Design.DesignerActionMethodItem.RelatedComponent.set -> void
+System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList? actionList, string! memberName, string? displayName) -> void
+System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList? actionList, string! memberName, string? displayName, bool includeAsDesignerVerb) -> void
+System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList? actionList, string! memberName, string? displayName, string? category) -> void
+System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList? actionList, string! memberName, string? displayName, string? category, bool includeAsDesignerVerb) -> void
+System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList? actionList, string! memberName, string? displayName, string? category, string? description) -> void
+System.ComponentModel.Design.DesignerActionMethodItem.DesignerActionMethodItem(System.ComponentModel.Design.DesignerActionList? actionList, string! memberName, string? displayName, string? category, string? description, bool includeAsDesignerVerb) -> void
+System.ComponentModel.Design.DesignerActionMethodItem.RelatedComponent.get -> System.ComponentModel.IComponent?
+System.ComponentModel.Design.DesignerActionMethodItem.RelatedComponent.set -> void
 ~System.ComponentModel.Design.DesignerActionService.Add(System.ComponentModel.IComponent comp, System.ComponentModel.Design.DesignerActionList actionList) -> void
 ~System.ComponentModel.Design.DesignerActionService.Add(System.ComponentModel.IComponent comp, System.ComponentModel.Design.DesignerActionListCollection designerActionListCollection) -> void
 ~System.ComponentModel.Design.DesignerActionService.Contains(System.ComponentModel.IComponent comp) -> bool
@@ -323,7 +323,7 @@ System.ComponentModel.Design.Serialization.BasicDesignerLoader.SetBaseComponentC
 ~virtual System.ComponentModel.Design.ComponentDesigner.PreFilterEvents(System.Collections.IDictionary events) -> void
 ~virtual System.ComponentModel.Design.ComponentDesigner.PreFilterProperties(System.Collections.IDictionary properties) -> void
 ~virtual System.ComponentModel.Design.ComponentDesigner.Verbs.get -> System.ComponentModel.Design.DesignerVerbCollection
-~virtual System.ComponentModel.Design.DesignerActionMethodItem.MemberName.get -> string
+virtual System.ComponentModel.Design.DesignerActionMethodItem.MemberName.get -> string!
 ~virtual System.ComponentModel.Design.DesignerActionService.GetComponentActions(System.ComponentModel.IComponent component, System.Windows.Forms.Design.ComponentActionsType type) -> System.ComponentModel.Design.DesignerActionListCollection
 ~virtual System.ComponentModel.Design.DesignerActionService.GetComponentDesignerActions(System.ComponentModel.IComponent component, System.ComponentModel.Design.DesignerActionListCollection actionLists) -> void
 ~virtual System.ComponentModel.Design.DesignerActionService.GetComponentServiceActions(System.ComponentModel.IComponent component, System.ComponentModel.Design.DesignerActionListCollection actionLists) -> void
