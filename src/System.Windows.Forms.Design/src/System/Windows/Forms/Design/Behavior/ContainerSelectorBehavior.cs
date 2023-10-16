@@ -34,7 +34,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
     /// </summary>
     internal ContainerSelectorBehavior(Control containerControl, IServiceProvider serviceProvider, bool setInitialDragPoint)
     {
-        _behaviorService = (BehaviorService)serviceProvider.GetService(typeof(BehaviorService));
+        _behaviorService = serviceProvider.GetService<BehaviorService>();
         if (_behaviorService is null)
         {
             Debug.Fail("Could not get the BehaviorService from ContainerSelectorBehavior!");
@@ -67,12 +67,12 @@ internal sealed class ContainerSelectorBehavior : Behavior
         if (button == MouseButtons.Left)
         {
             //select our component
-            ISelectionService selSvc = (ISelectionService)_serviceProvider.GetService(typeof(ISelectionService));
+            ISelectionService selSvc = _serviceProvider.GetService<ISelectionService>();
             if (selSvc is not null && !ContainerControl.Equals(selSvc.PrimarySelection as Control))
             {
                 selSvc.SetSelectedComponents(new object[] { ContainerControl }, SelectionTypes.Primary | SelectionTypes.Toggle);
                 // Setting the selected component will create a new glyph, so this instance of the glyph won't receive any more mouse messages. So we need to tell the new glyph what the initialDragPoint and okToMove are.
-                if (!(g is ContainerSelectorGlyph selOld))
+                if (g is not ContainerSelectorGlyph selOld)
                 {
                     return false;
                 }
@@ -81,7 +81,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
                 {
                     foreach (Glyph glyph in a.Glyphs)
                     {
-                        if (!(glyph is ContainerSelectorGlyph selNew))
+                        if (glyph is not ContainerSelectorGlyph selNew)
                         {
                             continue;
                         }
@@ -93,7 +93,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
                         }
 
                         // Check if the containercontrols are the same
-                        if (!(selNew.RelatedBehavior is ContainerSelectorBehavior behNew) || !(selOld.RelatedBehavior is ContainerSelectorBehavior behOld))
+                        if (selNew.RelatedBehavior is not ContainerSelectorBehavior behNew || selOld.RelatedBehavior is not ContainerSelectorBehavior behOld)
                         {
                             continue;
                         }
@@ -177,8 +177,8 @@ internal sealed class ContainerSelectorBehavior : Behavior
     private void StartDragOperation(Point initialMouseLocation)
     {
         //need to grab a hold of some services
-        ISelectionService selSvc = (ISelectionService)_serviceProvider.GetService(typeof(ISelectionService));
-        IDesignerHost host = (IDesignerHost)_serviceProvider.GetService(typeof(IDesignerHost));
+        ISelectionService selSvc = _serviceProvider.GetService<ISelectionService>();
+        IDesignerHost host = _serviceProvider.GetService<IDesignerHost>();
         if (selSvc is null || host is null)
         {
             Debug.Fail("Can't drag this Container! Either SelectionService is null or DesignerHost is null");
@@ -192,7 +192,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
         //create our list of controls-to-drag
         foreach (IComponent comp in selComps)
         {
-            if ((comp is Control ctrl) && (ctrl.Parent is not null))
+            if (comp is Control { Parent: not null } ctrl)
             {
                 if (!ctrl.Parent.Equals(requiredParent))
                 {
