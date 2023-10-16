@@ -15,11 +15,8 @@ namespace System.Windows.Forms.Design.Behavior;
 /// </summary>
 internal sealed class ContainerSelectorBehavior : Behavior
 {
-    private Control _containerControl; //our related control
     private IServiceProvider _serviceProvider; //used for starting a drag/drop
     private BehaviorService _behaviorService; //ptr to where we start our drag/drop operation
-    private bool _okToMove; //state identifying if we are allowed to move the container
-    private Point _initialDragPoint; //cached "mouse down" point
 
     // For some controls, we want to change the original drag point to be the upper-left of the control in  order to make it easier to drop the control at a desired location. But not all controls want this behavior. E.g. we want to do it for Panel and ToolStrip, but not for Label. Label has a ContainerSelectorBehavior via the NoResizeSelectionBorder glyph.
     private readonly bool _setInitialDragPoint;
@@ -51,31 +48,20 @@ internal sealed class ContainerSelectorBehavior : Behavior
             return;
         }
 
-        _containerControl = containerControl;
+        ContainerControl = containerControl;
         _serviceProvider = serviceProvider;
-        _initialDragPoint = Point.Empty;
-        _okToMove = false;
+        InitialDragPoint = Point.Empty;
+        OkToMove = false;
     }
 
-    public Control ContainerControl
-    {
-        get => _containerControl;
-    }
+    public Control ContainerControl { get; private set; }
 
     /// <summary>
     ///  This will be true when we detect a mousedown on our glyph.  The Glyph can use this state to always return 'true' from hittesting indicating that it would like all messages (like mousemove).
     /// </summary>
-    public bool OkToMove
-    {
-        get => _okToMove;
-        set => _okToMove = value;
-    }
+    public bool OkToMove { get; set; }
 
-    public Point InitialDragPoint
-    {
-        get => _initialDragPoint;
-        set => _initialDragPoint = value;
-    }
+    public Point InitialDragPoint { get; set; }
 
     /// <summary>
     ///  If the user selects the containerglyph - select our related component.
@@ -86,9 +72,9 @@ internal sealed class ContainerSelectorBehavior : Behavior
         {
             //select our component
             ISelectionService selSvc = (ISelectionService)_serviceProvider.GetService(typeof(ISelectionService));
-            if (selSvc is not null && !_containerControl.Equals(selSvc.PrimarySelection as Control))
+            if (selSvc is not null && !ContainerControl.Equals(selSvc.PrimarySelection as Control))
             {
-                selSvc.SetSelectedComponents(new object[] { _containerControl }, SelectionTypes.Primary | SelectionTypes.Toggle);
+                selSvc.SetSelectedComponents(new object[] { ContainerControl }, SelectionTypes.Primary | SelectionTypes.Toggle);
                 // Setting the selected component will create a new glyph, so this instance of the glyph won't receive any more mouse messages. So we need to tell the new glyph what the initialDragPoint and okToMove are.
                 if (!(g is ContainerSelectorGlyph selOld))
                 {
@@ -142,7 +128,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
         if (_setInitialDragPoint)
         {
             // Set the mouse location to be to control's location.
-            Point controlOrigin = _behaviorService.ControlToAdornerWindow(_containerControl);
+            Point controlOrigin = _behaviorService.ControlToAdornerWindow(ContainerControl);
             controlOrigin = _behaviorService.AdornerWindowPointToScreen(controlOrigin);
             Cursor.Position = controlOrigin;
             return controlOrigin;
@@ -204,7 +190,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
         }
 
         //must identify a required parent to avoid dragging mixes of children
-        Control requiredParent = _containerControl.Parent;
+        Control requiredParent = ContainerControl.Parent;
         List<IComponent> dragControls = new();
         ICollection selComps = selSvc.GetSelectedComponents();
         //create our list of controls-to-drag
@@ -231,7 +217,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
             if (_setInitialDragPoint)
             {
                 // In this case we want the initialmouselocation to be the control's origin.
-                controlOrigin = _behaviorService.ControlToAdornerWindow(_containerControl);
+                controlOrigin = _behaviorService.ControlToAdornerWindow(ContainerControl);
                 controlOrigin = _behaviorService.AdornerWindowPointToScreen(controlOrigin);
             }
             else
@@ -239,7 +225,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
                 controlOrigin = initialMouseLocation;
             }
 
-            DropSourceBehavior dsb = new DropSourceBehavior(dragControls, _containerControl.Parent, controlOrigin);
+            DropSourceBehavior dsb = new DropSourceBehavior(dragControls, ContainerControl.Parent, controlOrigin);
             try
             {
                 _behaviorService.DoDragDrop(dsb);
