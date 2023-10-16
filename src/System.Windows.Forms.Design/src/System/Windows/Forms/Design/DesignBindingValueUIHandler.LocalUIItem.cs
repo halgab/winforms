@@ -12,7 +12,8 @@ internal partial class DesignBindingValueUIHandler
 {
     private class LocalUIItem : PropertyValueUIItem
     {
-        internal LocalUIItem(DesignBindingValueUIHandler handler, Binding binding) : base(handler.DataBitmap, new PropertyValueUIItemInvokeHandler(OnPropertyValueUIItemInvoke), GetToolTip(binding))
+        internal LocalUIItem(DesignBindingValueUIHandler handler, Binding binding)
+            : base(handler.DataBitmap, new PropertyValueUIItemInvokeHandler(OnPropertyValueUIItemInvoke), GetToolTip(binding))
         {
             Binding = binding;
         }
@@ -22,12 +23,9 @@ internal partial class DesignBindingValueUIHandler
         private static string GetToolTip(Binding binding)
         {
             string name = "";
-            if (binding.DataSource is IComponent comp)
+            if (binding.DataSource is IComponent { Site: { } site })
             {
-                if (comp.Site is not null)
-                {
-                    name = comp.Site.Name;
-                }
+                name = site.Name;
             }
 
             if (name.Length == 0)

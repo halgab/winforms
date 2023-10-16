@@ -39,7 +39,7 @@ internal partial class DesignBindingValueUIHandler : IDisposable
             {
                 // Only add the binding if it is one of the data source types we recognize.  Otherwise, our drop-down list won't show it as
                 // an option, which is confusing.
-                if ((binding.DataSource is IListSource || binding.DataSource is IList || binding.DataSource is Array) && binding.PropertyName.Equals(propDesc.Name))
+                if (binding.DataSource is IListSource or IList or Array && binding.PropertyName.Equals(propDesc.Name))
                 {
                     valueUIItemList.Add(new LocalUIItem(this, binding));
                 }
