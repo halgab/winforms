@@ -15,8 +15,8 @@ namespace System.Windows.Forms.Design.Behavior;
 /// </summary>
 internal sealed class ContainerSelectorBehavior : Behavior
 {
-    private IServiceProvider _serviceProvider; //used for starting a drag/drop
-    private BehaviorService _behaviorService; //ptr to where we start our drag/drop operation
+    private readonly IServiceProvider _serviceProvider; //used for starting a drag/drop
+    private readonly BehaviorService _behaviorService; //ptr to where we start our drag/drop operation
 
     // For some controls, we want to change the original drag point to be the upper-left of the control in  order to make it easier to drop the control at a desired location. But not all controls want this behavior. E.g. we want to do it for Panel and ToolStrip, but not for Label. Label has a ContainerSelectorBehavior via the NoResizeSelectionBorder glyph.
     private readonly bool _setInitialDragPoint;
@@ -25,9 +25,8 @@ internal sealed class ContainerSelectorBehavior : Behavior
     ///  Constructor, here we cache off all of our member vars and sync location and size changes.
     /// </summary>
     internal ContainerSelectorBehavior(Control containerControl, IServiceProvider serviceProvider)
+        : this(containerControl, serviceProvider, setInitialDragPoint: false)
     {
-        Init(containerControl, serviceProvider);
-        _setInitialDragPoint = false;
     }
 
     /// <summary>
@@ -35,26 +34,23 @@ internal sealed class ContainerSelectorBehavior : Behavior
     /// </summary>
     internal ContainerSelectorBehavior(Control containerControl, IServiceProvider serviceProvider, bool setInitialDragPoint)
     {
-        Init(containerControl, serviceProvider);
-        _setInitialDragPoint = setInitialDragPoint;
-    }
-
-    private void Init(Control containerControl, IServiceProvider serviceProvider)
-    {
         _behaviorService = (BehaviorService)serviceProvider.GetService(typeof(BehaviorService));
         if (_behaviorService is null)
         {
             Debug.Fail("Could not get the BehaviorService from ContainerSelectorBehavior!");
-            return;
+        }
+        else
+        {
+            ContainerControl = containerControl;
+            _serviceProvider = serviceProvider;
+            InitialDragPoint = Point.Empty;
+            OkToMove = false;
         }
 
-        ContainerControl = containerControl;
-        _serviceProvider = serviceProvider;
-        InitialDragPoint = Point.Empty;
-        OkToMove = false;
+        _setInitialDragPoint = setInitialDragPoint;
     }
 
-    public Control ContainerControl { get; private set; }
+    public Control ContainerControl { get; }
 
     /// <summary>
     ///  This will be true when we detect a mousedown on our glyph.  The Glyph can use this state to always return 'true' from hittesting indicating that it would like all messages (like mousemove).
