@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.ComponentModel;
 using System.Drawing.Design;
 
@@ -22,13 +20,13 @@ internal partial class DesignBindingValueUIHandler
 
         private static string GetToolTip(Binding binding)
         {
-            string name = "";
+            string? name = "";
             if (binding.DataSource is IComponent { Site: { } site })
             {
                 name = site.Name;
             }
 
-            if (name.Length == 0)
+            if (string.IsNullOrEmpty(name))
             {
                 name = "(List)";
             }
