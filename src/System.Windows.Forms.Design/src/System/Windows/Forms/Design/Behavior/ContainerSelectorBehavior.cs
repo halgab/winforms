@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#nullable disable
-
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -34,7 +32,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
     /// </summary>
     internal ContainerSelectorBehavior(Control containerControl, IServiceProvider serviceProvider, bool setInitialDragPoint)
     {
-        _behaviorService = serviceProvider.GetService<BehaviorService>();
+        _behaviorService = serviceProvider.GetService<BehaviorService>()!;
         if (_behaviorService is null)
         {
             Debug.Fail("Could not get the BehaviorService from ContainerSelectorBehavior!");
@@ -62,12 +60,12 @@ internal sealed class ContainerSelectorBehavior : Behavior
     /// <summary>
     ///  If the user selects the containerglyph - select our related component.
     /// </summary>
-    public override bool OnMouseDown(Glyph g, MouseButtons button, Point mouseLoc)
+    public override bool OnMouseDown(Glyph? g, MouseButtons button, Point mouseLoc)
     {
         if (button == MouseButtons.Left)
         {
             //select our component
-            ISelectionService selSvc = _serviceProvider.GetService<ISelectionService>();
+            ISelectionService? selSvc = _serviceProvider.GetService<ISelectionService>();
             if (selSvc is not null && !ContainerControl.Equals(selSvc.PrimarySelection as Control))
             {
                 selSvc.SetSelectedComponents(new object[] { ContainerControl }, SelectionTypes.Primary | SelectionTypes.Toggle);
@@ -139,7 +137,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
     /// <summary>
     ///  We will compare the mouse loc to the initial point (set in onmousedown) and if we're far enough, we'll create a dropsourcebehavior object and start out drag operation!
     /// </summary>
-    public override bool OnMouseMove(Glyph g, MouseButtons button, Point mouseLoc)
+    public override bool OnMouseMove(Glyph? g, MouseButtons button, Point mouseLoc)
     {
         if (button == MouseButtons.Left && OkToMove)
         {
@@ -164,7 +162,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
     /// <summary>
     ///  Simply clear the initial drag point, so we can start again on the next mouse down.
     /// </summary>
-    public override bool OnMouseUp(Glyph g, MouseButtons button)
+    public override bool OnMouseUp(Glyph? g, MouseButtons button)
     {
         InitialDragPoint = Point.Empty;
         OkToMove = false;
@@ -177,8 +175,8 @@ internal sealed class ContainerSelectorBehavior : Behavior
     private void StartDragOperation(Point initialMouseLocation)
     {
         //need to grab a hold of some services
-        ISelectionService selSvc = _serviceProvider.GetService<ISelectionService>();
-        IDesignerHost host = _serviceProvider.GetService<IDesignerHost>();
+        ISelectionService? selSvc = _serviceProvider.GetService<ISelectionService>();
+        IDesignerHost? host = _serviceProvider.GetService<IDesignerHost>();
         if (selSvc is null || host is null)
         {
             Debug.Fail("Can't drag this Container! Either SelectionService is null or DesignerHost is null");
@@ -186,7 +184,7 @@ internal sealed class ContainerSelectorBehavior : Behavior
         }
 
         //must identify a required parent to avoid dragging mixes of children
-        Control requiredParent = ContainerControl.Parent;
+        Control? requiredParent = ContainerControl.Parent;
         List<IComponent> dragControls = new();
         ICollection selComps = selSvc.GetSelectedComponents();
         //create our list of controls-to-drag
