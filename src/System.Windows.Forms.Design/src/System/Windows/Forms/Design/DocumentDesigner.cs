@@ -330,9 +330,7 @@ public partial class DocumentDesigner : ScrollableControlDesigner, IRootDesigner
     {
         // Read the stream out of the dataobject and get hold of the CLSID of the Toolbox item.
         MemoryStream stm = (MemoryStream)dataObject.GetData(AxClipFormat, true);
-        int len = (int)stm.Length;
-        byte[] bytes = new byte[len];
-        stm.Read(bytes, 0, len);
+        stm.TryGetBuffer(out ArraySegment<byte> bytes);
 
         string clsid = Text.Encoding.Default.GetString(bytes);
         int index = clsid.IndexOf('}');

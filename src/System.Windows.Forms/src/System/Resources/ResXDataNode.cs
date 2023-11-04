@@ -190,7 +190,7 @@ public sealed class ResXDataNode : ISerializable
 
     private string? FileRefTextEncoding => _fileRef?.TextFileEncoding?.BodyName ?? _fileRefTextEncoding;
 
-    private static string ToBase64WrappedString(byte[] data)
+    private static string ToBase64WrappedString(ReadOnlySpan<byte> data)
     {
         const int lineWrap = 80;
         const string prefix = "        ";
@@ -317,7 +317,8 @@ public sealed class ResXDataNode : ISerializable
                     binaryFormatter.Serialize(stream, value);
                 }
 
-                nodeInfo.ValueData = ToBase64WrappedString(stream.ToArray());
+                stream.TryGetBuffer(out ArraySegment<byte> bytes);
+                nodeInfo.ValueData = ToBase64WrappedString(bytes);
             }
 
             nodeInfo.MimeType = ResXResourceWriter.DefaultSerializedObjectMimeType;

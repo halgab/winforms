@@ -120,21 +120,19 @@ public partial class ResXFileRef
 
             // This is a regular file, we call its constructor with a stream as a parameter
             // or if it's a byte array we just return that.
-            byte[]? temp = null;
-
-            using (FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                Debug.Assert(fileStream is not null, $"Couldn't open {fileName}");
-                temp = new byte[fileStream.Length];
-                fileStream.Read(temp, 0, (int)fileStream.Length);
-            }
 
             if (toCreate == typeof(byte[]))
             {
-                return temp;
+                return File.ReadAllBytes(fileName);
             }
 
-            MemoryStream memoryStream = new MemoryStream(temp);
+            MemoryStream memoryStream = new MemoryStream();
+            using (FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                Debug.Assert(fileStream is not null, $"Couldn't open {fileName}");
+                fileStream.CopyTo(memoryStream);
+            }
+
             if (toCreate == typeof(MemoryStream))
             {
                 return memoryStream;

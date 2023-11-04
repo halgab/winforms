@@ -1567,8 +1567,8 @@ public partial class Control
 #pragma warning restore
                     }
 
-                    using VARIANT data = (VARIANT)new BSTR(Convert.ToBase64String(
-                        new ReadOnlySpan<byte>(stream.GetBuffer(), 0, (int)stream.Length)));
+                    stream.TryGetBuffer(out ArraySegment<byte> buffer);
+                    using VARIANT data = (VARIANT)new BSTR(Convert.ToBase64String(buffer));
                     propertyBag->Write(currentProperty.Name, data);
                     continue;
                 }

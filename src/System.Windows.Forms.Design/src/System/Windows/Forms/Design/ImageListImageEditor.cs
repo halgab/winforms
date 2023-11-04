@@ -98,12 +98,10 @@ public class ImageListImageEditor : ImageEditor
 
     private static ImageListImage LoadImageFromStream(Stream stream, bool imageIsIcon)
     {
-        // Copy the original stream to a buffer, then wrap a memory stream around it to avoid locking the file.
-        byte[] buffer = new byte[stream.Length];
-        stream.Read(buffer, 0, (int)stream.Length);
-
+        // Copy the original stream to a memory stream to avoid locking the file.
         // The created image will take over ownership of the stream.
-        MemoryStream ms = new MemoryStream(buffer);
+        MemoryStream ms = new MemoryStream();
+        stream.CopyTo(ms);
         return ImageListImage.ImageListImageFromStream(ms, imageIsIcon);
     }
 

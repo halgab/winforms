@@ -2874,8 +2874,7 @@ public partial class RichTextBox : TextBoxBase
             encodedBytes = (CodePagesEncodingProvider.Instance.GetEncoding(0) ?? Encoding.UTF8).GetBytes(str);
         }
 
-        _editStream = new MemoryStream(encodedBytes.Length);
-        _editStream.Write(encodedBytes, 0, encodedBytes.Length);
+        _editStream = new MemoryStream(encodedBytes);
         _editStream.Position = 0;
         StreamIn(_editStream, flags);
     }
@@ -2979,25 +2978,23 @@ public partial class RichTextBox : TextBoxBase
 
     private string StreamOut(uint flags)
     {
-        Stream stream = new MemoryStream();
+        MemoryStream stream = new();
         StreamOut(stream, flags, false);
         stream.Position = 0;
-        int streamLength = (int)stream.Length;
         string result = string.Empty;
 
-        if (streamLength > 0)
-        {
-            byte[] bytes = new byte[streamLength];
-            stream.Read(bytes, 0, streamLength);
+        stream.TryGetBuffer(out ArraySegment<byte> bytes);
 
+        if (bytes.Count > 0)
+        {
             if ((flags & PInvoke.SF_UNICODE) != 0)
             {
-                result = Encoding.Unicode.GetString(bytes, 0, bytes.Length);
+                result = Encoding.Unicode.GetString(bytes);
             }
             else
             {
                 // Convert from the current code page
-                result = (CodePagesEncodingProvider.Instance.GetEncoding(0) ?? Encoding.UTF8).GetString(bytes, 0, bytes.Length);
+                result = (CodePagesEncodingProvider.Instance.GetEncoding(0) ?? Encoding.UTF8).GetString(bytes);
             }
 
             // Trimming off a null char is usually a sign of incorrect marshalling.
