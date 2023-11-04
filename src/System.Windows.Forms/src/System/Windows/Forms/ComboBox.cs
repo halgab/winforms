@@ -453,13 +453,7 @@ public partial class ComboBox : ListControl
         }
         set
         {
-            if (value < 1)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(value),
-                    value,
-                    string.Format(SR.InvalidArgument, nameof(DropDownWidth), value));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
             if (Properties.GetInteger(PropDropDownWidth) != value)
             {
@@ -496,13 +490,7 @@ public partial class ComboBox : ListControl
         }
         set
         {
-            if (value < 1)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(value),
-                    value,
-                    string.Format(SR.InvalidArgument, nameof(DropDownHeight), value));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
             if (Properties.GetInteger(PropDropDownHeight) != value)
             {
@@ -673,10 +661,7 @@ public partial class ComboBox : ListControl
 
         set
         {
-            if (value < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(ItemHeight), value));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
             ResetHeightCache();
 
@@ -744,10 +729,8 @@ public partial class ComboBox : ListControl
         }
         set
         {
-            if (value < 1 || value > 100)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidBoundArgument, nameof(MaxDropDownItems), value, 1, 100));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 100);
 
             _maxDropDownItems = (short)value;
         }
@@ -990,10 +973,8 @@ public partial class ComboBox : ListControl
                     itemCount = _itemsCollection.Count;
                 }
 
-                if (value < -1 || value >= itemCount)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(SelectedIndex), value));
-                }
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, -1);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, itemCount);
 
                 if (IsHandleCreated)
                 {
@@ -1126,14 +1107,7 @@ public partial class ComboBox : ListControl
         }
         set
         {
-            if (value < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(value),
-                    value,
-                    string.Format(SR.InvalidArgument, nameof(SelectionStart), value));
-            }
-
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
             Select(value, SelectionLength);
         }
     }

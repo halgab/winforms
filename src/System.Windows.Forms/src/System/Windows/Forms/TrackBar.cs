@@ -610,9 +610,10 @@ public partial class TrackBar : Control, ISupportInitialize
                 return;
             }
 
-            if (!_initializing && ((value < _minimum) || (value > _maximum)))
+            if (!_initializing)
             {
-                throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidBoundArgument, nameof(Value), value, $"'{nameof(Minimum)}'", $"'${nameof(Maximum)}'"));
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, _minimum);
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(value, _maximum);
             }
 
             _value = value;

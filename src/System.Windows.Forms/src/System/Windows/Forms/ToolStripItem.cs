@@ -1157,12 +1157,7 @@ public abstract partial class ToolStripItem : BindableComponent,
         }
         set
         {
-            if (value < ImageList.Indexer.DefaultIndex)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(value),
-                    string.Format(SR.InvalidLowBoundArgumentEx, nameof(ImageIndex), value, ImageList.Indexer.DefaultIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(value, ImageList.Indexer.DefaultIndex);
 
             ImageIndexer.Index = value;
             _state[s_stateInvalidMirroredImage] = true;

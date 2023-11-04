@@ -107,10 +107,8 @@ public partial class NumericUpDown : UpDownBase, ISupportInitialize
 
         set
         {
-            if (value < 0 || value > 99)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidBoundArgument, nameof(DecimalPlaces), value, 0, 99));
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 99);
 
             _decimalPlaces = value;
             UpdateEditText();
@@ -160,14 +158,9 @@ public partial class NumericUpDown : UpDownBase, ISupportInitialize
 
         set
         {
-            if (value < 0.0m)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidArgument, nameof(Increment), value));
-            }
-            else
-            {
-                _increment = value;
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+
+            _increment = value;
         }
     }
 
@@ -322,18 +315,17 @@ public partial class NumericUpDown : UpDownBase, ISupportInitialize
         {
             if (value != _currentValue)
             {
-                if (!_initializing && ((value < _minimum) || (value > _maximum)))
+                if (!_initializing)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, string.Format(SR.InvalidBoundArgument, nameof(Value), value, $"'{nameof(Minimum)}'", $"'{nameof(Maximum)}'"));
+                    ArgumentOutOfRangeException.ThrowIfLessThan(value, _minimum);
+                    ArgumentOutOfRangeException.ThrowIfGreaterThan(value, _maximum);
                 }
-                else
-                {
-                    _currentValue = value;
 
-                    OnValueChanged(EventArgs.Empty);
-                    _currentValueChanged = true;
-                    UpdateEditText();
-                }
+                _currentValue = value;
+
+                OnValueChanged(EventArgs.Empty);
+                _currentValueChanged = true;
+                UpdateEditText();
             }
         }
     }
